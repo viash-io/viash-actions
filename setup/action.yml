@@ -26,8 +26,8 @@ runs:
       env: 
         GITHUB_TOKEN: ${{ github.token }}
       run: |
+        # process parameters
         extra_params=( )
-
         if [ ! -z "${{inputs.version}}" ]; then 
           extra_params+=( "--tag" "${{inputs.version}}" )
         fi
@@ -40,9 +40,17 @@ runs:
         if [ ! -z "${{inputs.target_image_source}}" ]; then 
           extra_params+=( "--target_image_source" "${{inputs.target_image_source}}" )
         fi
+
+        # create dir
+        mkdir -p "$HOME/.local/bin"
+
+        # install viash
         curl -fsSL get.viash.io | bash -s -- "${extra_params[@]}" --bin "$HOME/.local/bin"
+
+        # add dir to path
         echo "$HOME/.local/bin" >> $GITHUB_PATH
         
+        # check version
         viash -v | sed 's#viash #version=#;s# (c).*##' >> $GITHUB_OUTPUT
 
         echo "Viash Installed !"
