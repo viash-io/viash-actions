@@ -23,10 +23,10 @@ async function run() {
     };
 
     let args = ['ns', 'list', '--format', 'json'];
-    if (typeof src !== 'undefined') {
+    if (src != '') {
       args.push('--src', src);
     }
-    if (typeof query !== 'undefined') {
+    if (query != '') {
       args.push('--query', query);
     }
 
