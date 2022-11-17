@@ -1,0 +1,25 @@
+{
+  "name": "viash-actions",
+  "version": "1.0.0",
+  "description": "This repository stores [Github Actions](https://github.com/features/actions) useful for building and publishing [Viash](https://viash.io) documents.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viash-io/viash-actions.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/viash-io/viash-actions/issues"
+  },
+  "homepage": "https://github.com/viash-io/viash-actions#readme",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/exec": "^1.1.1",
+    "@actions/github": "^5.1.1"
+  }
+}

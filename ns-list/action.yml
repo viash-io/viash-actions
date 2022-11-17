@@ -1,0 +1,13 @@
+name: 'Hello World'
+description: 'Greet someone and record the time'
+inputs:
+  src:
+    description: 'A source directory containing viash config files, possibly structured in a hierarchical folder structure.'
+  query:
+    description: 'Filter which components get selected by component and namespace name. Can be a regex. Example: "^mynamespace/component1$".'
+outputs:
+  components_json:
+    description: 'A json of the components found.'
+runs:
+  using: 'node16'
+  main: 'index.js'
