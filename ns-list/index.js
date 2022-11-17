@@ -20,7 +20,7 @@ async function run() {
       }
     };
 
-    const args = ['ns', 'list'];
+    let args = ['ns', 'list'];
     if (typeof src !== 'undefined') {
       args += ['--src=' + src]
     }
