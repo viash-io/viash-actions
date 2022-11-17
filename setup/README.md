@@ -32,13 +32,13 @@ We recommend using a Linux or MacOS runner if possible.
           registry: ghcr.io
   ```
 
-* `organisation` - _optional_. Which organisation name to use in the Docker image name. Setting the value to your github organisation is recommended.
+* `organization` - _optional_. Which organization name to use in the Docker image name. Setting the value to your github organization is recommended.
 
   ```yaml
     steps:
       - uses: viash-io/viash-actions/setup@v1
         with:
-          organisation: viash-io
+          organization: viash-io
   ```
 
 * `target_image_source` - _optional_. Which image source to specify in the component builds. Setting it to this git repo is recommended.

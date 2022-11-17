@@ -8,8 +8,8 @@ inputs:
   registry:
     description: 'Which Docker registry to use in the Docker image name.'
     required: false
-  organisation:
-    description: 'Which organisation name to use in the Docker image name.'
+  organization:
+    description: 'Which organization name to use in the Docker image name.'
     required: false
   target_image_source:
     description: 'Which image source to specify in the component builds.'
@@ -34,8 +34,8 @@ runs:
         if [ ! -z "${{inputs.registry}}" ]; then 
           extra_params+=( "--registry" "${{inputs.registry}}" )
         fi
-        if [ ! -z "${{inputs.organisation}}" ]; then 
-          extra_params+=( "--organisation" "${{inputs.organisation}}" )
+        if [ ! -z "${{inputs.organization}}" ]; then 
+          extra_params+=( "--organization" "${{inputs.organization}}" )
         fi
         if [ ! -z "${{inputs.target_image_source}}" ]; then 
           extra_params+=( "--target_image_source" "${{inputs.target_image_source}}" )
