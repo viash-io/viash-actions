@@ -20,7 +20,7 @@ async function run() {
       }
     };
 
-    let args = ['ns', 'list'];
+    let args = ['ns', 'list', '--format', 'json'];
     if (typeof src !== 'undefined') {
       args.push('--src', src);
     }
