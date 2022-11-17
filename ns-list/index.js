@@ -22,10 +22,10 @@ async function run() {
 
     let args = ['ns', 'list'];
     if (typeof src !== 'undefined') {
-      args += ['--src=' + src]
+      args.push('--src', src);
     }
     if (typeof query !== 'undefined') {
-      args += ['--query=' + query]
+      args.push('--query', query);
     }
 
     await exec.exec('viash', args, options);
@@ -33,7 +33,7 @@ async function run() {
     core.setOutput("components_json", myOutput);
 
     // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.stringify(github.context.payload, undefined, 2)
+    const payload = JSON.stringify(github.context.payload, undefined, 2);
     console.log(`The event payload: ${payload}`);
   } catch (error) {
     core.setFailed(error.message);
