@@ -6,8 +6,6 @@ async function run() {
   try {
     const src = core.getInput('src');
     const query = core.getInput('query');
-    console.log(`src: ${src}`);
-    console.log(`query: ${query}`);
 
     let myOutput = '';
     let myError = '';
