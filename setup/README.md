@@ -23,33 +23,6 @@ We recommend using a Linux or MacOS runner if possible.
   
   If the latest development build is desired, use `version: develop`.
 
-* `registry` - _optional_. Which Docker registry to use in the Docker image name. Setting the value to `ghcr.io` is recommended.
-
-  ```yaml
-    steps:
-      - uses: viash-io/viash-actions/setup@v1
-        with:
-          registry: ghcr.io
-  ```
-
-* `organization` - _optional_. Which organization name to use in the Docker image name. Setting the value to your github organization is recommended.
-
-  ```yaml
-    steps:
-      - uses: viash-io/viash-actions/setup@v1
-        with:
-          organization: viash-io
-  ```
-
-* `target_image_source` - _optional_. Which image source to specify in the component builds. Setting it to this git repo is recommended.
-
-  ```yaml
-    steps:
-      - uses: viash-io/viash-actions/setup@v1
-        with:
-          target_image_source: https://github.com/openpipelines-bio/openpipeline
-  ```
-
 ## Examples
 
 ```yaml
