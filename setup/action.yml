@@ -5,15 +5,6 @@ inputs:
   version:
     description: 'The version of Viash to use. Either a release tag (eg. 0.6.0) or "develop" for latest built dev version. If missing, uses latest stable version.'
     required: false
-  registry:
-    description: 'Which Docker registry to use in the Docker image name.'
-    required: false
-  organization:
-    description: 'Which organization name to use in the Docker image name.'
-    required: false
-  target_image_source:
-    description: 'Which image source to specify in the component builds.'
-    required: false
 outputs:
   version:
     description: 'The installed version of viash.'
@@ -31,21 +22,12 @@ runs:
         if [ ! -z "${{inputs.version}}" ]; then 
           extra_params+=( "--tag" "${{inputs.version}}" )
         fi
-        if [ ! -z "${{inputs.registry}}" ]; then 
-          extra_params+=( "--registry" "${{inputs.registry}}" )
-        fi
-        if [ ! -z "${{inputs.organization}}" ]; then 
-          extra_params+=( "--organization" "${{inputs.organization}}" )
-        fi
-        if [ ! -z "${{inputs.target_image_source}}" ]; then 
-          extra_params+=( "--target_image_source" "${{inputs.target_image_source}}" )
-        fi
 
         # create dir
         mkdir -p "$HOME/.local/bin"
 
         # install viash
-        curl -fsSL get.viash.io | bash -s -- "${extra_params[@]}" --bin "$HOME/.local/bin"
+        curl -fsSL https://github.com/viash-io/viash/releases/latest/download/viash_install | bash -s -- "${extra_params[@]}" --bin "$HOME/.local/bin"
 
         # add dir to path
         echo "$HOME/.local/bin" >> $GITHUB_PATH
