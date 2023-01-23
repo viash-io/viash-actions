@@ -24,7 +24,7 @@ runs:
       with: 
         repository: viash-io/viash_tools
         token: ${{ inputs.token }}
-        path: ${{ runner.temp }}/
+        path: viash_tools
     - name: 'Generate schemas'
       shell: bash
       id: generate-schemas
@@ -32,5 +32,5 @@ runs:
         viash ns list -s ${{ inputs.dir }} -p nextflow --format json 2> /dev/null > ${{ runner.temp }}/ns_list_src.json
         inputs=$(jq -r '[.[] | .info.config] | join(";")' ${{ runner.temp }}/ns_list_src.json)
         outputs_schema=$(jq -r '[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")' ${{ runner.temp }}/ns_list_src.json)
-        ${{ runner.temp }}/viash_tools/docker/nextflow/generate_schema/generate_schema --input "$inputs" --output "$outputs_schema"
+        viash_tools/docker/nextflow/generate_schema/generate_schema --input "$inputs" --output "$outputs_schema"
       
