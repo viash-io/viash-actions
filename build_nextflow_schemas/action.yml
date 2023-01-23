@@ -25,7 +25,7 @@ runs:
         repository: viash-io/viash_tools
         token: ${{ inputs.token }}
         path: viash_tools
-        ref: main_build
+        ref: "0.2.0"
     - name: 'Generate schemas'
       shell: bash
       id: generate-schemas
