@@ -26,6 +26,7 @@ runs:
         token: ${{ inputs.token }}
         path: ${{ runner.temp }}/
     - name: 'Generate schemas'
+      shell: bash
       id: generate-schemas
       run: |
         viash ns list -s ${{ inputs.dir }} -p nextflow --format json 2> /dev/null > ${{ runner.temp }}/ns_list_src.json
