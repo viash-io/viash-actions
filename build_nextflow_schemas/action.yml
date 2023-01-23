@@ -33,6 +33,7 @@ runs:
         viash ns list -s ${{ inputs.dir }} -p nextflow --format json 2> /dev/null > ${{ runner.temp }}/ns_list_src.json
         [ -s ${{ runner.temp }}/ns_list_src.json ] || { echo >&2 "file is empty"; exit 1; }
         inputs=$(jq -r '[.[] | .info.config] | join(";")' ${{ runner.temp }}/ns_list_src.json)
+        [ -z "$inputs" ] && { echo "No Viash config files"; exit 1; }
         outputs_schema=$(jq -r '[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")' ${{ runner.temp }}/ns_list_src.json)
         echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema --input $inputs --output $outputs_schema"
         viash_tools/target/docker/nextflow/generate_schema/generate_schema --input "$inputs" --output "$outputs_schema"
