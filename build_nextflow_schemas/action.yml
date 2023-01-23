@@ -1,0 +1,35 @@
+name: 'Build nextflow schemas'
+author: 'Dries Schaumont'
+description: >
+    This action will build nextflow schemas for all 
+    Viash workflows and components in a repository
+inputs:
+    dir: 
+        required: true
+        description: 'Location of the viash configurations.'
+    token:
+        description: >
+            Personal access token (PAT) used to fetch the viash tools repository.
+        required: true
+        default: ${{ github.token }}
+outputs:
+  version:
+    description: 'The installed version of viash.'
+    value: ${{ steps.install-viash.outputs.version }}
+runs:
+  using: 'composite'
+  steps: 
+    - uses: viash-io/viash-actions/setup@v1.0.0
+    - uses: actions/checkout@v3
+      with: 
+        repository: viash-io/viash_tools
+        token: ${{ inputs.token }}
+        path: ${{ runner.temp }}/
+    - name: 'Generate schemas'
+      id: generate-schemas
+      run: |
+        viash ns list -s ${{ inputs.dir }} -p nextflow --format json 2> /dev/null > ${{ runner.temp }}/ns_list_src.json
+        inputs=$(jq -r '[.[] | .info.config] | join(";")' ${{ runner.temp }}/ns_list_src.json)
+        outputs_schema=$(jq -r '[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")' ${{ runner.temp }}/ns_list_src.json)
+        ${{ runner.temp }}/viash_tools/docker/nextflow/generate_schema/generate_schema --input "$inputs" --output "$outputs_schema"
+      
