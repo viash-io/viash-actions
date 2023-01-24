@@ -1,4 +1,4 @@
-name: 'Build parameter schemas'
+name: 'Build nf-tower schemas'
 author: 'Dries Schaumont'
 description: >
   This action will build nextflow schemas for all 
