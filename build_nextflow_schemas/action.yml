@@ -1,27 +1,41 @@
 name: 'Build nextflow schemas'
 author: 'Dries Schaumont'
 description: >
-    This action will build nextflow schemas for all 
-    Viash workflows and components in a repository
+  This action will build nextflow schemas for all 
+  Viash workflows and components in a repository
 inputs:
-    workflow_dir: 
-        required: true
-        description: 'Location of the viash configurations.'
-    token:
-        description: >
-            Personal access token (PAT) used to fetch the viash tools repository.
-        required: true
-        default: ${{ github.token }}
+  workflow_dir: 
+    required: true
+    description: 'Location of the viash configurations.'
+  token:
+    description: >
+        Personal access token (PAT) used to fetch the viash tools repository.
+    required: true
+    default: ${{ github.token }}
+  tools_version:
+    description: >
+      Release of Viash tools to use.
+    required: false
+    default: 'latest'
 runs:
   using: 'composite'
-  steps: 
+  steps:
     - uses: viash-io/viash-actions/setup@v1.0.0
+    - name: Get latest release
+      id: latestrelease
+      run: |
+        if [ "${{ inputs.tools_version }}" == "latest" ]; then
+          LATEST_RELEASE=$(curl -s -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ inputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/viash-io/viash_tools/releases/latest | jq -r '.tag_name')
+          echo "{releasetag}={$LATEST_RELEASE}" >> $GITHUB_OUTPUT
+        else
+          echo "{releasetag}={${{ inputs.tools_version }}}" >> $GITHUB_OUTPUT
+        fi
     - uses: actions/checkout@v3
       with: 
         repository: viash-io/viash_tools
         token: ${{ inputs.token }}
         path: viash_tools
-        ref: "main_build"
+        ref: ${{ steps.latestrelease.outputs.releasetag }}
     - name: 'Generate schemas'
       shell: bash
       id: generate-schemas
