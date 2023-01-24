@@ -1,10 +1,10 @@
-name: 'Build nextflow schemas'
+name: 'Build parameter schemas'
 author: 'Dries Schaumont'
 description: >
   This action will build nextflow schemas for all 
   Viash workflows and components in a repository
 inputs:
-  workflow_dir: 
+  input_dir: 
     required: true
     description: 'Location of the viash configurations.'
   token:
@@ -17,6 +17,16 @@ inputs:
       Release of Viash tools to use.
     required: false
     default: 'latest'
+outputs:
+  output_directory:
+    description: >
+      Location of the output files. By default, will save the build schemas 
+      next to the Viash config. If set, will create a 'nextflow' folder inside 
+      the output directory if it does not exist. The schema for a component 
+      will be stored in a folder with the name of that component, 
+      located in the nextflow directory. This follows the output schema from 
+      the 'viash ns build' command.
+    required: false
 runs:
   using: 'composite'
   steps:
@@ -42,11 +52,16 @@ runs:
       shell: bash
       id: generate-schemas
       run: |
-        viash ns list -s ${{ inputs.workflow_dir }} --format json 2> /dev/null > ${{ runner.temp }}/ns_list_src.json
+        viash ns list -s ${{ inputs.input_dir }} --format json 2> /dev/null > ${{ runner.temp }}/ns_list_src.json
         [ -s ${{ runner.temp }}/ns_list_src.json ] || { echo >&2 "No workflow Viash config files found."; exit 1; }
         inputs=$(jq -r '[.[] | .info.config] | join(";")' ${{ runner.temp }}/ns_list_src.json)
         [ -z "$inputs" ] && { echo >&2 "No workflow Viash config files found."; exit 1; }
-        outputs_schema=$(jq -r '[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")' ${{ runner.temp }}/ns_list_src.json)
+        if [ ! -z "${{outputs.output_directory}}" ]; # The default
+          jq_query='[.[] | "'+"${{outputs.output_directory}}"+'/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
+        else
+          jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
+        fi
+        outputs_schema=$(jq -r "$jq_query" ${{ runner.temp }}/ns_list_src.json)
         echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema --input $inputs --output $outputs_schema"
         viash_tools/target/docker/nextflow/generate_schema/generate_schema --input "$inputs" --output "$outputs_schema"
         echo "Created $outputs_schema"
