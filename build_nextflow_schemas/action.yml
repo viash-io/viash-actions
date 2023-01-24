@@ -62,9 +62,9 @@ runs:
         [ -z "$inputs" ] && { echo >&2 "No workflow Viash config files found."; exit 1; }
         if [ ! -z "${{inputs.output_directory}}" ]; then
           # Default behavior
-          jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
-        else
           jq_query='[.[] | "'"${{inputs.output_directory}}"'/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
+        else
+          jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
         fi
         echo "jq query: $jq_query"
         outputs_schema=$(jq -r "$jq_query" ${{ runner.temp }}/ns_list_src.json)
