@@ -12,10 +12,6 @@ inputs:
             Personal access token (PAT) used to fetch the viash tools repository.
         required: true
         default: ${{ github.token }}
-outputs:
-  version:
-    description: 'The installed version of viash.'
-    value: ${{ steps.install-viash.outputs.version }}
 runs:
   using: 'composite'
   steps: 
