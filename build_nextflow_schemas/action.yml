@@ -17,7 +17,6 @@ inputs:
       Release of Viash tools to use.
     required: false
     default: 'latest'
-outputs:
   output_directory:
     description: >
       Location of the output files. By default, will save the build schemas 
@@ -56,7 +55,7 @@ runs:
         [ -s ${{ runner.temp }}/ns_list_src.json ] || { echo >&2 "No workflow Viash config files found."; exit 1; }
         inputs=$(jq -r '[.[] | .info.config] | join(";")' ${{ runner.temp }}/ns_list_src.json)
         [ -z "$inputs" ] && { echo >&2 "No workflow Viash config files found."; exit 1; }
-        if [ ! -z "${{outputs.output_directory}}" ]; # The default
+        if [ ! -z "${{inputs.output_directory}}" ]; # The default
           jq_query='[.[] | "'+"${{outputs.output_directory}}"+'/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
         else
           jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
