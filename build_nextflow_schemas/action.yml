@@ -51,6 +51,11 @@ runs:
       shell: bash
       id: generate-schemas
       run: |
+        if ! command -v viash &> /dev/null
+        then
+          echo "Viash could not be found.";
+          exit 127;
+        fi
         viash ns list -s ${{ inputs.input_dir }} --format json 2> /dev/null > ${{ runner.temp }}/ns_list_src.json
         [ -s ${{ runner.temp }}/ns_list_src.json ] || { echo >&2 "No workflow Viash config files found."; exit 1; }
         inputs=$(jq -r '[.[] | .info.config] | join(";")' ${{ runner.temp }}/ns_list_src.json)
