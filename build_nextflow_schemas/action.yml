@@ -22,6 +22,7 @@ runs:
   steps:
     - uses: viash-io/viash-actions/setup@v1.0.0
     - name: Get latest release
+      shell: bash
       id: latestrelease
       run: |
         if [ "${{ inputs.tools_version }}" == "latest" ]; then
