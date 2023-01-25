@@ -14,13 +14,27 @@ ns_list_schema <- ns_subcommands_schema[[which(sapply(ns_subcommands_schema, fun
 
 # construct yaml
 selected_opts <- ns_list_schema$opts[sapply(ns_list_schema$opts, function(x) !x$name %in% "parallel")]
+input_values <- sapply(selected_opts, function(opt) {
+  descr <- opt$descr %>%
+    str_replace_all("@\\[[^]]*\\]\\(([^\\)]*)\\)", "\\1") %>%
+    str_replace_all(". *$", ".")
+
+  choices_str <- 
+    if (!is.null(opt$choices)) {
+      paste0(" Possible values are: \"", paste(opt$choices, collapse = "\", \""), "\".")
+    } else {
+      ""
+    }
+  out <- list(
+    description = paste0(descr, choices_str),
     required = opt$required
   )
+  setNames(list(out), opt$name)
 })
 out <- list(
   name = ns_list_schema$bannerCommand,
   description = ns_list_schema$bannerDescription,
-  inputs = setNames(input_values, input_names),
+  inputs = input_values,
   outputs = list(
     output = list(
       description = "A list of all of the components found. By default this will be a yaml, unless the format argument was set to 'json'."

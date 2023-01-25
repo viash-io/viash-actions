@@ -27,7 +27,7 @@ inputs:
     description: Modify a viash config at runtime using dynamic config modding.
     required: false
   format:
-    description: Which output format to use.
+    description: 'Which output format to use. Possible values are: "yaml", "json".'
     required: false
   parse_argument_groups:
     description: Whether or not to postprocess each component's argument groups.
