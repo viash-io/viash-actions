@@ -64,8 +64,8 @@ runs:
           exit 127;
         fi
         inputs=$(jq -r '[.[] | .info.config] | join(";")' << 'EOF'
-          ${{ steps.nslist.outputs.output }}
-        EOF  
+        ${{ steps.nslist.outputs.output }}
+        EOF
         )
         [ -z "$inputs" ] && { echo >&2 "No workflow Viash config files found."; exit 1; }
         if [ ! -z "${{inputs.output_directory}}" ]; then
