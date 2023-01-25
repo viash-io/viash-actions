@@ -121,6 +121,6 @@ runs:
 
 
         echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema --input $inputs --output $outputs_schema"
-        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" --output "${outputs[@]}"
+        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}"
         echo "Created $outputs_schema"
       
