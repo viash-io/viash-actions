@@ -1,0 +1,55 @@
+---
+title: ns-build
+format: gfm
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+# action <- yaml::read_yaml("ns-build/action.yml")
+action <- yaml::read_yaml("action.yml")
+```
+
+`r action$description`
+
+## Usage
+
+This action will run `viash ns build`.
+
+We recommend using a Linux or MacOS runner if possible.
+
+### Inputs available
+
+```{r}
+#| echo: false
+lines <- map_chr(names(action$inputs), function(name) {
+  input <- action$inputs[[name]]
+  required <- ifelse (input$required %||% FALSE, "required", "optional")
+  glue::glue("* `{name}`: - _{required}_. {input$description}")
+})
+knitr::asis_output(paste0(lines, collapse = "\n"))
+```
+
+## Examples
+
+```yaml
+name: demo of viash ns build
+
+on: 
+  branch: main
+
+jobs:
+  viash-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: viash-io/viash-actions/setup@v1
+
+      - uses: viash-io/viash-actions/ns-build@v1
+  viash-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: viash-io/viash-actions/setup@v1
+
+      - uses: viash-io/viash-actions/ns-build@v1
+```
+

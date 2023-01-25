@@ -3,9 +3,9 @@
 library(tidyverse)
 
 # parameters
-skip_args <- c("parallel")
-dest_file <- "ns-list/action.yml"
-subcommands <- c("ns", "list")
+skip_args <- c("push", "flatten")
+dest_file <- "ns-build/action.yml"
+subcommands <- c("ns", "build")
 
 #################### common code
 # fetch schema
@@ -45,11 +45,11 @@ out <- list(
   name = schema$bannerCommand,
   description = schema$bannerDescription,
   inputs = input_values,
-  outputs = list(
-    output = list(
-      description = "A list of all of the components found. By default this will be a yaml, unless the format argument was set to 'json'."
-    )
-  ),
+  # outputs = list(
+  #   output = list(
+  #     description = "A list of all of the components found. By default this will be a yaml, unless the format argument was set to 'json'."
+  #   )
+  # ),
   runs = list(
     using = "node16",
     main = "index.js"
