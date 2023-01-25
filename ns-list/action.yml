@@ -15,7 +15,7 @@ inputs:
     required: false
   src:
     description: 'A source directory containing viash config files, possibly structured
-      in a hierarchical folder structure. Default: src/.'
+      in a hierarchical folder structure. Default: "src/".'
     required: false
   platform:
     description: Acts as a regular expression to filter the platform ids specified
@@ -27,7 +27,7 @@ inputs:
     description: Modify a viash config at runtime using dynamic config modding.
     required: false
   format:
-    description: 'Which output format to use. Possible values are: "yaml", "json".'
+    description: 'Which output format to use. Possible values are: "yaml", "json". Default is "yaml".'
     required: false
   parse_argument_groups:
     description: Whether or not to postprocess each component's argument groups.
