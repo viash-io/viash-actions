@@ -47,6 +47,12 @@ runs:
         token: ${{ inputs.token }}
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
+
+    - uses: viash-io/viash-actions/ns-list@v1
+      id: nslist
+      with: 
+        src: ${{ inputs.input_dir }}
+
     - name: 'Generate schemas'
       shell: bash
       id: generate-schemas
@@ -56,9 +62,8 @@ runs:
           echo "Viash could not be found.";
           exit 127;
         fi
-        viash ns list -s ${{ inputs.input_dir }} --format json 2> /dev/null > ${{ runner.temp }}/ns_list_src.json
-        [ -s ${{ runner.temp }}/ns_list_src.json ] || { echo >&2 "No workflow Viash config files found."; exit 1; }
-        inputs=$(jq -r '[.[] | .info.config] | join(";")' ${{ runner.temp }}/ns_list_src.json)
+        [ -z "${{ steps.nslist.components_json }}" ] || { echo >&2 "No workflow Viash config files found."; exit 1; }
+        inputs=$(jq -r '[.[] | .info.config] | join(";")' <<< "${{ steps.nslist.components_json }}")
         [ -z "$inputs" ] && { echo >&2 "No workflow Viash config files found."; exit 1; }
         if [ ! -z "${{inputs.output_directory}}" ]; then
           # Default behavior
