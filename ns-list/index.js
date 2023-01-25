@@ -1,14 +1,12 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const exec = require('@actions/exec');
+const core = require("@actions/core");
+const github = require("@actions/github");
+const exec = require("@actions/exec");
 
 async function run() {
   try {
-    const src = core.getInput('src');
-    const query = core.getInput('query');
-
-    let myOutput = '';
-    let myError = '';
+    // set up listeners for 'ns list'
+    let myOutput = "";
+    let myError = "";
 
     const options = {};
     options.listeners = {
@@ -20,21 +18,27 @@ async function run() {
       }
     };
 
-    let args = ['ns', 'list', '--format', 'json'];
-    if (src != '') {
-      args.push('--src', src);
-    }
-    if (query != '') {
-      args.push('--query', query);
-    }
+    // fetch arguments for command
+    // todo: can I extract these inputNames from the action.yml?
+    const inputNames = [
+      "query", "query_namespace", "query_name", "src", "platform", "parallel", 
+      "config_mod", "format", "parse_argument_groups"
+    ]
+    const inputArgs = inputNames.flatMap(function(argName) {
+      const value = core.getInput(argName)
+      if (value == "") {
+        return [];
+      } else {
+        return ["--" + argName, value];
+      }
+    })
+    let args = ["ns", "list"].concat(inputArgs);
 
-    await exec.exec('viash', args, options);
+    // run command
+    await exec.exec("viash", args, options);
     
-    core.setOutput("components_json", myOutput);
-
-    // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.stringify(github.context.payload, undefined, 2);
-    console.log(`The event payload: ${payload}`);
+    // pass output
+    core.setOutput("output", myOutput);
   } catch (error) {
     core.setFailed(error.message);
   }

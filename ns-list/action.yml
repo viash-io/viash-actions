@@ -1,13 +1,44 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: viash ns list
+description: List a namespace containing many viash config files.
 inputs:
-  src:
-    description: 'A source directory containing viash config files, possibly structured in a hierarchical folder structure.'
   query:
-    description: 'Filter which components get selected by component and namespace name. Can be a regex. Example: "^mynamespace/component1$".'
+    description: 'Filter which components get selected by component and namespace
+      name. Can be a regex. Example: "^mynamespace/component1$".'
+    required: false
+  query_namespace:
+    description: 'Filter which namespaces get selected by namespace name. Can be a
+      regex. Example: "^mynamespace$".'
+    required: false
+  query_name:
+    description: 'Filter which components get selected by component name. Can be a
+      regex. Example: "^component1".'
+    required: false
+  src:
+    description: 'A source directory containing viash config files, possibly structured
+      in a hierarchical folder structure. Default: src/.'
+    required: false
+  platform:
+    description: Acts as a regular expression to filter the platform ids specified
+      in the found config files. If this is not provided, all platforms will be used.
+      If no platforms are defined in a config, the native platform will be used. In
+      addition, the path to a platform yaml file can also be specified.
+    required: false
+  parallel:
+    description: Whether or not to run the process in parallel.
+    required: false
+  config_mod:
+    description: Modify a viash config at runtime using dynamic config modding.
+    required: false
+  format:
+    description: Which output format to use.
+    required: false
+  parse_argument_groups:
+    description: Whether or not to postprocess each component's argument groups.
+    required: false
 outputs:
-  components_json:
-    description: 'A json of the components found.'
+  output:
+    description: A list of all of the components found. By default this will be a
+      yaml, unless the format argument was set to 'json'.
 runs:
-  using: 'node16'
-  main: 'index.js'
+  using: node16
+  main: index.js
