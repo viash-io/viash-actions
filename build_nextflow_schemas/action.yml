@@ -48,10 +48,11 @@ runs:
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
 
-    - uses: viash-io/viash-actions/ns-list@v1
+    - uses: viash-io/viash-actions/ns-list@vimprove_ns_list
       id: nslist
-      with: 
+      with:
         src: ${{ inputs.input_dir }}
+        format: "json"
 
     - name: 'Generate schemas'
       shell: bash
