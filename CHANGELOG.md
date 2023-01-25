@@ -1,6 +1,18 @@
+# viash-actions v2.0.0
+
+## Major changes
+
+* [ns-list](ns-list): Added arguments `query_namespace`, `query_name`, `platform`,
+  `config_mod`, `format` and `parse_argument_groups` to make the action more in line with the
+  arguments of `viash ns list`.
+## Breaking changes
+
+* [ns-list](ns-list): Renamed the output variable from `components_json` to simply `output`.
+  The default format is `format: yaml`, set to `format: json` to restore the previous
+  behaviour.
 # viash-actions v1.0.0
 
 Initial release. Contains the following actions:
 
-* [viash-io/viash-actions/setup](https://github.com/viash-io/viash-actions/tree/main/setup) - Install Viash
-* [viash-io/viash-actions/ns-list](https://github.com/viash-io/viash-actions/tree/main/ns-list) - List components in repo
+* [setup](setup): Install Viash
+* [ns-list](ns-list): List components in repo
