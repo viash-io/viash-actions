@@ -75,7 +75,10 @@ runs:
           jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
         fi
         echo "jq query: $jq_query"
-        outputs_schema=$(jq -r "$jq_query" ${{ runner.temp }}/ns_list_src.json)
+        outputs_schema=$(jq -r "$jq_query" << 'EOF'
+        ${{ steps.nslist.outputs.output }}
+        EOF
+        )
         echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema --input $inputs --output $outputs_schema"
         viash_tools/target/docker/nextflow/generate_schema/generate_schema --input "$inputs" --output "$outputs_schema"
         echo "Created $outputs_schema"
