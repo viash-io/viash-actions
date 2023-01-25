@@ -1,12 +1,16 @@
 name: 'Build nf-tower schemas'
 author: 'Dries Schaumont'
 description: >
-  This action will build nextflow schemas for all 
-  Viash workflows and components in a repository
+  This action will build nextflow schemas for Viash workflows and components in a repository.
+  For workflows, will save the build schemas next to the Viash config.
+  For components, will output to the target directory (see viash ns build).
 inputs:
-  input_dir: 
-    required: true
-    description: 'Location of the viash configurations.'
+  components:
+    required: false
+    description: 'Location of the viash configuration for components.'
+  workflows: 
+    required: false
+    description: 'Location of the viash configurations for workflows.'
   token:
     description: >
         Personal access token (PAT) used to fetch the viash tools repository.
@@ -17,15 +21,6 @@ inputs:
       Release of Viash tools to use.
     required: false
     default: 'latest'
-  output_directory:
-    description: >
-      Location of the output files. By default, will save the build schemas 
-      next to the Viash config. If set, will create a 'nextflow' folder inside 
-      the output directory if it does not exist. The schema for a component 
-      will be stored in a folder with the name of that component, 
-      located in the nextflow directory. This follows the output schema from 
-      the 'viash ns build' command.
-    required: false
 runs:
   using: 'composite'
   steps:
@@ -48,10 +43,19 @@ runs:
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
 
-    - uses: viash-io/viash-actions/ns-list@improve_ns_list
-      id: nslist
+    - uses: viash-io/viash-actions/ns-list@main
+      id: nslistcomponents
+      if: inputs.components
       with:
-        src: ${{ inputs.input_dir }}
+        src: ${{ inputs.components }}
+        format: "json"
+        platform: "nextflow"
+
+    - uses: viash-io/viash-actions/ns-list@main
+      id: nslistworkflows
+      if: inputs.workflows
+      with:
+        src: ${{ inputs.workflows }}
         format: "json"
 
     - name: 'Generate schemas'
@@ -63,22 +67,60 @@ runs:
           echo "Viash could not be found.";
           exit 127;
         fi
-        inputs=$(jq -r '[.[] | .info.config] | join(";")' << 'EOF'
-        ${{ steps.nslist.outputs.output }}
-        EOF
-        )
-        [ -z "$inputs" ] && { echo >&2 "No workflow Viash config files found."; exit 1; }
-        if [ ! -z "${{inputs.output_directory}}" ]; then
-          # Default behavior
-          jq_query='[.[] | "'"${{inputs.output_directory}}"'/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
-        else
-          jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
+
+        # Check if at least some input is defined.
+        if [ ${{ steps.nslistcomponents.outputs.output == null }} && ${{ steps.nslistworkflows.outputs.output == null }} ]; then
+          echo "One of the workflows or components properties must be set."
+          exit 1;
         fi
-        outputs_schema=$(jq -r "$jq_query" << 'EOF'
-        ${{ steps.nslist.outputs.output }}
-        EOF
-        )
+
+        # Process components
+        if [ ${{ steps.nslistcomponents.outputs.output != null }} ]; then
+          # Get config paths
+          components_inputs=$(jq -r '[.[] | .info.config] | join(";")' << 'EOF'
+          ${{ steps.nslistcomponents.outputs.output }}
+          EOF
+          )
+
+          # Get output paths
+          jq_query='[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
+          component_outputs_schema=$(jq -r "$jq_query" << 'EOF'
+            ${{ steps.nslistcomponents.outputs.output }}
+          EOF
+          )
+        fi
+
+        # Process workflows
+        if [ ${{ steps.nslistworkflows.outputs.output != null }} ]; then
+          # Get config paths
+          workflow_inputs=$(jq -r '[.[] | .info.config] | join(";")' << 'EOF'
+          ${{ steps.nslistworkflows.outputs.output }}
+          EOF
+          )
+
+          # Get output paths
+          jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
+          workflow_outputs_schema=$(jq -r "$jq_query" << 'EOF'
+          ${{ steps.nslist.outputs.output }}
+          EOF
+          )
+
+        fi
+        inputs=( )
+        outputs=( )
+
+        if [ ! -z "$workflow_inputs" ]; then 
+          inputs+=( "--input $workflow_inputs" )
+          outputs+=( "--output $workflow_outputs_schema" )
+        fi
+
+        if [ ! -z "$component_inputs" ]; then
+          inputs+=( "--input $component_inputs" )
+          outputs+=( "--output $component_outputs_schema" )
+        fi
+
+
         echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema --input $inputs --output $outputs_schema"
-        viash_tools/target/docker/nextflow/generate_schema/generate_schema --input "$inputs" --output "$outputs_schema"
+        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" --output "${outputs[@]}"
         echo "Created $outputs_schema"
       
