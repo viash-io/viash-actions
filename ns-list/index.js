@@ -19,9 +19,10 @@ async function run() {
     };
 
     // fetch arguments for command
+    // skip "parallel"
     // todo: can I extract these inputNames from the action.yml?
     const inputNames = [
-      "query", "query_namespace", "query_name", "src", "platform", "parallel", 
+      "query", "query_namespace", "query_name", "src", "platform",
       "config_mod", "format", "parse_argument_groups"
     ]
     const inputArgs = inputNames.flatMap(function(argName) {

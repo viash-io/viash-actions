@@ -13,10 +13,7 @@ ns_subcommands_schema <- ns_schema$subcommands
 ns_list_schema <- ns_subcommands_schema[[which(sapply(ns_subcommands_schema, function(li) li$name == "list"))]]
 
 # construct yaml
-input_names <- map_chr(ns_list_schema$opts, "name")
-input_values <- map(ns_list_schema$opts, function(opt) {
-  list(
-    description = gsub("@\\[[^]]*\\]\\(([^\\)]*)\\)", "\\1", opt$descr),
+selected_opts <- ns_list_schema$opts[sapply(ns_list_schema$opts, function(x) !x$name %in% "parallel")]
     required = opt$required
   )
 })

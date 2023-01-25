@@ -23,9 +23,6 @@ inputs:
       If no platforms are defined in a config, the native platform will be used. In
       addition, the path to a platform yaml file can also be specified.
     required: false
-  parallel:
-    description: Whether or not to run the process in parallel.
-    required: false
   config_mod:
     description: Modify a viash config at runtime using dynamic config modding.
     required: false
