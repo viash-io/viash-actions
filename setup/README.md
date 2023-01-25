@@ -26,7 +26,7 @@ We recommend using a Linux or MacOS runner if possible.
 ## Examples
 
 ```yaml
-name: viash-setup
+name: demo of setup
 
 on: 
   branch: main
