@@ -48,7 +48,7 @@ runs:
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
 
-    - uses: viash-io/viash-actions/ns-list@vimprove_ns_list
+    - uses: viash-io/viash-actions/ns-list@improve_ns_list
       id: nslist
       with:
         src: ${{ inputs.input_dir }}
