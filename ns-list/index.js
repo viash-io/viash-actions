@@ -24,10 +24,17 @@ async function run() {
       "query", "query_namespace", "query_name", "src", "platform",
       "config_mod", "format", "parse_argument_groups"
     ]
+    const booleanInputs = ["parse_argument_groups"]
     const inputArgs = inputNames.flatMap(function(argName) {
       const value = core.getInput(argName)
       if (value == "") {
         return [];
+      } else if (booleanInputs.indexOf(argName) >= 0) {
+        if (value.toLowerCase() == "true") {
+          return ["--" + argName];
+        } else {
+          return [];
+        }
       } else {
         return ["--" + argName, value];
       }
