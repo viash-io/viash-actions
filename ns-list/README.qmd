@@ -1,0 +1,67 @@
+---
+title: ns-list
+format: gfm
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+# action <- yaml::read_yaml("ns-list/action.yml")
+action <- yaml::read_yaml("action.yml")
+```
+
+`r action$description`
+
+## Usage
+
+This action will run `viash ns list` and store the resulting yaml / json in the output.
+
+We recommend using a Linux or MacOS runner if possible.
+
+### Inputs available
+
+```{r}
+#| echo: false
+lines <- map_chr(names(action$inputs), function(name) {
+  input <- action$inputs[[name]]
+  required <- ifelse (input$required %||% FALSE, "required", "optional")
+  glue::glue("* `{name}`: - _{required}_. {input$description}")
+})
+knitr::asis_output(paste0(lines, collapse = "\n"))
+```
+
+## Examples
+
+```yaml
+name: demo of viash ns list
+
+on: 
+  branch: main
+
+jobs:
+  viash-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: viash-io/viash-actions/setup@v1
+
+      - id: ns_list
+        uses: viash-io/viash-actions/ns-list@v1
+
+      - run: |
+          # do something with the output yaml
+          echo "${{steps.ns_list.outputs.output}}"
+  viash-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: viash-io/viash-actions/setup@v1
+
+      - id: ns_list
+        uses: viash-io/viash-actions/ns-list@v1
+        with:
+          format: json
+
+      - run: |
+          # do something with the output json
+          echo "${{steps.ns_list.outputs.output}}"
+```
+
