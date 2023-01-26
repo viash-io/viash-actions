@@ -24,7 +24,7 @@ inputs:
     required: false
     description: >
       The git tag. Used to create links to the source code in the generated documentation.
-    default: "${{ GITHUB_REF_NAME }}"
+    default: "${{ vars.GITHUB_REF_NAME }}"
   git_repo:
     required: false
     description: >
@@ -47,7 +47,6 @@ inputs:
     default: 'latest'
 runs:
   using: 'composite'
-  steps:
   steps:
     - name: Get latest release
       shell: bash
