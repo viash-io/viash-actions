@@ -33,7 +33,6 @@ inputs:
     default: ${{ github.repository }}
   write_index:
     required: false
-    default: 'false'
     description: Whether or not to also create an index file. Options are 'true' or 'false'.
     default: 'false'
   token:
