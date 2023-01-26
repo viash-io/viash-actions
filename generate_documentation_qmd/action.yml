@@ -91,5 +91,5 @@ runs:
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ github.repository }}" \
           --git_browse_url "https://github.com/${{ github.repository }}/blob/main/" \
-          --git_tag "${{ input.git_tag }}" \
-          --write_index "${{ input.write_index }}"
+          --git_tag "${{ inputs.git_tag }}" \
+          --write_index "${{ inputs.write_index }}"
