@@ -24,7 +24,7 @@ inputs:
     required: false
     description: >
       The git tag. Used to create links to the source code in the generated documentation.
-    default: "${{ vars.GITHUB_REF_NAME }}"
+    default: "${{ github.ref_name }}"
   git_repo:
     required: false
     description: >
