@@ -105,6 +105,9 @@ runs:
         inputs=( )
         outputs=( )
 
+        echo "Workflow inputs: $workflow_inputs"
+        echo "Component inputs: $component_inputs"
+
         if [ -n "$workflow_inputs" ]; then 
           inputs+=( "--input $workflow_inputs" )
           outputs+=( "--output $workflow_outputs_schema" )
