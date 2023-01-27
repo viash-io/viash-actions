@@ -100,8 +100,9 @@ runs:
           ${{ steps.nslist.outputs.output }}
           EOF
           )
-
         fi
+
+        IFS=" "
         inputs=( )
         outputs=( )
 
