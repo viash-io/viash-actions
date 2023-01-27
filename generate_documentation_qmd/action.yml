@@ -18,17 +18,19 @@ inputs:
       Output folder to write to.
   dest_path:
     required: false
-    description: Template for output paths
+    description: >
+      Template for output paths. Can contain `{type}`, `{namespace}` and `{name}` 
+      wildcards to create a custom folder hierarchy for storing the output for different components
     default: "{type}s/{namespace}/{name}.qmd"
   git_tag:
     required: false
     description: >
-      The git tag. Used to create links to the source code in the generated documentation.
+      The git tag. Used to create links to the source code for nextflow commands in the generated documentation.
     default: "${{ github.ref_name }}"
   git_repo:
     required: false
     description: >
-      Github repository. Used to create links to the source code in the generated documentation.
+      Github repository. Used to create links to the source code for nextflow commands in the generated documentation.
       Must use format "owner/repo-name" will default to the repo where this action is being run for.
     default: ${{ github.repository }}
   write_index:
@@ -83,13 +85,17 @@ runs:
 
         extra_args=( )
         if [ ! -z "${{ inputs.component_template }}" ]; then
-          extra_args+="--template ${{ inputs.component_template }}"
+          extra_args+=(--template "${{ inputs.component_template }}")
+        fi
+
+        if [ ! -z "${{ inputs.dest_path }}" ]; then
+          extra_args+=("--dest_path "${{ inputs.dest_path }}")
         fi
 
         viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
           --input "${{ inputs.input_dir }}" "${extra_args[@]}" \
           --output "${{ inputs.output_dir }}" \
-          --git_repo "${{ github.repository }}" \
-          --git_browse_url "https://github.com/${{ github.repository }}/blob/main/" \
+          --git_repo "${{ inputs.git_repo }}" \
+          --git_browse_url "https://github.com/${{ inputs.git_repo }}/blob/${{ inputs.git_tag }}/" \
           --git_tag "${{ inputs.git_tag }}" \
           --write_index "${{ inputs.write_index }}"
