@@ -20,10 +20,9 @@ We recommend using a Linux or MacOS runner if possible.
 
 * `dest_path` - _optional_. Template for the location of the qmd files. Can contain `{type}`, `{namespace}` and `{name}` wildcards to create a custom folder hierarchy for storing the output for different components. Default: `"{type}s/{namespace}/{name}.qmd"`
 
-* `git_tag` - _optional_. A git tag or branch. Used to create links to the source code in the generated documentation. Default: tag of the current branch. Ex: `0.2.0`
+* `ref` - _optional_. A git tag or branch. Used to create links to the source code and to build nextflow commands in the generated documentation. Default: tag of the current branch. Ex: `0.2.0`
 
-* `git_repo` - _optional_. Github repository. Used to create links to the source code in the generated documentation.
-Must use format "owner/repo-name". Will default to the repo where this action is being run for. Ex: `openpipelines-bio/openpipeline`
+* `repository` - _optional_. Github repository. Used to create links to the source code and to build nextflow commands in the generated documentation. Must use format "owner/repo-name". Will default to the repo where this action is being run for. Ex: `openpipelines-bio/openpipeline`
 
 * `write_index` - _optional_. Whether or not to also create a quarto index file that joins the different pages for the components and workflows. Options are `'true'` or `'false'`.
 
