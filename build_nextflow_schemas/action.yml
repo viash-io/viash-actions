@@ -71,7 +71,7 @@ runs:
         fi
 
         # Process components
-        if [ ${{ steps.nslistcomponents.outputs.output != null }} ]; then
+        if [ "${{ steps.nslistcomponents.outputs.output != null }}" == "true" ]; then
           # Get config paths
           components_inputs=$(jq -r '[.[] | .info.config] | join(";")' << 'EOF'
           ${{ steps.nslistcomponents.outputs.output }}
@@ -87,7 +87,7 @@ runs:
         fi
 
         # Process workflows
-        if [ ${{ steps.nslistworkflows.outputs.output != null }} ]; then
+        if [ "${{ steps.nslistworkflows.outputs.output != null }}" == "true" ]; then
           # Get config paths
           workflow_inputs=$(jq -r '[.[] | .info.config] | join(";")' << 'EOF'
           ${{ steps.nslistworkflows.outputs.output }}
