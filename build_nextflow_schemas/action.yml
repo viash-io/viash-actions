@@ -62,11 +62,7 @@ runs:
       shell: bash
       id: generate-schemas
       run: |
-        if ! command -v viash &> /dev/null
-        then
-          echo "Viash could not be found.";
-          exit 127;
-        fi
+        command -v viash >/dev/null 2>&1 || { echo >&2 "Viash could not be found."; exit 127; }
 
         # Check if at least some input is defined.
         if [ ${{ steps.nslistcomponents.outputs.output == null }} && ${{ steps.nslistworkflows.outputs.output == null }} ]; then
