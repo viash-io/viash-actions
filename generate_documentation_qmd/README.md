@@ -46,40 +46,14 @@ jobs:
     steps:
     - uses: viash-io/viash-actions/setup@v1.0.0
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    - name: Get changed files
-      id: changed-files
-      uses: tj-actions/changed-files@v34
-
-    - name: List all changed files
-      run: |
-        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-          echo "$file was changed"
-        done
-    
-    - uses: actions/checkout@v3
-      with:
-        repository: openpipelines-bio/website
-        path: openpipelines-website
-        
-    - uses: actions/checkout@v3
-      with:
-        repository: openpipelines-bio/openpipeline
-        path: openpipelines
-        ref: "main_build"
-
     - uses: viash-io/viash-actions/generate_documentation_qmd@generate_documentation_qmd
       with:
-        input_dir: openpipelines
-        output_dir: openpipelines-bio/website/components
+        input_dir: src
+        output_dir: /website/components
         dest_path: "{type}s/{namespace}/{name}.qmd"
         git_repo: openpipelines-bio/openpipelines
         token: ${{ secrets.GTHB_PAT }}
         tools_version: main_build
-        
-
 ```
 
 # Example template
