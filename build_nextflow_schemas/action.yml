@@ -82,7 +82,8 @@ runs:
           jq_query='[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
           component_outputs_schema=$(jq -r "$jq_query" <<-'  EOF'
           ${{ steps.nslistcomponents.outputs.output }}
-          EOF)
+          EOF
+          )
         fi
 
         # Process workflows
@@ -90,13 +91,15 @@ runs:
           # Get config paths
           workflow_inputs=$(jq -r '[.[] | .info.config] | join(";")' <<-'  EOF'
           ${{ steps.nslistworkflows.outputs.output }}
-          EOF)
+          EOF
+          )
 
           # Get output paths
           jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
           workflow_outputs_schema=$(jq -r "$jq_query" <<-'  EOF'
           ${{ steps.nslist.outputs.output }}
-          EOF)
+          EOF
+          )
 
         fi
         inputs=( )
