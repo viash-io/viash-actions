@@ -86,7 +86,7 @@ runs:
           extra_args+="--template ${{ inputs.component_template }}"
         fi
 
-        viash run viash_tools/src/quarto/generate_documentation_qmd/config.vsh.yml -- \
+        viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
           --input "${{ inputs.input_dir }}" "${extra_args[@]}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ github.repository }}" \
