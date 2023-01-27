@@ -27,7 +27,7 @@ inputs:
     description: >
       The git tag. Used to create links to the source code and to build nextflow commands in the generated documentation.
     default: "${{ github.ref_name }}"
-  repo:
+  repository:
     required: false
     description: >
       Github repository. Used to create links to the source code and to build nextflow commands in the generated documentation.
