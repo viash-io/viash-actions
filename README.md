@@ -2,7 +2,8 @@
 
 This repository stores [Github Actions](https://github.com/features/actions) useful for building and publishing [Viash](https://viash.io) documents.
 
-1. [viash-io/viash-actions/setup](https://github.com/viash-io/viash-actions/tree/main/setup) - Install Viash
+1. [viash-io/viash-actions/setup](setup) - Install Viash
+1. [viash-io/viash-actions/ns-list](ns-list) - List Viash components in a repository
 
 We recommend using `v1` for your actions.
 
