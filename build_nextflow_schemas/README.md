@@ -39,7 +39,7 @@ jobs:
         fetch-depth: 0
 
     - name: Build nextflow schemas
-      uses: viash-io/viash-actions/build_nextflow_schemas@build_nextflow_schemas
+      uses: viash-io/viash-actions/build_nextflow_schemas@v2
       with:
         workflows: workflows
         token: ${{ secrets.GTHB_PAT }}
