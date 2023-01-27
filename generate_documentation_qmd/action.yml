@@ -76,7 +76,7 @@ runs:
       shell: bash
       id: generate-schemas
       run: |
-        if [ "${{ contains(fromJSON('[true, false]'), inputs.write_index) }}" -ne "true" ]; then
+        if [ "${{ contains(fromJSON('[true, false]'), inputs.write_index) }}" == "true" ]; then
           echo "The value passed with the write_index property must be either 'true' or 'false'."
           exit 1
         fi
@@ -86,7 +86,7 @@ runs:
           extra_args+="--template ${{ inputs.component_template }}"
         fi
 
-        viash run viash_tools/src/quarto/generate_documentation_qmd \
+        viash run viash_tools/src/quarto/generate_documentation_qmd -- \
           --input "${{ inputs.input_dir }}" "${extra_args[@]}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ github.repository }}" \
