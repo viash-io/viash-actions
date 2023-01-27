@@ -73,14 +73,14 @@ runs:
         # Process components
         if [ "${{ steps.nslistcomponents.outputs.output != null }}" == "true" ]; then
           # Get config paths
-          components_inputs=$(jq -r '[.[] | .info.config] | join(";")' <<-'    EOF'
+          components_inputs=$(jq -r '[.[] | .info.config] | join(";")' <<-'  EOF'
           ${{ steps.nslistcomponents.outputs.output }}
           EOF
           )
 
           # Get output paths
           jq_query='[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
-          component_outputs_schema=$(jq -r "$jq_query" <<-'    EOF'
+          component_outputs_schema=$(jq -r "$jq_query" <<-'  EOF'
           ${{ steps.nslistcomponents.outputs.output }}
           EOF
           )
@@ -89,14 +89,14 @@ runs:
         # Process workflows
         if [ "${{ steps.nslistworkflows.outputs.output != null }}" == "true" ]; then
           # Get config paths
-          workflow_inputs=$(jq -r '[.[] | .info.config] | join(";")' <<-'    EOF'
+          workflow_inputs=$(jq -r '[.[] | .info.config] | join(";")' <<-'  EOF'
           ${{ steps.nslistworkflows.outputs.output }}
           EOF
           )
 
           # Get output paths
           jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
-          workflow_outputs_schema=$(jq -r "$jq_query" <<-'    EOF'
+          workflow_outputs_schema=$(jq -r "$jq_query" <<-'  EOF'
           ${{ steps.nslist.outputs.output }}
           EOF
           )
