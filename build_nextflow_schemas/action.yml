@@ -61,7 +61,7 @@ runs:
     - name: 'Generate schemas'
       shell: bash
       id: generate-schemas
-      run: >
+      run: |
         command -v viash >/dev/null 2>&1 || { echo >&2 "Viash could not be found."; exit 127; }
 
         # Check if at least some input is defined.
