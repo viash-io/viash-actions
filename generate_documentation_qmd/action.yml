@@ -89,7 +89,7 @@ runs:
         fi
 
         if [ ! -z "${{ inputs.dest_path }}" ]; then
-          extra_args+=("--dest_path "${{ inputs.dest_path }}")
+          extra_args+=(--dest_path "${{ inputs.dest_path }}")
         fi
 
         viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
