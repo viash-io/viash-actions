@@ -108,12 +108,14 @@ runs:
         echo "Workflow inputs: $workflow_inputs"
         echo "Component inputs: $component_inputs"
 
-        if [ -n "$workflow_inputs" ]; then 
+        if [ -n "$workflow_inputs" ]; then
+          echo "Adding workflow inputs" 
           inputs+=( "--input $workflow_inputs" )
           outputs+=( "--output $workflow_outputs_schema" )
         fi
 
         if [ -n "$component_inputs" ]; then
+          echo "Adding component inputs" 
           inputs+=( "--input $component_inputs" )
           outputs+=( "--output $component_outputs_schema" )
         fi
