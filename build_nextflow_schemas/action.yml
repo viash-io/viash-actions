@@ -105,12 +105,12 @@ runs:
         inputs=( )
         outputs=( )
 
-        if [ ! -z "$workflow_inputs" ]; then 
+        if [ -n "$workflow_inputs" ]; then 
           inputs+=( "--input $workflow_inputs" )
           outputs+=( "--output $workflow_outputs_schema" )
         fi
 
-        if [ ! -z "$component_inputs" ]; then
+        if [ -n "$component_inputs" ]; then
           inputs+=( "--input $component_inputs" )
           outputs+=( "--output $component_outputs_schema" )
         fi
