@@ -65,7 +65,7 @@ runs:
         command -v viash >/dev/null 2>&1 || { echo >&2 "Viash could not be found."; exit 127; }
 
         # Check if at least some input is defined.
-        if [ "${{ steps.nslistcomponents.outputs.output == null }}" == "true" && "${{ steps.nslistworkflows.outputs.output == null }}" == "true" ]; then
+        if [ "${{ steps.nslistcomponents.outputs.output == null }}" == "true" ] && [ "${{ steps.nslistworkflows.outputs.output == null }}" == "true" ]; then
           echo "One of the workflows or components properties must be set."
           exit 1;
         fi
