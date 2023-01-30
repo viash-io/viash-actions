@@ -32,7 +32,7 @@ We recommend using a Linux or MacOS runner if possible.
   are: “yaml”, “json”.
 - `parse_argument_groups`: - *optional*. Whether or not to postprocess
   each component’s argument groups.
-- `output_path`: - *optional*. Path to a non-existent file to which the 
+- `output_file`: - *optional*. Path to a non-existent file to which the 
   output from this action will be written.
 
 ## Examples
