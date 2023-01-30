@@ -95,7 +95,7 @@ runs:
           )
 
           # Get output paths
-          jq_query='[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_schema.json"] | join(";")'
+          jq_query='[.[] | map(select(any(".functionality.resources[].type" == "nextflow_script"))) | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_schema.json"] | join(";")'
           workflow_outputs_schema=$(jq -r "$jq_query" <<-'  EOF'
           ${{ steps.nslistworkflows.outputs.output }}
           EOF
