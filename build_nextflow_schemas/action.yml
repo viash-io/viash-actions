@@ -75,7 +75,7 @@ runs:
         # Process components
         if [ -f "${{ runner.temp }}/ns_list_components.json" ]; then
           # Get config paths
-          components_inputs=$(jq -r '[.[] | .info.config] | join(";")' "${{ runner.temp }}/ns_list_components.json"')
+          components_inputs=$(jq -r '[.[] | .info.config] | join(";")' "${{ runner.temp }}/ns_list_components.json")
 
           # Get output paths
           jq_query='[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
