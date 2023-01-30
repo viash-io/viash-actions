@@ -86,7 +86,7 @@ runs:
         if [ -f "${{ runner.temp }}/ns_list_workflows.json" ]; then
           cat "${{ runner.temp }}/ns_list_workflows.json"
           # Get config paths
-          workflow_inputs=$(jq -r '[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config] | join(";") "${{ runner.temp }}/ns_list_workflows.json")
+          workflow_inputs=$(jq -r '[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config] | join(";")' "${{ runner.temp }}/ns_list_workflows.json")
 
           # Get output paths
           jq_query='[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_schema.json"] | join(";")'
