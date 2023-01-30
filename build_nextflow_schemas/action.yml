@@ -43,20 +43,22 @@ runs:
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
 
-    - uses: viash-io/viash-actions/ns-list@main
+    - uses: viash-io/viash-actions/ns-list@add_output_file
       id: nslistcomponents
       if: inputs.components
       with:
         src: ${{ inputs.components }}
         format: "json"
         platform: "nextflow"
+        output_file: ${{ runner.temp }}/ns_list_components.json
 
-    - uses: viash-io/viash-actions/ns-list@main
+    - uses: viash-io/viash-actions/ns-list@add_output_file
       id: nslistworkflows
       if: inputs.workflows
       with:
         src: ${{ inputs.workflows }}
         format: "json"
+        output_file: ${{ runner.temp }}/ns_list_components.json
 
     - name: 'Generate schemas'
       shell: bash
@@ -65,7 +67,7 @@ runs:
         command -v viash >/dev/null 2>&1 || { echo >&2 "Viash could not be found."; exit 127; }
 
         # Check if at least some input is defined.
-        if [ "${{ steps.nslistcomponents.outputs.output == null }}" == "true" ] && [ "${{ steps.nslistworkflows.outputs.output == null }}" == "true" ]; then
+        if [ ! -f "${{ runner.temp }}/ns_list_components.json" ] && [ ! -f "${{ runner.temp }}/ns_list_workflows.json" ]; then
           echo "One of the workflows or components properties must be set."
           exit 1;
         fi
@@ -73,33 +75,21 @@ runs:
         # Process components
         if [ "${{ steps.nslistcomponents.outputs.output != null }}" == "true" ]; then
           # Get config paths
-          components_inputs=$(jq -r '[.[] | .info.config] | join(";")' <<-'  EOF'
-          ${{ steps.nslistcomponents.outputs.output }}
-          EOF
-          )
+          components_inputs=$(jq -r '[.[] | .info.config] | join(";")' "${{ runner.temp }}/ns_list_components.json")
 
           # Get output paths
           jq_query='[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
-          component_outputs_schema=$(jq -r "$jq_query" <<-'  EOF'
-          ${{ steps.nslistcomponents.outputs.output }}
-          EOF
-          )
+          component_outputs_schema=$(jq -r "$jq_query" "${{ runner.temp }}/ns_list_components.json")
         fi
 
         # Process workflows
         if [ "${{ steps.nslistworkflows.outputs.output != null }}" == "true" ]; then
           # Get config paths
-          workflow_inputs=$(jq -r '[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config] | join(";")' <<-'  EOF'
-          ${{ steps.nslistworkflows.outputs.output }}
-          EOF
-          )
+          workflow_inputs=$(jq -r '[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config] | join(";") "${{ runner.temp }}/ns_list_workflows.json")
 
           # Get output paths
           jq_query='[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_schema.json"] | join(";")'
-          workflow_outputs_schema=$(jq -r "$jq_query" <<-'  EOF'
-          ${{ steps.nslistworkflows.outputs.output }}
-          EOF
-          )
+          workflow_outputs_schema=$(jq -r "$jq_query" "${{ runner.temp }}/ns_list_workflows.json")
         fi
 
         inputs=()
