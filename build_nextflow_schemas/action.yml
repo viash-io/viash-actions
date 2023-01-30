@@ -58,7 +58,7 @@ runs:
       with:
         src: ${{ inputs.workflows }}
         format: "json"
-        output_file: ${{ runner.temp }}/ns_list_components.json
+        output_file: ${{ runner.temp }}/ns_list_workflows.json
 
     - name: 'Generate schemas'
       shell: bash
