@@ -89,7 +89,7 @@ runs:
         # Process workflows
         if [ "${{ steps.nslistworkflows.outputs.output != null }}" == "true" ]; then
           # Get config paths
-          workflow_inputs=$(jq -r '[.[] | .info.config] | join(";")' <<-'  EOF'
+          workflow_inputs=$(jq -r '[.[] | map(select(any(".functionality.resources[].type" == "nextflow_script"))) | .info.config] | join(";")' <<-'  EOF'
           ${{ steps.nslistworkflows.outputs.output }}
           EOF
           )
