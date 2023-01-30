@@ -32,6 +32,9 @@ inputs:
   parse_argument_groups:
     description: Whether or not to postprocess each component's argument groups.
     required: false
+  output_file:
+    required: false
+    description: Path of a file to which the output will be written.
 outputs:
   output:
     description: A list of all of the components found. By default this will be a

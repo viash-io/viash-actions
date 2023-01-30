@@ -1,5 +1,6 @@
 const core = require("@actions/core");
 const exec = require("@actions/exec");
+const fs = require('fs');
 
 async function run() {
   try {
@@ -44,6 +45,12 @@ async function run() {
     // run command
     await exec.exec("viash", args, options);
     
+    // set output for output_file
+    const output_file = core.getInput("output_file")
+    if (output_file) {
+      fs.writeFile(output_file, 'wx', myOutput)
+    }
+
     // pass output
     core.setOutput("output", myOutput);
   } catch (error) {
