@@ -48,7 +48,7 @@ async function run() {
     // set output for output_file
     const output_file = core.getInput("output_file")
     if (output_file) {
-      fs.writeFile(output_file, 'wx', myOutput, (err) => {
+      fs.writeFile(output_file, 'wx', myOutput, err => {
         if (err) {throw err;}
       })
     }
