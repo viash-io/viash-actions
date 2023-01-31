@@ -8,6 +8,8 @@
 
 * [ns-list](ns-list): Added the `output_file` argument that allows writing the output for this action to a file.
 
+* [setup](setup): Remove parameters that should be specified in `_viash.yaml`.
+
 ## Breaking changes
 
 * [ns-list](ns-list): Renamed the output variable from `components_json` to simply `output`.
