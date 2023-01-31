@@ -5,6 +5,9 @@
 * [ns-list](ns-list): Added arguments `query_namespace`, `query_name`, `platform`,
   `config_mod`, `format` and `parse_argument_groups` to make the action more in line with the
   arguments of `viash ns list`.
+
+* [setup](setup): Remove parameters that should be specified in `_viash.yaml`.
+
 ## Breaking changes
 
 * [ns-list](ns-list): Renamed the output variable from `components_json` to simply `output`.
