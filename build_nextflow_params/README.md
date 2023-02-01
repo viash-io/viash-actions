@@ -1,4 +1,4 @@
-# build_parameter_yaml
+# build_nextflow_params
 
 This action will build nextflow parameter file templates for Viash workflows and components in a folder.
 
