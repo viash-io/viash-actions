@@ -35,8 +35,8 @@ knitr::asis_output(paste0(lines, collapse = "\n"))
 ```{r}
 #| echo: false
 lines <- map_chr(names(action$outputs), function(name) {
-  input <- action$outputs[[name]]
-  glue::glue("* `{name}`: {input$description}")
+  output <- action$outputs[[name]]
+  glue::glue("* `{name}`: {output$description}")
 })
 knitr::asis_output(paste0(lines, collapse = "\n"))
 ```
