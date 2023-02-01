@@ -1,0 +1,101 @@
+name: 'Build and publish qmd'
+author: 'Dries Schaumont'
+description: >
+  Create quarto markdown files for viash components or workflows, based on a jinja template.
+inputs:
+  input_dir:
+    required: false
+    description: 'Directory where the viash configs can be found.'
+    default: "."
+  component_template:
+    required: false
+    description: >
+      Jinja template that can be used to customize the resulting qmd files.
+      By default will use the included template.
+  output_dir:
+    required: true
+    description: >
+      Output folder to write to.
+  dest_path:
+    required: false
+    description: >
+      Template for output paths. Can contain `{type}`, `{namespace}` and `{name}` 
+      wildcards to create a custom folder hierarchy for storing the output for different components
+    default: "{type}s/{namespace}/{name}.qmd"
+  ref:
+    required: false
+    description: >
+      The git tag. Used to create links to the source code and to build nextflow commands in the generated documentation.
+    default: "${{ github.ref_name }}"
+  repository:
+    required: false
+    description: >
+      Github repository. Used to create links to the source code and to build nextflow commands in the generated documentation.
+      Must use format "owner/repo-name" will default to the repo where this action is being run for.
+    default: ${{ github.repository }}
+  write_index:
+    required: false
+    description: Whether or not to also create an index file. Options are 'true' or 'false'.
+    default: 'false'
+  token:
+    description: >
+        Personal access token (PAT) used to fetch the viash tools repository.
+    required: true
+    default: ${{ github.token }}
+  tools_version:
+    description: >
+      Release of Viash tools to use.
+    required: false
+    default: 'latest'
+runs:
+  using: 'composite'
+  steps:
+    - name: Get latest release
+      shell: bash
+      id: latestrelease
+      run: |
+        if [ "${{ inputs.tools_version }}" == "latest" ]; then
+          RELEASE_TAG=$(curl -s -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ inputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/viash-io/viash_tools/releases/latest | jq -r '.tag_name')
+        else
+          RELEASE_TAG="${{ inputs.tools_version }}"
+        fi
+        echo "Using version $RELEASE_TAG"
+        echo "releasetag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+    - uses: actions/checkout@v3
+      with: 
+        repository: viash-io/viash_tools
+        token: ${{ inputs.token }}
+        path: viash_tools
+        ref: ${{ steps.latestrelease.outputs.releasetag }}
+    - uses: viash-io/viash-actions/ns-list@main
+      id: nslistcomponents
+      if: inputs.components
+      with:
+        src: ${{ inputs.components }}
+        format: "json"
+        platform: "nextflow"
+    - name: 'Generate quarto markdown files.'
+      shell: bash
+      id: generate-schemas
+      run: |
+        if [ "${{ contains(fromJSON('[true, false]'), inputs.write_index) }}" == "true" ]; then
+          echo "The value passed with the write_index property must be either 'true' or 'false'."
+          exit 1
+        fi
+
+        extra_args=( )
+        if [ ! -z "${{ inputs.component_template }}" ]; then
+          extra_args+=(--template "${{ inputs.component_template }}")
+        fi
+
+        if [ ! -z "${{ inputs.dest_path }}" ]; then
+          extra_args+=(--dest_path "${{ inputs.dest_path }}")
+        fi
+
+        viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
+          --input "${{ inputs.input_dir }}" "${extra_args[@]}" \
+          --output "${{ inputs.output_dir }}" \
+          --git_repo "${{ inputs.repository }}" \
+          --git_browse_url "https://github.com/${{ inputs.repository }}/blob/${{ inputs.ref }}/" \
+          --git_tag "${{ inputs.ref }}" \
+          --write_index "${{ inputs.write_index }}"
