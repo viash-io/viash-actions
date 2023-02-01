@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: viash-io/viash-actions/setup@v1.0.0
+    - uses: viash-io/viash-actions/setup@v2
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
