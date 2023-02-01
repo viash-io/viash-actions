@@ -1,0 +1,105 @@
+name: 'Build parameter yaml'
+author: 'Dries Schaumont'
+description: >
+  This action will build nextflow parameter file templates
+  (see nextflow's -params-file option) for Viash workflows and components in a repository.
+  For workflows, will save the build schemas next to the Viash config.
+  For components, will output to the target directory (see viash ns build).
+inputs:
+  components:
+    required: false
+    description: 'Location of the viash configuration for components.'
+  workflows: 
+    required: false
+    description: 'Location of the viash configurations for workflows.'
+  token:
+    description: >
+        Personal access token (PAT) used to fetch the viash tools repository.
+    required: true
+    default: ${{ github.token }}
+  tools_version:
+    description: >
+      Release of Viash tools to use.
+    required: false
+    default: 'latest'
+runs:
+  using: 'composite'
+  steps:
+    - name: Get latest release
+      shell: bash
+      id: latestrelease
+      run: |
+        if [ "${{ inputs.tools_version }}" == "latest" ]; then
+          RELEASE_TAG=$(curl -s -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ inputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/viash-io/viash_tools/releases/latest | jq -r '.tag_name')
+        else
+          RELEASE_TAG="${{ inputs.tools_version }}"
+        fi
+        echo "Using version $RELEASE_TAG"
+        echo "releasetag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+    - uses: actions/checkout@v3
+      with: 
+        repository: viash-io/viash_tools
+        token: ${{ inputs.token }}
+        path: viash_tools
+        ref: ${{ steps.latestrelease.outputs.releasetag }}
+
+    - uses: viash-io/viash-actions/ns-list@v2
+      id: nslistcomponents
+      if: inputs.components
+      with:
+        src: ${{ inputs.components }}
+        format: "json"
+        platform: "nextflow"
+        output_file: ${{ runner.temp }}/ns_list_components.json
+
+    - uses: viash-io/viash-actions/ns-list@v2
+      id: nslistworkflows
+      if: inputs.workflows
+      with:
+        src: ${{ inputs.workflows }}
+        format: "json"
+        output_file: ${{ runner.temp }}/ns_list_workflows.json
+
+    - name: 'Generate param files'
+      shell: bash
+      id: generate-params
+      run: |
+        command -v viash >/dev/null 2>&1 || { echo >&2 "Viash could not be found."; exit 127; }
+        # Check if at least some input is defined.
+        if [ ! -f "${{ runner.temp }}/ns_list_components.json" ] && [ ! -f "${{ runner.temp }}/ns_list_workflows.json" ]; then
+          echo "One of the workflows or components properties must be set."
+          exit 1;
+        fi
+        # Process components
+        if [ -f "${{ runner.temp }}/ns_list_components.json" ]; then
+          # Get config paths
+          component_inputs=$(jq -r '[.[] | .info.config] | join(";")' "${{ runner.temp }}/ns_list_components.json")
+          # Get output paths
+          jq_query='[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_params.yaml"] | join(";")'
+          component_outputs_params=$(jq -r "$jq_query" "${{ runner.temp }}/ns_list_components.json")
+        fi
+        # Process workflows
+        if [ -f "${{ runner.temp }}/ns_list_workflows.json" ]; then
+          # Get config paths
+          workflow_inputs=$(jq -r '[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config] | join(";")' "${{ runner.temp }}/ns_list_workflows.json")
+          # Get output paths
+          jq_query='[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
+          workflow_outputs_params=$(jq -r "$jq_query" "${{ runner.temp }}/ns_list_workflows.json")
+        fi
+        inputs=()
+        outputs=()
+        echo "Workflow inputs: $workflow_inputs"
+        echo "Component inputs: $component_inputs"
+        if [ -n "$workflow_inputs" ]; then
+          echo "Adding workflow inputs" 
+          inputs+=(--input "$workflow_inputs")
+          outputs+=(--output "$workflow_outputs_params")
+        fi
+        if [ -n "$component_inputs" ]; then
+          echo "Adding component inputs" 
+          inputs+=(--input "$component_inputs")
+          outputs+=(--output "$component_outputs_params")
+        fi
+        echo "Running viash_tools/target/docker/nextflow/generate_params/generate_params ${inputs[@]} ${outputs[@]}"
+        viash_tools/target/docker/nextflow/generate_params/generate_params "${inputs[@]}" "${outputs[@]}"
+        echo "Created $outputs"
