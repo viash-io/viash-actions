@@ -51,7 +51,7 @@ async function run() {
       fs.writeFile(output_file, myOutput, { flag: 'wx' }, err => {
         if (err) {throw err;}
       })
-      core.setOutput("output_file", myOutput)
+      core.setOutput("output_file", output_file)
     }
 
     // pass output
