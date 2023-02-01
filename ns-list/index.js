@@ -1,6 +1,7 @@
 const core = require("@actions/core");
 const exec = require("@actions/exec");
 const fs = require('fs');
+const path = require('path');
 
 async function run() {
   try {
@@ -46,13 +47,13 @@ async function run() {
     await exec.exec("viash", args, options);
     
     // set output for output_file
-    const output_file = core.getInput("output_file")
-    if (output_file) {
-      fs.writeFile(output_file, myOutput, { flag: 'wx' }, err => {
-        if (err) {throw err;}
-      })
-      core.setOutput("output_file", output_file)
-    }
+    const output_file = core.getInput("output_file");
+    const extension = "." + core.getInput("format");
+    const to_write_to = output_file ? output_file : path.join(process.env.RUNNER_TEMP, Date.now().toString() + extension);
+    fs.writeFile(to_write_to, myOutput, { flag: 'wx' }, err => {
+      if (err) {throw err;}
+    })
+    core.setOutput("output_file", to_write_to)
 
     // pass output
     core.setOutput("output", myOutput);

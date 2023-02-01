@@ -34,7 +34,8 @@ We recommend using a Linux or MacOS runner if possible.
 - `parse_argument_groups`: - *optional*. Whether or not to postprocess
   each component’s argument groups.
 - `output_file`: - *optional*. Path of a file to which the output will
-  be written.
+  be written. If not set, this action will create a file with a random
+  name in `RUNNER_TEMP`.
 
 ### Outputs
 

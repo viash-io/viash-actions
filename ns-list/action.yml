@@ -34,7 +34,9 @@ inputs:
     required: false
   output_file:
     required: false
-    description: Path of a file to which the output will be written.
+    description: >
+      Path of a file to which the output will be written. If not set, 
+      this action will create a file with a random name in `RUNNER_TEMP`.
 outputs:
   output:
     description: A list of all of the components found. By default this will be a
