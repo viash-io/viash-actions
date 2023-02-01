@@ -6,7 +6,7 @@ This action will build nextflow parameter file templates for Viash workflows and
 
 This action will look for viash configs for workflows and components in a directory,
 and will generate (nextflow parameter file templates)[https://www.nextflow.io/docs/latest/cli.html#run].
-For workflows, the schemas will saved next to the Viash config, for components will output to the target directory (see viash ns build). 
+For workflows, the parameter files will saved next to the Viash config, for components will output to the target directory (see viash ns build). 
 This component required Viash to be installed and available in `$PATH`. 
 We recommend to use [viash-actions/setup](https://github.com/viash-io/viash-actions/tree/main/setup) before you run `build_nextflow_params`.
 
