@@ -5,8 +5,9 @@ List a namespace containing many viash config files.
 
 ## Usage
 
-This action will run `viash ns list` and store the resulting yaml / json
-in the output.
+This action will run `viash ns list`. See the reference documentation on
+[ns list](https://viash.io/reference/viash/ns.html) for more info on
+each of the arguments.
 
 We recommend using a Linux or MacOS runner if possible.
 

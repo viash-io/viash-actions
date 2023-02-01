@@ -5,7 +5,9 @@ Build a namespace from many viash config files.
 
 ## Usage
 
-This action will run `viash ns build`.
+This action will run `viash ns build`. See the reference documentation
+on [ns build](https://viash.io/reference/viash/ns.html) for more info on
+each of the arguments.
 
 We recommend using a Linux or MacOS runner if possible.
 
@@ -33,8 +35,6 @@ We recommend using a Linux or MacOS runner if possible.
   into. Default: target/.
 - `setup`: - *optional*. Which setup strategy for creating the container
   to use \[Docker Platform only\].
-- `flatten`: - *optional*. Flatten the target builds, handy for building
-  one platform to a bin directory.
 
 ## Examples
 
