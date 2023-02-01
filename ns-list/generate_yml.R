@@ -1,25 +1,35 @@
+# This script generates a github action given a Viash schema
+
 library(tidyverse)
 
-# use this script to generate part of this action
+# parameters
+skip_args <- c("parallel")
+dest_file <- "ns-list/action.yml"
+subcommands <- c("ns", "list")
 
+#################### common code
 # fetch schema
 out <- system("viash export cli_schema", intern = TRUE)
-cli_schema <- jsonlite::fromJSON(out, simplifyVector = FALSE)
+schema <- jsonlite::fromJSON(out, simplifyVector = FALSE)
 
-# find ns list schema
-ns_schema <- cli_schema[[which(sapply(cli_schema, function(li) li$name == "ns"))]]
+# go down schema to find the right command
+for (i in seq_along(subcommands)) {
+  subcommand <- subcommands[[i]]
+  schema <- schema[[which(sapply(schema, function(li) li$name == subcommand))]]
 
-ns_subcommands_schema <- ns_schema$subcommands
-ns_list_schema <- ns_subcommands_schema[[which(sapply(ns_subcommands_schema, function(li) li$name == "list"))]]
+  if (i != length(subcommands)) {
+    schema <- schema$subcommands
+  }
+}
 
 # construct yaml
-selected_opts <- ns_list_schema$opts[sapply(ns_list_schema$opts, function(x) !x$name %in% "parallel")]
+selected_opts <- schema$opts[sapply(schema$opts, function(x) !x$name %in% skip_args)]
 input_values <- sapply(selected_opts, function(opt) {
   descr <- opt$descr %>%
     str_replace_all("@\\[[^]]*\\]\\(([^\\)]*)\\)", "\\1") %>%
     str_replace_all(". *$", ".")
 
-  choices_str <- 
+  choices_str <-
     if (!is.null(opt$choices)) {
       paste0(" Possible values are: \"", paste(opt$choices, collapse = "\", \""), "\".")
     } else {
@@ -32,8 +42,8 @@ input_values <- sapply(selected_opts, function(opt) {
   setNames(list(out), opt$name)
 })
 out <- list(
-  name = ns_list_schema$bannerCommand,
-  description = ns_list_schema$bannerDescription,
+  name = schema$bannerCommand,
+  description = schema$bannerDescription,
   inputs = input_values,
   outputs = list(
     output = list(
@@ -54,4 +64,8 @@ handlers <- list(
     return(result)
   }
 )
-yaml::write_yaml(out, "ns-list/action.yml", handlers = handlers)
+yaml::write_yaml(
+  out,
+  dest_file,
+  handlers = handlers
+)

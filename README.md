@@ -3,9 +3,10 @@
 This repository stores [Github Actions](https://github.com/features/actions) useful for building and publishing [Viash](https://viash.io) documents.
 
 1. [viash-io/viash-actions/setup](setup) - Install Viash
-1. [viash-io/viash-actions/ns-list](ns-list) - List Viash components in a repository
+2. [viash-io/viash-actions/ns-list](ns-list) - List Viash components in a repository
+3. [viash-io/viash-actions/ns-build](ns-build) - Build a namespace from many viash config files.
 
-We recommend using `v1` for your actions.
+We recommend using `v2` for your actions.
 
 ## Release Management
 

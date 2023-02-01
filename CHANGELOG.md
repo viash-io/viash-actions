@@ -2,7 +2,9 @@
 
 ## New Features
 
-* Added [build-nextflow-schemas](build-nextflow-schemas) - Build schemas from a viash config to use with nf-tower
+* Added [ns-build](ns-build) - Build a namespace from many viash config files.
+
+* Added [build_nextflow_schemas](build_nextflow_schemas) - Build schemas from a viash config to use with nf-tower
 
 * Added [build-nextflow-params](build-nextflow-params) - build nextflow parameter file templates (see nextflow's -params-file option) from viash configs
 
