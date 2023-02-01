@@ -36,8 +36,7 @@ knitr::asis_output(paste0(lines, collapse = "\n"))
 #| echo: false
 lines <- map_chr(names(action$outputs), function(name) {
   input <- action$outputs[[name]]
-  required <- ifelse (input$required %||% FALSE, "required", "optional")
-  glue::glue("* `{name}`: - _{required}_. {input$description}")
+  glue::glue("* `{name}`: {input$description}")
 })
 knitr::asis_output(paste0(lines, collapse = "\n"))
 ```
