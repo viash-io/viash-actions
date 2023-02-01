@@ -38,7 +38,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Build nextflow schemas
+    - name: Build nextflow parameter files
       uses: viash-io/viash-actions/build_nextflow_params@v2
       with:
         workflows: workflows

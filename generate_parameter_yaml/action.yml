@@ -3,7 +3,7 @@ author: 'Dries Schaumont'
 description: >
   This action will build nextflow parameter file templates
   (see nextflow's -params-file option) for Viash workflows and components in a repository.
-  For workflows, will save the build schemas next to the Viash config.
+  For workflows, will save the build parameter files next to the Viash config.
   For components, will output to the target directory (see viash ns build).
 inputs:
   components:
