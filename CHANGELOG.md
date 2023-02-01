@@ -4,6 +4,8 @@
 
 * Added [build_nextflow_schemas](build_nextflow_schemas) - Build schemas from a viash config to use with nf-tower
 
+* Added [build_nextflow_params](build_nextflow_params) - build nextflow parameter file templates (see nextflow's -params-file option) from viash configs
+
 ## Major changes
 
 * [ns-list](ns-list): Added arguments `query_namespace`, `query_name`, `platform`,
