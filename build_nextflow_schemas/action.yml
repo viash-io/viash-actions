@@ -50,7 +50,6 @@ runs:
         src: ${{ inputs.components }}
         format: "json"
         platform: "nextflow"
-        output_file: ${{ runner.temp }}/ns_list_components.json
 
     - uses: viash-io/viash-actions/ns-list@add_output_file
       id: nslistworkflows
@@ -58,7 +57,6 @@ runs:
       with:
         src: ${{ inputs.workflows }}
         format: "json"
-        output_file: ${{ runner.temp }}/ns_list_workflows.json
 
     - name: 'Generate schemas'
       shell: bash
