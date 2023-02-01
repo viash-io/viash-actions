@@ -1,4 +1,4 @@
-# generate_documentation_qmd
+# generate-documentation-qmd
 
 Create quarto markdown files for viash components or workflows, based on a jinja template.
 
@@ -34,7 +34,7 @@ We recommend using a Linux or MacOS runner if possible.
 ## Examples
 
 ```yaml
-name: demo of generate_documentation_qmd
+name: demo of generate-documentation-qmd
 
 on:
   pull_request:
@@ -46,7 +46,7 @@ jobs:
     steps:
     - uses: viash-io/viash-actions/setup@v1.0.0
     - uses: actions/checkout@v3
-    - uses: viash-io/viash-actions/generate_documentation_qmd@v2
+    - uses: viash-io/viash-actions/generate-documentation-qmd@v2
       with:
         input_dir: src
         output_dir: /website/components
