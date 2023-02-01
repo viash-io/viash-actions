@@ -30,6 +30,17 @@ lines <- map_chr(names(action$inputs), function(name) {
 knitr::asis_output(paste0(lines, collapse = "\n"))
 ```
 
+### Outputs
+
+```{r}
+#| echo: false
+lines <- map_chr(names(action$outputs), function(name) {
+  output <- action$outputs[[name]]
+  glue::glue("* `{name}`: {output$description}")
+})
+knitr::asis_output(paste0(lines, collapse = "\n"))
+```
+
 ## Examples
 
 ```yaml

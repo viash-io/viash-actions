@@ -6,6 +6,8 @@
   `config_mod`, `format` and `parse_argument_groups` to make the action more in line with the
   arguments of `viash ns list`.
 
+* [ns-list](ns-list): Added the `output_file` argument that allows writing the output for this action to a file.
+
 * [setup](setup): Remove parameters that should be specified in `_viash.yaml`.
 
 ## Breaking changes

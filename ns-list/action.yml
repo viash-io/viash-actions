@@ -32,10 +32,22 @@ inputs:
   parse_argument_groups:
     description: Whether or not to postprocess each component's argument groups.
     required: false
+  output_file:
+    required: false
+    description: >
+      Path of a file to which the output will be written. If not set, 
+      this action will create a file with a random name in `RUNNER_TEMP`.
 outputs:
   output:
     description: A list of all of the components found. By default this will be a
       yaml, unless the format argument was set to 'json'.
+  output_file:
+    description: >
+      Path of a file to which the output was written (same as inputs.output_file).
+      We recommend using this property for capturing the action's output because
+      there is a limit in the object size that github actions can manage. Additionally,
+      if you use this property instead of a static file path, changing the location of
+      the output file will not require you to adjust settings for downstream actions as well.
 runs:
   using: node16
   main: index.js
