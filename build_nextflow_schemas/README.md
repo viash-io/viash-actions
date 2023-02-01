@@ -6,7 +6,7 @@ This action will build nextflow schemas for Viash workflows and components in a 
 
 This action will look for viash configs for workflows and components in a directory,
 and will generate [nextflow pipeline JSON schemas](https://help.tower.nf/latest/pipeline-schema/overview/).
-For workflows, the schemas will saved next to the Viash config, for components will output to the target directory (see viash ns build). This component required Viash to be installed and available in `$PATH`. We recommend to use [viash-actions/setup](https://github.com/viash-io/viash-actions/tree/main/setup) before you run `generate_documentation_qmd`.
+For workflows, the parameter file will be saved next to the Viash config, for components will output to the target directory (see viash ns build). This component required Viash to be installed and available in `$PATH`. We recommend to use [viash-actions/setup](https://github.com/viash-io/viash-actions/tree/main/setup) before you run `generate_documentation_qmd`.
 
 We recommend using a Linux or MacOS runner if possible.
 
