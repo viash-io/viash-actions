@@ -20,7 +20,8 @@ We recommend using a Linux or MacOS runner if possible.
 - `query_name`: - *optional*. Filter which components get selected by
   component name. Can be a regex. Example: “^component1”.
 - `src`: - *optional*. A source directory containing viash config files,
-  possibly structured in a hierarchical folder structure. Default: src/.
+  possibly structured in a hierarchical folder structure. Default:
+  “src/”.
 - `platform`: - *optional*. Acts as a regular expression to filter the
   platform ids specified in the found config files. If this is not
   provided, all platforms will be used. If no platforms are defined in a
@@ -29,11 +30,24 @@ We recommend using a Linux or MacOS runner if possible.
 - `config_mod`: - *optional*. Modify a viash config at runtime using
   dynamic config modding.
 - `format`: - *optional*. Which output format to use. Possible values
-  are: “yaml”, “json”.
+  are: “yaml”, “json”. Default is “yaml”.
 - `parse_argument_groups`: - *optional*. Whether or not to postprocess
   each component’s argument groups.
-- `output_file`: - *optional*. Path to a non-existent file to which the 
-  output from this action will be written.
+- `output_file`: - *optional*. Path of a file to which the output will
+  be written.
+
+### Outputs
+
+- `output`: - *optional*. A list of all of the components found. By
+  default this will be a yaml, unless the format argument was set to
+  ‘json’.
+- `output_file`: - *optional*. Path of a file to which the output was
+  written (same as inputs.output_file). We recommend using this property
+  for capturing the action’s output because there is a limit in the
+  object size that github actions can manage. Additionally, if you use
+  this property instead of a static file path, changing the location of
+  the output file will not require you to adjust settings for downstream
+  actions as well.
 
 ## Examples
 
