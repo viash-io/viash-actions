@@ -4,7 +4,7 @@
 
 * Added [build_nextflow_schemas](build_nextflow_schemas) - Build schemas from a viash config to use with nf-tower
 
-* Added [build_parameter_yaml](build_parameter_yaml) - build nextflow parameter file templates (see nextflow's -params-file option) from viash configs
+* Added [build_nextflow_params](build_parameter_yaml) - build nextflow parameter file templates (see nextflow's -params-file option) from viash configs
 
 ## Major changes
 
