@@ -1,3 +1,9 @@
+# viash-actions v3.0.0
+
+## Minor changes
+
+* [ns-list](ns-list): No longer prints output for interactive console.
+
 # viash-actions v2.0.0
 
 ## New Features
