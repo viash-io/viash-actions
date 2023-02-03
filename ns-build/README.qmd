@@ -42,14 +42,14 @@ jobs:
   viash-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: viash-io/viash-actions/setup@v1
+      - uses: viash-io/viash-actions/setup@v3
 
-      - uses: viash-io/viash-actions/ns-build@v1
+      - uses: viash-io/viash-actions/ns-build@v3
   viash-macos:
     runs-on: macos-latest
     steps:
-      - uses: viash-io/viash-actions/setup@v1
+      - uses: viash-io/viash-actions/setup@v3
 
-      - uses: viash-io/viash-actions/ns-build@v1
+      - uses: viash-io/viash-actions/ns-build@v3
 ```
 

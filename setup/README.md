@@ -14,7 +14,7 @@ We recommend using a Linux or MacOS runner if possible.
 
   ```yaml
     steps:
-      - uses: viash-io/viash-actions/setup@v1
+      - uses: viash-io/viash-actions/setup@v3
         with:
           version: 0.6.0
   ```
@@ -35,19 +35,19 @@ jobs:
   viash-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: viash-io/viash-actions/setup@v1
+      - uses: viash-io/viash-actions/setup@v3
       - run: |
           viash --version
   viash-windows:
     runs-on: windows-latest
     steps:
-      - uses: viash-io/viash-actions/setup@v1
+      - uses: viash-io/viash-actions/setup@v3
       - run: |
           viash --version
   viash-macos:
     runs-on: macos-latest
     steps:
-      - uses: viash-io/viash-actions/setup@v1
+      - uses: viash-io/viash-actions/setup@v3
       - run: |
           viash --version
 ```

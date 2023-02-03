@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: viash-io/viash-actions/setup@v1.0.0
+    - uses: viash-io/viash-actions/setup@v3
     - uses: actions/checkout@v3
     - uses: viash-io/viash-actions/generate-documentation-qmd@v2
       with:
