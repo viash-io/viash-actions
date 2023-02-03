@@ -39,6 +39,8 @@ runs:
 
       # iterate over the components
       for component in "${components[@]}"; do
+        config_path=$(jq -cr '.info.config' <<< "$component" )
+        echo "Checking '$config_path'"
 
         # get the components resources
         readarray -t resources < <(jq -cr '
@@ -51,8 +53,8 @@ runs:
         # check if resource is in the list of changed resources
         for resource_rel_path in "${resources[@]}"; do
           resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
-          echo "Checking path $resource_project_path"
           if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " || "$GITHUB_REF" == "refs/heads/main" || "${{ contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
+            echo "  Detected changed resources!"
             output_array+="$component"
             break
           fi
