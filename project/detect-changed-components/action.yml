@@ -32,7 +32,7 @@ runs:
       output_file=$(mktemp $RUNNER_TEMP/viash_ns_changed_files.XXXXXX.json)
 
       if [[ "$GITHUB_REF" == "refs/heads/${{ github.event.repository.default_branch }}" || "${{ contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
-        cp "${{ input.input_file }}" "$output_file"
+        cp "${{ inputs.input_file }}" "$output_file"
         echo "output_file=$output_file" >> $GITHUB_OUTPUT
         exit 0
       fi
