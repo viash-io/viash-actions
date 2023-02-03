@@ -1,5 +1,9 @@
 # viash-actions v3.0.0
 
+## Minor changes
+
+* `ns-list: No longer prints output to interactive console.
+
 ## New features
 
 * Added `project/sync-and-cache-s3`: Sync and cache an S3 bucket.

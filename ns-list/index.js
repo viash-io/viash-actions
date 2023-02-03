@@ -18,6 +18,7 @@ async function run() {
         myError += data.toString();
       }
     };
+    options.silent = true;
 
     // fetch arguments for command
     // skip "parallel"
