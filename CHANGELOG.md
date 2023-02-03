@@ -2,7 +2,7 @@
 
 ## Minor changes
 
-* [ns-list](ns-list): No longer prints output for interactive console.
+* [ns-list](ns-list): No longer prints output to interactive console.
 
 # viash-actions v2.0.0
 
