@@ -26,7 +26,7 @@ We recommend using a Linux or MacOS runner if possible.
 
 * `write_index` - _optional_. Whether or not to also create a quarto index file that joins the different pages for the components and workflows. Options are `'true'` or `'false'`.
 
-* `token` - Personal access token (PAT) used to fetch the viash tools repository.
+* `viash_pro_token` - Viash Pro token.
 
 * `tools_version` - _optional_. Release of Viash tools to use. Will use the latest release by default. Ex: `main_build`
 

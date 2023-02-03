@@ -37,11 +37,9 @@ inputs:
     required: false
     description: Whether or not to also create an index file. Options are 'true' or 'false'.
     default: 'false'
-  token:
-    description: >
-        Personal access token (PAT) used to fetch the viash tools repository.
+  viash_pro_token:
+    description: Viash Pro token.
     required: true
-    default: ${{ github.token }}
   tools_version:
     description: >
       Release of Viash tools to use.
@@ -64,7 +62,7 @@ runs:
     - uses: actions/checkout@v3
       with: 
         repository: viash-io/viash_tools
-        token: ${{ inputs.token }}
+        token: ${{ inputs.viash_pro_token }}
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
     - uses: viash-io/viash-actions/ns-list@main

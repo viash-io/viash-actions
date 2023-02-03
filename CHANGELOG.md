@@ -1,26 +1,43 @@
-# viash-actions v2.0.0
+# viash-actions v3.0.0
 
-## New Features
-
-* Added [ns-build](ns-build) - Build a namespace from many viash config files.
-
-* Added [build_nextflow_schemas](build_nextflow_schemas) - Build schemas from a viash config to use with nf-tower
-
-* Added [build-nextflow-params](build-nextflow-params) - build nextflow parameter file templates (see nextflow's -params-file option) from viash configs
-
-## Major changes
-
-* [ns-list](ns-list): Added arguments `query_namespace`, `query_name`, `platform`,
-  `config_mod`, `format` and `parse_argument_groups` to make the action more in line with the
-  arguments of `viash ns list`.
-
-* [ns-list](ns-list): Added the `output_file` argument that allows writing the output for this action to a file.
-
-* [setup](setup): Remove parameters that should be specified in `_viash.yaml`.
 
 ## Breaking changes
 
-* [ns-list](ns-list): Renamed the output variable from `components_json` to simply `output`.
+* `pro/build-nextflow-params`:
+  - Renamed from `build-nextflow-params`.
+  - Input `token` was renamed to `viash_pro_token`.
+
+* `pro/build-nextflow-schemas`:
+  - Renamed from `build-nextflow-schemas`.
+  - Input `token` was renamed to `viash_pro_token`.
+
+* `pro/generate-documentation-qmd`:
+  - Renamed from `generate-documentation-qmd`.
+  - Input `token` was renamed to `viash_pro_token`.
+
+# viash-actions v2.0.0
+
+## New features
+
+* Added `ns-build` - Build a namespace from many viash config files.
+
+* Added `build-nextflow-schemas` - Build schemas from a viash config to use with nf-tower
+
+* Added `build-nextflow-params` - build nextflow parameter file templates (see nextflow's -params-file option) from viash configs
+
+## Major changes
+
+* `ns-list`: Added arguments `query_namespace`, `query_name`, `platform`,
+  `config_mod`, `format` and `parse_argument_groups` to make the action more in line with the
+  arguments of `viash ns list`.
+
+* `ns-list`: Added the `output_file` argument that allows writing the output for this action to a file.
+
+* `setup`: Remove parameters that should be specified in `_viash.yaml`.
+
+## Breaking changes
+
+* `ns-list`: Renamed the output variable from `components_json` to simply `output`.
   The default format is `format: yaml`, set to `format: json` to restore the previous
   behaviour.
 
@@ -28,5 +45,5 @@
 
 Initial release. Contains the following actions:
 
-* [setup](setup): Install Viash
-* [ns-list](ns-list): List components in repo
+* `setup`: Install Viash
+* `ns-list`: List components in repo
