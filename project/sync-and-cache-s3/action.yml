@@ -25,13 +25,16 @@ runs:
       shell: bash
       id: cache_hash
       run: |
-        AWS_EC2_METADATA_DISABLED=true \
-          aws s3 ls \
-          ${{ inputs.s3_bucket }} \
-          --recursive \
-          --no-sign-request \
-          > bucket-contents.txt
-        echo "cache_hash=${{ inputs.cache_key_prefix}}$( md5sum bucket-contents.txt | awk '{ print $1 }' )" >> $GITHUB_OUTPUT
+        hash=$(
+          AWS_EC2_METADATA_DISABLED=true \
+            aws s3 ls \
+            ${{ inputs.s3_bucket }} \
+            --recursive \
+            --no-sign-request | \
+            md5sum | \
+            awk '{ print $1 }'
+        )
+        echo "cache_hash=${{ inputs.cache_key_prefix}}$hash" >> $GITHUB_OUTPUT
     
     # initialize cache
     - name: Cache resources
