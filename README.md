@@ -1,10 +1,14 @@
 # Github Actions for Viash
 
-This repository stores [Github Actions](https://github.com/features/actions) useful for building and publishing [Viash](https://viash.io) documents.
+This repository stores [Github Actions](https://github.com/features/actions) useful for building and publishing [Viash](https://viash.io) components:
 
 1. [viash-io/viash-actions/setup](setup) - Install Viash
 2. [viash-io/viash-actions/ns-list](ns-list) - List Viash components in a repository
-3. [viash-io/viash-actions/ns-build](ns-build) - Build a namespace from many viash config files.
+3. [viash-io/viash-actions/ns-build](ns-build) - Build a namespace from many viash config files
+
+There are also a few actions that are commonly used in Viash projects:
+
+1. [viash-io/viash-actions/project/cache-and-sync-s3] - Sync and cache an S3 bucket
 
 We recommend using `v2` for your actions.
 

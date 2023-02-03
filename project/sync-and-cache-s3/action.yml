@@ -1,0 +1,56 @@
+name: Sync and cache an S3 bucket
+author: Data Intuitive
+description: >
+  Sync an S3 bucket to a folder and create a cache.
+inputs:
+  s3_bucket:
+    required: true
+    description: 'Path to an S3 bucket.'
+  dest_path:
+    required: true
+    description: 'Where to store the data.'
+  cache_key_prefix:
+    required: false
+    description: A prefix for the cache hash key. Prefix is also used for restoring stale cache if no cache hit occurred for key.
+    default: cachekey__
+outputs:
+  cache_key:
+    description: Caching key.
+    value: ${{ steps.cache_hash.outputs.cache_hash }}
+runs:
+  using: 'composite'
+  steps:
+    # create cache_hash key
+    - name: Create hash key
+      shell: bash
+      id: cache_hash
+      run: |
+        AWS_EC2_METADATA_DISABLED=true \
+          aws s3 ls \
+          ${{ inputs.s3_bucket }} \
+          --recursive \
+          --no-sign-request \
+          > bucket-contents.txt
+        echo "cache_hash=${{ inputs.cache_key_prefix}}$( md5sum bucket-contents.txt | awk '{ print $1 }' )" >> $GITHUB_OUTPUT
+    
+    # initialize cache
+    - name: Cache resources
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.dest_path }}
+        key: ${{ steps.cache_hash.outputs.cache_hash }}
+        restore-keys: ${{ inputs.cache_key_prefix}}
+
+    # sync if need be
+    - name: Sync resources
+      shell: bash
+      run: |
+        AWS_EC2_METADATA_DISABLED=true \
+          aws s3 sync \
+          ${{ inputs.s3_bucket }} \
+          ${{ inputs.dest_path }} \
+          --delete --no-sign-request
+    - name: List resources
+      shell: bash
+      run: |
+        tree ${{ inputs.dest_path }} -L 3

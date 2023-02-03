@@ -1,5 +1,8 @@
 # viash-actions v3.0.0
 
+## New features
+
+* Added `project/sync-and-cache-s3`: Sync and cache an S3 bucket.
 
 ## Breaking changes
 
