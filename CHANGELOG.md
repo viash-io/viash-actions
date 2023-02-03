@@ -4,7 +4,7 @@
 
 * Added `project/sync-and-cache-s3`: Sync and cache an S3 bucket.
 
-* Added `project/filter-changed`: Filter a json produced by `ns-list` such that
+* Added `project/detect-changed-components`: Filter a json produced by `ns-list` such that
   only components whose resources have changed in comparison to the default branch
   are retained.
 

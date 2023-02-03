@@ -33,13 +33,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: viash-io/viash-actions/setup@v2
+    - uses: viash-io/viash-actions/setup@v3
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
     - name: Build nextflow parameter files
-      uses: viash-io/viash-actions/build-nextflow-params@v2
+      uses: viash-io/viash-actions/build-nextflow-params@v3
       with:
         workflows: workflows
         token: ${{ secrets.GTHB_PAT }}

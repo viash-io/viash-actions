@@ -8,9 +8,10 @@ This repository stores [Github Actions](https://github.com/features/actions) use
 
 There are also a few actions that are commonly used in Viash projects:
 
-1. [viash-io/viash-actions/project/cache-and-sync-s3] - Sync and cache an S3 bucket
+1. [viash-io/viash-actions/project/cache-and-sync-s3](project/cache-and-sync-s3) - Sync and cache an S3 bucket
+2. [viash-io/viash_actions/project/detect-changed-components](project/detect-changed-components) - Detect changed Viash components
 
-We recommend using `v2` for your actions.
+We recommend using `v3` for your actions.
 
 ## Release Management
 

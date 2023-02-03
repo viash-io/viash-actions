@@ -1,8 +1,8 @@
 # Detect components with changed files
 
 Filter a json file produced by viash ns list on whether
-  the component has been changed with respect to the
-  default branch.
+the component has been changed with respect to the
+default branch.
 
 ## Inputs
 
@@ -17,7 +17,7 @@ Filter a json file produced by viash ns list on whether
 ## Examples
 
 ```yaml
-name: demo of filter-changed
+name: demo of detect-changed
 
 on:
   push:
@@ -30,12 +30,12 @@ jobs:
     - uses: actions/checkout@v3
 
     - id: ns_list
-      uses: viash-io/viash-actions/ns-list@v2
+      uses: viash-io/viash-actions/ns-list@v3
       with:
         format: json  
 
     - id: ns_list_changed
-      uses: viash-io/viash-actions/filter-changed@v2
+      uses: viash-io/viash-actions/detect-changed-components@v3
       with:
         input_file: ${{ steps.ns_list.outputs.output_file }}
 ```

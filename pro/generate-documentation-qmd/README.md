@@ -46,7 +46,7 @@ jobs:
     steps:
     - uses: viash-io/viash-actions/setup@v3
     - uses: actions/checkout@v3
-    - uses: viash-io/viash-actions/generate-documentation-qmd@v2
+    - uses: viash-io/viash-actions/generate-documentation-qmd@v3
       with:
         input_dir: src
         output_dir: /website/components
