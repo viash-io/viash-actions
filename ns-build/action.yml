@@ -1,4 +1,5 @@
 name: viash ns build
+author: Data Intuitive
 description: Build a namespace from many viash config files.
 inputs:
   query:

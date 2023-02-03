@@ -1,5 +1,5 @@
 name: 'Build nf-tower schemas'
-author: 'Dries Schaumont'
+author: Data Intuitive
 description: >
   This action will build nextflow schemas for Viash workflows and components in a repository.
   For workflows, will save the build schemas next to the Viash config.
@@ -11,11 +11,9 @@ inputs:
   workflows: 
     required: false
     description: 'Location of the viash configurations for workflows.'
-  token:
-    description: >
-        Personal access token (PAT) used to fetch the viash tools repository.
+  viash_pro_token:
+    description: Viash Pro token.
     required: true
-    default: ${{ github.token }}
   tools_version:
     description: >
       Release of Viash tools to use.
@@ -39,11 +37,11 @@ runs:
     - uses: actions/checkout@v3
       with: 
         repository: viash-io/viash_tools
-        token: ${{ inputs.token }}
+        token: ${{ inputs.viash_pro_token }}
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
 
-    - uses: viash-io/viash-actions/ns-list@v2
+    - uses: viash-io/viash-actions/ns-list@v3
       id: nslistcomponents
       if: inputs.components
       with:
@@ -51,7 +49,7 @@ runs:
         format: "json"
         platform: "nextflow"
 
-    - uses: viash-io/viash-actions/ns-list@v2
+    - uses: viash-io/viash-actions/ns-list@v3
       id: nslistworkflows
       if: inputs.workflows
       with:

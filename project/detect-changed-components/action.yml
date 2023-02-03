@@ -1,0 +1,75 @@
+name: Detect components with changed files
+author: Data Intuitive
+description: >
+  Filter a json file produced by viash ns list on whether
+  the component has been changed with respect to the
+  default branch.
+inputs:
+  input_file:
+    required: true
+    description: 'Path to a viash ns list json file'
+outputs:
+  output_file:
+    description: |
+      Path to the filtered viash ns list json file, filtered on whether one of the
+      resources of the component has been changed or not.
+    value: ${{ steps.filter.outputs.output_file }}
+runs:
+  using: 'composite'
+  steps:
+  - name: Get changed files
+    id: changed-files
+    uses: tj-actions/changed-files@v35.5.0
+    with:
+      separator: ";"
+      diff_relative: true
+
+  - name: Set matrix to only run tests for components that had their config or resources changed.
+    id: filter
+    shell: bash
+    run: |
+      # create output path
+      output_file=$(mktemp $RUNNER_TEMP/viash_ns_changed_files.XXXXXX.json)
+
+      if [[ "$GITHUB_REF" == "refs/heads/${{ github.event.repository.default_branch }}" || "${{ contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
+        cp "${{ inputs.input_file }}" "$output_file"
+        echo "output_file=$output_file" >> $GITHUB_OUTPUT
+        exit 0
+      fi
+
+      # create output array
+      declare -a output_array=()
+
+      # read changed files as array
+      IFS=$';' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
+
+      # read components as array
+      readarray -t components < <(jq -c '.[]' "${{ inputs.input_file }}")
+
+      # iterate over the components
+      for component in "${components[@]}"; do
+        config_path=$(jq -cr '.info.config' <<< "$component" )
+        echo "Checking '$config_path'"
+
+        # get the components resources
+        readarray -t resources < <(jq -cr '
+          (.info.config | capture("^(?<dir>.*\/)").dir) as $dir |
+          ([.info.config] +
+            ([.functionality.resources[].path?] | map($dir + .)) +
+            ([.functionality.test_resources[].path?] | map($dir + .)))[]
+        ' <<< "$component")
+        
+        # check if resource is in the list of changed resources
+        for resource_rel_path in "${resources[@]}"; do
+          resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
+          if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " ]]; then
+            echo "  Detected changed resources!"
+            output_array+="$component"
+            break
+          fi
+        done
+      done
+
+      # reformat as json and write to file
+      jq -cs '.' <<< "${output_array[*]}" > "$output_file"
+      echo "output_file=$output_file" >> $GITHUB_OUTPUT

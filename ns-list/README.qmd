@@ -53,10 +53,10 @@ jobs:
   viash-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: viash-io/viash-actions/setup@v1
+      - uses: viash-io/viash-actions/setup@v3
 
       - id: ns_list
-        uses: viash-io/viash-actions/ns-list@v1
+        uses: viash-io/viash-actions/ns-list@v3
 
       - run: |
           # do something with the output yaml
@@ -64,10 +64,10 @@ jobs:
   viash-macos:
     runs-on: macos-latest
     steps:
-      - uses: viash-io/viash-actions/setup@v1
+      - uses: viash-io/viash-actions/setup@v3
 
       - id: ns_list
-        uses: viash-io/viash-actions/ns-list@v1
+        uses: viash-io/viash-actions/ns-list@v3
         with:
           format: json
 

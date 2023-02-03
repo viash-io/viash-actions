@@ -1,4 +1,5 @@
 name: viash ns list
+author: Data Intuitive
 description: List a namespace containing many viash config files.
 inputs:
   query:
