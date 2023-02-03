@@ -1,9 +1,5 @@
 # viash-actions v3.0.0
 
-## Minor changes
-
-* `ns-list: No longer prints output to interactive console.
-
 ## New features
 
 * Added `project/sync-and-cache-s3`: Sync and cache an S3 bucket.
@@ -11,6 +7,10 @@
 * Added `project/detect-changed-components`: Filter a json produced by `ns-list` such that
   only components whose resources have changed in comparison to the default branch
   are retained.
+
+## Minor changes
+
+* `ns-list`: No longer prints output to interactive console.
 
 ## Breaking changes
 
