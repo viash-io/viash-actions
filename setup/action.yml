@@ -1,5 +1,5 @@
 name: 'Setup Viash'
-author: 'Robrecht Cannoodt'
+author: Data Intuitive
 description: 'This action will setup Viash from the git repository https://github.com/viash-io/viash/'
 inputs:
   version:
