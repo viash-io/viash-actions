@@ -5,7 +5,7 @@ description: >
 inputs:
   input_dir:
     required: false
-    description: 'Directory where the viash configs can be found.'
+    description: 'Directory inside the working directory where the viash configs can be found.'
     default: "."
   component_template:
     required: false
@@ -45,11 +45,16 @@ inputs:
       Release of Viash tools to use.
     required: false
     default: 'latest'
+  working_directory:
+    description: >
+      Folder where this action will be executed.
+    default: './'
 runs:
   using: 'composite'
   steps:
     - name: Get latest release
       shell: bash
+      working-directory: ${{ inputs.working_directory }}
       id: latestrelease
       run: |
         if [ "${{ inputs.tools_version }}" == "latest" ]; then
@@ -63,18 +68,12 @@ runs:
       with: 
         repository: viash-io/viash_tools
         token: ${{ inputs.viash_pro_token }}
-        path: viash_tools
+        path: ${{ inputs.working_directory }}/viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
-    - uses: viash-io/viash-actions/ns-list@main
-      id: nslistcomponents
-      if: inputs.components
-      with:
-        src: ${{ inputs.components }}
-        format: "json"
-        platform: "nextflow"
     - name: 'Generate quarto markdown files.'
       shell: bash
       id: generate-schemas
+      working-directory: ${{ inputs.working_directory }}
       run: |
         if [ "${{ contains(fromJSON('[true, false]'), inputs.write_index) }}" == "true" ]; then
           echo "The value passed with the write_index property must be either 'true' or 'false'."
@@ -90,7 +89,7 @@ runs:
           extra_args+=(--dest_path "${{ inputs.dest_path }}")
         fi
 
-        viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
+        ${{ inputs.working_directory }}/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
           --input "${{ inputs.input_dir }}" "${extra_args[@]}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ inputs.repository }}" \
