@@ -1,3 +1,9 @@
+# viash-actions v3.1.0
+
+# New features
+
+* `pro/generate-documentation-qmd`: Added `workworking_directory` option. 
+
 # viash-actions v3.0.0
 
 ## New features
