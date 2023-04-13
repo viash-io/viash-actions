@@ -47,7 +47,8 @@ inputs:
     default: 'latest'
   working_directory:
     description: >
-      Folder where this action will be executed.
+      Folder where this action will be executed. Most usefull when using
+      the `actions/checkout` with a different `path:`.
     default: './'
 runs:
   using: 'composite'
@@ -70,14 +71,6 @@ runs:
         token: ${{ inputs.viash_pro_token }}
         path: ${{ inputs.working_directory }}/viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
-    - name: 'Test'
-      shell: bash
-      working-directory: ${{ inputs.working_directory }}
-      run: |
-        echo "tree"
-        tree
-        echo "${{ inputs.input_dir }}"
-        tree "${{ inputs.input_dir }}"
     - name: 'Generate quarto markdown files.'
       shell: bash
       id: generate-schemas
