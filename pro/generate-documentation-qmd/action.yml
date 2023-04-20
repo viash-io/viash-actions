@@ -5,7 +5,7 @@ description: >
 inputs:
   input_dir:
     required: false
-    description: 'Directory where the viash configs can be found.'
+    description: 'Directory inside the working directory where the viash configs can be found.'
     default: "."
   component_template:
     required: false
@@ -45,6 +45,15 @@ inputs:
       Release of Viash tools to use.
     required: false
     default: 'latest'
+  working_directory:
+    description: >
+      Folder where this action will be executed. Most useful when using
+      `actions/checkout` with a different `path:`, as paths to files in the resulting qmd
+      are generated relative to the working directory. For example: checking out a repository 
+      with `path: "my_project"`, `input_dir: "my_project/src/"` and not using `working_directory`; will
+      result in in paths that look like `my_project/src/...`. Using `path: "my_project"`, 
+      `input_dir: "./src/"` and `working_directory: "my_project/"` will generate paths like `./src/...`.
+    default: './'
 runs:
   using: 'composite'
   steps:
@@ -63,18 +72,12 @@ runs:
       with: 
         repository: viash-io/viash_tools
         token: ${{ inputs.viash_pro_token }}
-        path: viash_tools
+        path: ${{ inputs.working_directory }}/viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
-    - uses: viash-io/viash-actions/ns-list@main
-      id: nslistcomponents
-      if: inputs.components
-      with:
-        src: ${{ inputs.components }}
-        format: "json"
-        platform: "nextflow"
     - name: 'Generate quarto markdown files.'
       shell: bash
       id: generate-schemas
+      working-directory: ${{ inputs.working_directory }}
       run: |
         if [ "${{ contains(fromJSON('[true, false]'), inputs.write_index) }}" == "true" ]; then
           echo "The value passed with the write_index property must be either 'true' or 'false'."

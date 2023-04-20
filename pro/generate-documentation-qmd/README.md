@@ -30,6 +30,12 @@ We recommend using a Linux or MacOS runner if possible.
 
 * `tools_version` - _optional_. Release of Viash tools to use. Will use the latest release by default. Ex: `main_build`
 
+* `working_directory` - _optional_. Folder where this action will be executed. Most useful when using
+`actions/checkout` with a different `path:`, as paths to files in the resulting qmd
+are generated relative to the working directory. For example: checking out a repository 
+with `path: "my_project"`, `input_dir: "my_project/src/"` and not using `working_directory`; will
+result in in paths that look like `my_project/src/...`. Using `path: "my_project"`, 
+`input_dir: "./src/"` and `working_directory: "my_project/"` will generate paths like `./src/...`.
 
 ## Examples
 
