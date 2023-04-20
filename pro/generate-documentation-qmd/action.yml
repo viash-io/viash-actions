@@ -47,15 +47,18 @@ inputs:
     default: 'latest'
   working_directory:
     description: >
-      Folder where this action will be executed. Most usefull when using
-      the `actions/checkout` with a different `path:`.
+      Folder where this action will be executed. Most useful when using
+      `actions/checkout` with a different `path:`, as paths to files in the resulting qmd
+      are generated relative to the working directory. For example: checking out a repository 
+      with `path: "my_project"`, `input_dir: "my_project/src/"` and not using `working_directory`; will
+      result in in paths that look like `my_project/src/...`. Using `path: "my_project"`, 
+      `input_dir: "./src/"` and `working_directory: "my_project/"` will generate paths like `./src/...`.
     default: './'
 runs:
   using: 'composite'
   steps:
     - name: Get latest release
       shell: bash
-      working-directory: ${{ inputs.working_directory }}
       id: latestrelease
       run: |
         if [ "${{ inputs.tools_version }}" == "latest" ]; then
