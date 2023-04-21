@@ -6,7 +6,7 @@
 
 ## Bug fixes
 
-* `project/detect-changed-components`: Use `path` and `parent` to detect a component's resources.
+* `project/detect-changed-components`: Refactor component resource detection.
 
 # viash-actions v3.0.0
 
