@@ -1,3 +1,7 @@
+# viash-actions v3.2.0
+
+
+
 # viash-actions v3.1.0
 
 ## New features
