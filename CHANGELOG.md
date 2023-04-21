@@ -4,6 +4,10 @@
 
 * `pro/generate-documentation-qmd`: Added `working_directory` option. 
 
+## Bug fixes
+
+* `project/detect-changed-components`: Use `path` and `parent` to detect a component's resources.
+
 # viash-actions v3.0.0
 
 ## New features
