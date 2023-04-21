@@ -24,6 +24,37 @@ runs:
       separator: ";"
       diff_relative: true
 
+  # Note: a component's resources is detected using a jq statement. 
+  # Example usage of the jq statement:
+  #
+  # Input:
+  # functionality:
+  #   resources:
+  #     - type: python_script
+  #       path: script.py
+  #       parent: file:/home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/config.vsh.yaml
+  #     - type: file
+  #       path: file.txt
+  #       parent: file:///home/rcannood/workspace/openproblems/openproblems-v2/
+  #     - type: "file"
+  #       path: "resources_test/label_projection/pancreas"
+  #       parent: "file:///home/rcannood/workspace/openproblems/openproblems-v2/"
+  #   test_resources:
+  #     - type: "file"
+  #       path: "LICENSE"
+  #       parent: "file:///home/rcannood/workspace/openproblems/openproblems-v2/"
+  #     - type: "file"
+  #       text: "content"
+  #       dest: "foo.txt"
+  # info:
+  #   config: /home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/config.vsh.yaml
+  #
+  # Output:
+  # /home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/config.vsh.yaml
+  # /home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/script.py
+  # /home/rcannood/workspace/openproblems/openproblems-v2/file.txt
+  # /home/rcannood/workspace/openproblems/openproblems-v2/resources_test/label_projection/pancreas
+  # /home/rcannood/workspace/openproblems/openproblems-v2/LICENSE
   - name: Set matrix to only run tests for components that had their config or resources changed.
     id: filter
     shell: bash
@@ -52,12 +83,18 @@ runs:
         echo "Checking '$config_path'"
 
         # get the components resources
-        readarray -t resources < <(jq -cr '
-          (.info.config | capture("^(?<dir>.*\/)").dir) as $dir |
-          ([.info.config] +
-            ([.functionality.resources[].path?] | map($dir + .)) +
-            ([.functionality.test_resources[].path?] | map($dir + .)))[]
-        ' <<< "$component")
+        readarray -t resources < <(
+          jq -cr '
+          (
+            [.info.config] +
+            [
+              .functionality.resources[], .functionality.test_resources[]
+                | select(.path and .parent)
+                | (.parent | sub("^file:(//)?"; "") | sub("/[^/]*$"; "")) + "/" + .path
+            ]
+          )[]
+          ' <<< "$component"
+        )
         
         # check if resource is in the list of changed resources
         for resource_rel_path in "${resources[@]}"; do
