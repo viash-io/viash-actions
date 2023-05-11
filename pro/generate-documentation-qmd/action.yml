@@ -68,12 +68,11 @@ runs:
         fi
         echo "Using version $RELEASE_TAG"
         echo "releasetag=$RELEASE_TAG" >> $GITHUB_OUTPUT
-    - uses: actions/checkout@v3
-      with: 
-        repository: viash-io/viash_tools
-        token: ${{ inputs.viash_pro_token }}
-        path: ${{ inputs.working_directory }}/viash_tools
-        ref: ${{ steps.latestrelease.outputs.releasetag }}
+    # The checkout action does not allow checking out a repo outside $GITHUB_WORKSPACE
+    - name: 'Checkout viash_tools'
+      shell: bash
+      run: |
+        git clone https://${{ inputs.viash_pro_token }}@github.com/viash-io/viash_tools.git "$RUNNER_TEMP/viash_tools" -b ${{ steps.latestrelease.outputs.releasetag }}
     - name: 'Generate quarto markdown files.'
       shell: bash
       id: generate-schemas
@@ -93,10 +92,14 @@ runs:
           extra_args+=(--dest_path "${{ inputs.dest_path }}")
         fi
 
-        viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
+        $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
           --input "${{ inputs.input_dir }}" "${extra_args[@]}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ inputs.repository }}" \
           --git_browse_url "https://github.com/${{ inputs.repository }}/blob/${{ inputs.ref }}/" \
           --git_tag "${{ inputs.ref }}" \
           --write_index "${{ inputs.write_index }}"
+    - name: 'Cleanup checkout'
+      shell: bash
+      run: |
+        rm -rf "$RUNNER_TEMP/viash_tools"

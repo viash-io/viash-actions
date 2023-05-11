@@ -1,6 +1,8 @@
-# viash-actions v3.2.0
+# viash-actions v3.1.1
 
+## Bug fixes
 
+`pro/generate-documentation-qmd`: Avoid building .qmd files for the components in the `viash_tools` repository by cloning it into `RUNNER_TEMP`.
 
 # viash-actions v3.1.0
 
