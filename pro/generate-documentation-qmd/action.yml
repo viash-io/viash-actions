@@ -72,7 +72,7 @@ runs:
     - name: 'Checkout viash_tools'
       shell: bash
       run: |
-        git clone https://${{ inputs.viash_pro_token }}:github.com/viash-io/viash_tools.git "$RUNNER_TEMP/viash_tools" -b ${{ steps.latestrelease.outputs.releasetag }}
+        git clone https://${{ inputs.viash_pro_token }}@github.com/viash-io/viash_tools.git "$RUNNER_TEMP/viash_tools" -b ${{ steps.latestrelease.outputs.releasetag }}
     - name: 'Generate quarto markdown files.'
       shell: bash
       id: generate-schemas
