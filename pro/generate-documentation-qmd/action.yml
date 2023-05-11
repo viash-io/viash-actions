@@ -92,7 +92,7 @@ runs:
           extra_args+=(--dest_path "${{ inputs.dest_path }}")
         fi
 
-        viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
+        $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
           --input "${{ inputs.input_dir }}" "${extra_args[@]}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ inputs.repository }}" \
