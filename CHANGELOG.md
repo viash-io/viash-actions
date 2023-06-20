@@ -1,3 +1,9 @@
+# viash-actions v3.2.0
+
+## New features
+
+* Added `update-docker-engine`.
+
 # viash-actions v3.1.2
 
 ## Bug fixes
