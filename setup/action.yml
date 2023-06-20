@@ -27,7 +27,7 @@ runs:
         mkdir -p "$HOME/.local/bin"
 
         # install viash
-        curl -fsSL get.viash.io | bash -s -- "${extra_params[@]}" --bin "$HOME/.local/bin"
+        curl -fsSL dl.viash.io | bash -s -- "${extra_params[@]}"; mv viash "$HOME/.local/bin"
 
         # add dir to path
         echo "$HOME/.local/bin" >> $GITHUB_PATH

@@ -1,3 +1,9 @@
+# viash-actions v3.1.2
+
+## Bug fixes
+
+`setup`: Fetch Viash from `dl.viash.io` instead of deprecated `get.viash.io`.
+
 # viash-actions v3.1.1
 
 ## Bug fixes
