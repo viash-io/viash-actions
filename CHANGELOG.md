@@ -4,11 +4,17 @@
 
 * `pro/generate-documentation-qmd`: Renamed `working_directory` to `project_directory`, and renamed `input_dir` to `src` (#17).
 
+# viash-actions v3.2.1
+
+## Bug fixes
+
+* `setup`: Add fallback to downloading the Viash installer (#18).
+
 # viash-actions v3.2.0
 
 ## New features
 
-* Added `update-docker-engine`.
+* Added `update-docker-engine` (#15).
 
 # viash-actions v3.1.2
 
