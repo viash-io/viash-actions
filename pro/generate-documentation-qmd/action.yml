@@ -3,7 +3,7 @@ author: 'Dries Schaumont'
 description: >
   Create quarto markdown files for viash components or workflows, based on a jinja template.
 inputs:
-  input_dir:
+  src_dir:
     required: false
     description: |
       Directory inside the project directory where the viash configs can be found.
@@ -97,7 +97,7 @@ runs:
 
         $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
           --input ./ "${extra_args[@]}" \
-          --src "${{ inputs.input_dir }}" \
+          --src "${{ inputs.src_dir }}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ inputs.repository }}" \
           --git_browse_url "https://github.com/${{ inputs.repository }}/blob/${{ inputs.ref }}/" \

@@ -12,7 +12,7 @@ We recommend using a Linux or MacOS runner if possible.
 
 ### Inputs available
 
-* `input_dir` - _optional_: Directory containing viash configs. Must be a path relative to the project project directory. Most usefull for           destinguishing between different types of components (for example: component and workflow configs). Ex: `./`.
+* `src_dir` - _optional_: Directory containing viash configs. Must be a path relative to the project project directory. Most usefull for           destinguishing between different types of components (for example: component and workflow configs). Ex: `./`.
 
 * `component_template` - _optional_. Path pointing to Jinja template that can be used to customize the resulting qmd files. By default will use a default included template. An example of a template can be found at the bottom of this page.
 
@@ -34,9 +34,9 @@ We recommend using a Linux or MacOS runner if possible.
 Must contain viash configs for components and workflows, together with the build components in a target folder. 
 Most useful when using `actions/checkout` with a different `path:`, as paths to files in the resulting qmd
 are generated relative to the working directory. For example: checking out a repository 
-with `path: "my_project"`, `input_dir: "my_project/src/"` and not using `project_directory`; will
+with `path: "my_project"`, `src_dir: "my_project/src/"` and not using `project_directory`; will
 result in in paths that look like `my_project/src/...`. Using `path: "my_project"`, 
-`input_dir: "./src/"` and `project_directory: "my_project/"` will generate paths like `./src/...`.
+`src_dir: "./src/"` and `project_directory: "my_project/"` will generate paths like `./src/...`.
 
 ## Examples
 
@@ -55,7 +55,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: viash-io/viash-actions/generate-documentation-qmd@v3
       with:
-        input_dir: src
+        src_dir: src
         output_dir: /website/components
         dest_path: "{type}s/{namespace}/{name}.qmd"
         git_repo: openpipelines-bio/openpipelines
