@@ -3,22 +3,22 @@ author: 'Dries Schaumont'
 description: >
   Create quarto markdown files for viash components or workflows, based on a jinja template.
 inputs:
-  input_dir:
-    required: false
-    description: |
-      Directory inside the project directory where the viash configs can be found.
-      Most usefull for destinguishing between different types of components within the project directory
-      (for example: component and workflow configs).
-    default: "./"
+  output_dir:
+    required: true
+    description: >
+      Output folder to write to.
+  viash_pro_token:
+    description: Viash Pro token.
+    required: true
+  project_directory:
+    description: >
+      The directory in which the Viash project config (`_viash.yaml`) resides.
+    default: './'
   component_template:
     required: false
     description: >
       Jinja template that can be used to customize the resulting qmd files.
       By default will use the included template.
-  output_dir:
-    required: true
-    description: >
-      Output folder to write to.
   dest_path:
     required: false
     description: >
@@ -40,23 +40,15 @@ inputs:
     required: false
     description: Whether or not to also create an index file. Options are 'true' or 'false'.
     default: 'false'
-  viash_pro_token:
-    description: Viash Pro token.
-    required: true
   tools_version:
     description: >
       Release of Viash tools to use.
     required: false
     default: 'latest'
-  project_directory:
-    description: >
-      Folder where this action will be executed. Most useful when using
-      `actions/checkout` with a different `path:`, as paths to files in the resulting qmd
-      are generated relative to the working directory. For example: checking out a repository 
-      with `path: "my_project"`, `input_dir: "my_project/src/"` and not using `working_directory`; will
-      result in in paths that look like `my_project/src/...`. Using `path: "my_project"`, 
-      `input_dir: "./src/"` and `working_directory: "my_project/"` will generate paths like `./src/...`.
-    default: './'
+  src:
+    required: false
+    description: |
+      An override for the `--src` parameter in `viash ns list`.
 runs:
   using: 'composite'
   steps:
@@ -96,8 +88,8 @@ runs:
         fi
 
         $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
-          --input "${{ inputs.project_directory }}" "${extra_args[@]}" \
-          --src "${{ inputs.input_dir }}" \
+          --input "." "${extra_args[@]}" \
+          --src "${{ inputs.src }}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ inputs.repository }}" \
           --git_browse_url "https://github.com/${{ inputs.repository }}/blob/${{ inputs.ref }}/" \

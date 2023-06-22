@@ -1,46 +1,43 @@
-# generate-documentation-qmd
+---
+title: generate-documentation-qmd
+format: gfm
+---
 
-Create quarto markdown files for viash components or workflows, based on
-a jinja template.
+```{r}
+#| include: false
+library(tidyverse)
+action <- yaml::read_yaml("action.yml")
+```
+
+`r action$description`
 
 ### Inputs available
 
-- `output_dir`: Output folder to write to.
-
-- `viash_pro_token`: Viash Pro token.
-
-- `project_directory`: *(Optional)* The directory in which the Viash
-  project config (`_viash.yaml`) resides.
-
-- `component_template`: *(Optional)* Jinja template that can be used to
-  customize the resulting qmd files. By default will use the included
-  template.
-
-- `dest_path`: *(Optional)* Template for output paths. Can contain
-  `{type}`, `{namespace}` and `{name}` wildcards to create a custom
-  folder hierarchy for storing the output for different components
-
-- `ref`: *(Optional)* The git tag. Used to create links to the source
-  code and to build nextflow commands in the generated documentation.
-
-- `repository`: *(Optional)* Github repository. Used to create links to
-  the source code and to build nextflow commands in the generated
-  documentation. Must use format “owner/repo-name” will default to the
-  repo where this action is being run for.
-
-- `write_index`: *(Optional)* Whether or not to also create an index
-  file. Options are ‘true’ or ‘false’.
-
-- `tools_version`: *(Optional)* Release of Viash tools to use.
-
-- `src`: *(Optional)* An override for the `--src` parameter in
-  `viash ns list`.
+```{r}
+#| echo: false
+lines <- map_chr(names(action$inputs), function(name) {
+  input <- action$inputs[[name]]
+  required <- ifelse (input$required %||% FALSE, "", "_(Optional)_ ")
+  glue::glue("* `{name}`: {required}{input$description}")
+})
+knitr::asis_output(paste0(lines, collapse = "\n"))
+```
 
 ### Outputs
 
+```{r}
+#| echo: false
+lines <- map_chr(names(action$outputs), function(name) {
+  output <- action$outputs[[name]]
+  glue::glue("* `{name}`: {output$description}")
+})
+knitr::asis_output(paste0(lines, collapse = "\n"))
+```
+
+
 ## Examples
 
-``` yaml
+```yaml
 name: demo of generate-documentation-qmd
 
 on:
@@ -65,7 +62,7 @@ jobs:
 
 # Example template
 
-```` markdown
+````markdown
 
 ---
 title: "{{functionality.info.name}}"
@@ -149,10 +146,10 @@ Replace `-profile docker` with `-profile podman` or `-profile singularity` depen
 {% for author in functionality.authors %}
   * {{author.name}}
     {%- if author.props.github is defined -%}
-      {% raw %} [{% endraw %}](https://github.com/{{author.props.github}})
+      {% raw %} [{{< fa brands github >}}{% endraw %}](https://github.com/{{author.props.github}})
     {%- endif -%}
     {%- if author.props.orcid is defined -%}
-      {% raw %} [{% endraw %}](https://orcid.org/{{author.props.orcid}})
+      {% raw %} [{{< fa brands orcid >}}{% endraw %}](https://orcid.org/{{author.props.orcid}})
     {%- endif -%}
     {%- if author.roles is defined and author.roles is not string -%}
       {{' '}}({{author.roles|join(", ")}})
@@ -171,4 +168,5 @@ Replace `-profile docker` with `-profile podman` or `-profile singularity` depen
 {{render.graph}}
 ```
 {%endif %}
+
 ````
