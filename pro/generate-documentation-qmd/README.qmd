@@ -25,19 +25,19 @@ lines <- map_chr(names(action$inputs), function(name) {
 knitr::asis_output(paste0(lines, collapse = "\n"))
 ```
 
-### Outputs
-
 ```{r}
 #| echo: false
 lines <- map_chr(names(action$outputs), function(name) {
   output <- action$outputs[[name]]
   glue::glue("* `{name}`: {output$description}")
 })
-knitr::asis_output(paste0(lines, collapse = "\n"))
+if (length(lines) > 0) {
+  knitr::asis_output(paste0("### Outputs", "", lines, collapse = "\n"))
+}
 ```
 
 
-## Examples
+## Usage
 
 ```yaml
 name: demo of generate-documentation-qmd
@@ -50,13 +50,17 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: viash-io/viash-actions/setup@v3
     - uses: actions/checkout@v3
+        with:
+          path: project
+
+    - uses: viash-io/viash-actions/setup@v3
+
     - uses: viash-io/viash-actions/generate-documentation-qmd@v3
       with:
-        project_dir: ./
+        project_dir: project
         src: src
-        output_dir: /website/components
+        output_dir: website
         dest_path: "{type}s/{namespace}/{name}.qmd"
         git_repo: openpipelines-bio/openpipelines
         token: ${{ secrets.GTHB_PAT }}
