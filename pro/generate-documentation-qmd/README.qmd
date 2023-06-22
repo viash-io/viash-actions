@@ -17,8 +17,10 @@ action <- yaml::read_yaml("action.yml")
 #| echo: false
 lines <- map_chr(names(action$inputs), function(name) {
   input <- action$inputs[[name]]
-  required <- ifelse (input$required %||% FALSE, "", "_(Optional)_ ")
-  glue::glue("* `{name}`: {required}{input$description}")
+  required <- ifelse(input$required %||% FALSE, "", "_(Optional)_ ")
+  description <- gsub(".[ \n\r]*$", ".", input$description)
+  default <- ifelse(!is.null(input$default), paste0(" Default: `", input$default, "`."), "")
+  glue::glue("* `{name}`: {required}{description}{default}")
 })
 knitr::asis_output(paste0(lines, collapse = "\n"))
 ```

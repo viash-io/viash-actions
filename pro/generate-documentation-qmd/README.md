@@ -6,35 +6,31 @@ a jinja template.
 ### Inputs available
 
 - `output_dir`: Output folder to write to.
-
 - `viash_pro_token`: Viash Pro token.
-
 - `project_directory`: *(Optional)* The directory in which the Viash
   project config (`_viash.yaml`) resides. Most useful when using
   `actions/checkout` with a different `path:`, as paths to files in the
   resulting qmd are generated relative to the working directory.
-
+  Default: `./`.
 - `component_template`: *(Optional)* Jinja template that can be used to
   customize the resulting qmd files. By default will use the included
   template.
-
 - `dest_path`: *(Optional)* Template for output paths. Can contain
   `{type}`, `{namespace}` and `{name}` wildcards to create a custom
-  folder hierarchy for storing the output for different components
-
+  folder hierarchy for storing the output for different component.
+  Default: `{type}s/{namespace}/{name}.qmd`.
 - `ref`: *(Optional)* The git tag. Used to create links to the source
   code and to build nextflow commands in the generated documentation.
-
+  Default: `${{ github.ref_name }}`.
 - `repository`: *(Optional)* Github repository. Used to create links to
   the source code and to build nextflow commands in the generated
   documentation. Must use format “owner/repo-name” will default to the
-  repo where this action is being run for.
-
+  repo where this action is being run for. Default:
+  `${{ github.repository }}`.
 - `write_index`: *(Optional)* Whether or not to also create an index
-  file. Options are ‘true’ or ‘false’.
-
-- `tools_version`: *(Optional)* Release of Viash tools to use.
-
+  file. Options are ‘true’ or ‘false’. Default: `false`.
+- `tools_version`: *(Optional)* Release of Viash tools to use. Default:
+  `latest`.
 - `src`: *(Optional)* An override for the `--src` parameter in
   `viash ns list`. Example: `src/`.
 
