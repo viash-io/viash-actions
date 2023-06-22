@@ -31,9 +31,8 @@ runs:
           wget https://github.com/viash-io/viash/releases/latest/download/viash_install -O $RUNNER_TEMP/viash_install
         
         # install viash
-        bash "$RUNNER_TEMP/viash_install" -- "${extra_params[@]}" --output "$RUNNER_TEMP/viash"
+        bash "$RUNNER_TEMP/viash_install" -- "${extra_params[@]}" --output "$HOME/.local/bin/viash"
         rm "$RUNNER_TEMP/viash_install"
-        mv "$RUNNER_TEMP/viash" "$HOME/.local/bin"
 
         # add dir to path
         echo "$HOME/.local/bin" >> $GITHUB_PATH
