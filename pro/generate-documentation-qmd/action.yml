@@ -96,7 +96,7 @@ runs:
         fi
 
         $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
-          --input "${{ inputs.project_directory }}" "${extra_args[@]}" \
+          --input ./ "${extra_args[@]}" \
           --src "${{ inputs.input_dir }}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ inputs.repository }}" \
