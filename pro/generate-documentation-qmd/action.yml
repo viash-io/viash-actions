@@ -11,8 +11,11 @@ inputs:
     description: Viash Pro token.
     required: true
   project_directory:
-    description: >
+    description: |
       The directory in which the Viash project config (`_viash.yaml`) resides.
+      Most useful when using `actions/checkout` with a different `path:`,
+      as paths to files in the resulting qmd are generated relative to the
+      working directory.
     default: './'
   component_template:
     required: false
@@ -48,7 +51,7 @@ inputs:
   src:
     required: false
     description: |
-      An override for the `--src` parameter in `viash ns list`.
+      An override for the `--src` parameter in `viash ns list`. Example: `src/`.
 runs:
   using: 'composite'
   steps:
@@ -88,7 +91,7 @@ runs:
         fi
 
         $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
-          --input "." "${extra_args[@]}" \
+          --input "./" "${extra_args[@]}" \
           --src "${{ inputs.src }}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ inputs.repository }}" \

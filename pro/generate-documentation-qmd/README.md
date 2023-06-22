@@ -10,7 +10,9 @@ a jinja template.
 - `viash_pro_token`: Viash Pro token.
 
 - `project_directory`: *(Optional)* The directory in which the Viash
-  project config (`_viash.yaml`) resides.
+  project config (`_viash.yaml`) resides. Most useful when using
+  `actions/checkout` with a different `path:`, as paths to files in the
+  resulting qmd are generated relative to the working directory.
 
 - `component_template`: *(Optional)* Jinja template that can be used to
   customize the resulting qmd files. By default will use the included
@@ -34,7 +36,7 @@ a jinja template.
 - `tools_version`: *(Optional)* Release of Viash tools to use.
 
 - `src`: *(Optional)* An override for the `--src` parameter in
-  `viash ns list`.
+  `viash ns list`. Example: `src/`.
 
 ### Outputs
 
