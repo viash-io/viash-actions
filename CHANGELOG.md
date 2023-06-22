@@ -1,3 +1,9 @@
+# viash-actions v4.0.0
+
+## Breaking changes
+
+* `pro/generate-documentation-qmd`: Renamed `working_directory` to `project_directory`, and renamed `input_dir` to `src` (#17).
+
 # viash-actions v3.2.1
 
 ## Bug fixes
