@@ -5,8 +5,11 @@ description: >
 inputs:
   input_dir:
     required: false
-    description: 'Directory inside the working directory where the viash configs can be found.'
-    default: "."
+    description: |
+      Directory inside the project directory where the viash configs can be found.
+      Most usefull for destinguishing between different types of components within the project directory
+      (for example: component and workflow configs).
+    default: "./"
   component_template:
     required: false
     description: >
@@ -45,7 +48,7 @@ inputs:
       Release of Viash tools to use.
     required: false
     default: 'latest'
-  working_directory:
+  project_directory:
     description: >
       Folder where this action will be executed. Most useful when using
       `actions/checkout` with a different `path:`, as paths to files in the resulting qmd
@@ -76,7 +79,7 @@ runs:
     - name: 'Generate quarto markdown files.'
       shell: bash
       id: generate-schemas
-      working-directory: ${{ inputs.working_directory }}
+      working-directory: ${{ inputs.project_directory }}
       run: |
         if [ "${{ contains(fromJSON('[true, false]'), inputs.write_index) }}" == "true" ]; then
           echo "The value passed with the write_index property must be either 'true' or 'false'."
@@ -93,7 +96,8 @@ runs:
         fi
 
         $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
-          --input "${{ inputs.input_dir }}" "${extra_args[@]}" \
+          --input "${{ inputs.project_directory }}" "${extra_args[@]}" \
+          --src "${{ inputs.input_dir }}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ inputs.repository }}" \
           --git_browse_url "https://github.com/${{ inputs.repository }}/blob/${{ inputs.ref }}/" \

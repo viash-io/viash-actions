@@ -12,7 +12,7 @@ We recommend using a Linux or MacOS runner if possible.
 
 ### Inputs available
 
-* `input_dir` - 'Directory contain viash configs for components and workflows, together with the build components in a target folder. Will most often be a repository that has been cloned in a previous step of your workflow using [checkout](https://github.com/marketplace/actions/checkout). Ex: `.`.
+* `input_dir` - _optional_: Directory containing viash configs. Must be a path relative to the project project directory. Most usefull for           destinguishing between different types of components (for example: component and workflow configs). Ex: `./`.
 
 * `component_template` - _optional_. Path pointing to Jinja template that can be used to customize the resulting qmd files. By default will use a default included template. An example of a template can be found at the bottom of this page.
 
@@ -30,12 +30,13 @@ We recommend using a Linux or MacOS runner if possible.
 
 * `tools_version` - _optional_. Release of Viash tools to use. Will use the latest release by default. Ex: `main_build`
 
-* `working_directory` - _optional_. Folder where this action will be executed. Most useful when using
-`actions/checkout` with a different `path:`, as paths to files in the resulting qmd
+* `project_directory` - _optional_. Folder where this action will be executed. 
+Must contain viash configs for components and workflows, together with the build components in a target folder. 
+Most useful when using `actions/checkout` with a different `path:`, as paths to files in the resulting qmd
 are generated relative to the working directory. For example: checking out a repository 
-with `path: "my_project"`, `input_dir: "my_project/src/"` and not using `working_directory`; will
+with `path: "my_project"`, `input_dir: "my_project/src/"` and not using `project_directory`; will
 result in in paths that look like `my_project/src/...`. Using `path: "my_project"`, 
-`input_dir: "./src/"` and `working_directory: "my_project/"` will generate paths like `./src/...`.
+`input_dir: "./src/"` and `project_directory: "my_project/"` will generate paths like `./src/...`.
 
 ## Examples
 
