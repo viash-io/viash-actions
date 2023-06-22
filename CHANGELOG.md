@@ -4,6 +4,10 @@
 
 * Added `update-docker-engine`.
 
+## Bug fixes
+
+* `setup`: Add fallback to downloading the Viash installer (#18).
+
 # viash-actions v3.1.2
 
 ## Bug fixes
