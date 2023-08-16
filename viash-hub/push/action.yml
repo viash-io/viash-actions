@@ -25,6 +25,7 @@ runs:
   using: 'composite'
   steps:
     - name: 'Pull existing branch'
+      shell: bash
       id: pullfromgithub
       run: |
         repo_dir=/home/runner/viash-hub-push-`date +%s`
