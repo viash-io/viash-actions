@@ -28,6 +28,7 @@ async function run() {
       "config_mod", "format", "parse_argument_groups"
     ]
     const booleanInputs = ["parse_argument_groups"]
+    const multilineInputs = ["config_mod"]
     const inputArgs = inputNames.flatMap(function(argName) {
       const value = core.getInput(argName)
       if (value == "") {
@@ -38,6 +39,11 @@ async function run() {
         } else {
           return [];
         }
+      } else if (multilineInputs.indexOf(argName) >= 0) {
+        const values = core.getMultilineInput(argName)
+        return values.flatMap(function(value) {
+          return ["--" + argName, value]
+        })
       } else {
         return ["--" + argName, value];
       }
