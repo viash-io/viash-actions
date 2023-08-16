@@ -1,0 +1,45 @@
+name: 'Push code to viash-hub'
+author: Data Intuitive
+description: >
+  This action will push build artifacts to Viash-Hub.
+inputs:
+  github_token:
+    required: false
+    description: GitHub token.
+  viash_hub_token:
+    description: Viash-Hub token.
+    required: true
+  viash_hub_repo:
+    description: user/repo_name on Viash-Hub.
+    required: true
+  github_repo:
+    description: user/repo_name on GitHub from where to get the base branch information.
+    required: true
+  src-branch:
+    description: Source Git branch name.
+    required: true
+  dest-branch:
+    description: Destination Git branch name.
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Pull existing branch'
+      id: pullfromgithub
+      run: |
+        repo_dir=/home/runner/viash-hub-push-`date +%s`
+        # removed --depth=1 given that we rewrite the remote history.
+        git clone --single-branch --branch ${{ inputs.src-branch }} --no-checkout https://x-access-token:${{ inputs.github_token }}@github.com/${{ inputs.github_repo }}.git $repo_dir
+        cd $repo_dir
+    - name: 'Push to Viash-Hub'
+      shell: bash
+      id: pushviashhub
+      run: |
+        rsync -a --exclude='.git' ${{ github.workspace }}/ .
+        git add --all
+        git remote add viash-hub https://x-access-token:${{ inputs.viash_hub_token }}@viash-hub.com/${{ inputs.viash_hub_repo }}.git
+        git config user.name ${{ github.actor }}
+        git config user.email ${{ github.actor }}@users.noreply.github.com
+        git commit -m "deploy: ${{ github.sha }}"
+        git push -f viash-hub ${{ inputs.dest-branch }}
+      
