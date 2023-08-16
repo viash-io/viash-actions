@@ -42,7 +42,7 @@ async function run() {
       } else if (multilineInputs.indexOf(argName) >= 0) {
         const values = core.getMultilineInput(argName)
         return values.flatMap(function(value) {
-          return ["--" + argName, value]
+          return ["--" + argName, value];
         })
       } else {
         return ["--" + argName, value];
