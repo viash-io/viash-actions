@@ -1,3 +1,9 @@
+# viash-actions v4.0.1
+
+* `ns-build`, `ns-list`: Allow `config_mod` to be used as multiline text. Each line will become a separate `--config_mod` parameter.
+
+* `viash-hub/deploy`: Add an action to deploy build artifacts from GitHub to Viash-Hub.
+
 # viash-actions v4.0.0
 
 ## Breaking changes

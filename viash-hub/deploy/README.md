@@ -1,12 +1,11 @@
-# push
+# Deploy
 
-This action will push build artifacts to Viash-Hub.
+This action will deploy/push build artifacts to Viash-Hub.
+The functionality is greatly inspired by `peaceiris/actions-gh-pages@v3` but tweaked and minimized for our use case.
 
 ## Usage
 
-This action will pull a branch from a repository and replace all content with the available build artifacts from the pipeline.
-
-Currently hard coded to use GitHub as source. This could be extended to allow pulling from Viash-Hub, maybe even make it the default behaviour.
+This action will deploy/pull a branch from a repository and replace all content with the available build artifacts from the pipeline.
 
 ### Inputs available
 
