@@ -1,0 +1,59 @@
+name: 'Deploy to viash-hub'
+author: Data Intuitive
+description: >
+  This action will push build artifacts to Viash-Hub.
+inputs:
+  github_token:
+    required: false
+    description: GitHub token.
+  viash_hub_token:
+    description: Viash-Hub token.
+    required: true
+  viash_hub_repo:
+    description: user/repo_name on Viash-Hub.
+    required: true
+  github_repo:
+    description: user/repo_name on GitHub from where to get the base branch information.
+    required: false
+  src-branch:
+    description: Source Git branch name.
+    required: true
+  dest-branch:
+    description: Destination Git branch name.
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Determine temporary working directory'
+      shell: bash
+      id: workdir
+      run: |
+        repo_dir=/home/runner/viash-hub-push-`date +%s`
+        echo "working directory: $repo_dir"
+        echo "REPO_DIR=$repo_dir" >> $GITHUB_ENV
+    - name: 'Pull existing branch from GitHub'
+      if: ${{ inputs.github_repo != '' }}
+      shell: bash
+      id: pullfromgithub
+      run: |
+        # removed --depth=1 given that we rewrite the remote history.
+        git clone --single-branch --branch ${{ inputs.src-branch }} --no-checkout https://x-access-token:${{ inputs.github_token }}@github.com/${{ inputs.github_repo }}.git ${{ env.REPO_DIR }}
+    - name: 'Pull existing branch from ViashHub'
+      if: ${{ inputs.github_repo == '' }}
+      shell: bash
+      id: pullfromviashhub
+      run: |
+        git clone --single-branch --branch ${{ inputs.src-branch }} --depth=1 --no-checkout https://x-access-token:${{ inputs.viash_hub_token }}@viash-hub.com/${{ inputs.viash_hub_repo }}.git ${{ env.REPO_DIR }}
+    - name: 'Push to Viash-Hub'
+      shell: bash
+      id: pushviashhub
+      run: |
+        cd ${{ env.REPO_DIR }}
+        rsync -a --exclude='.git' ${{ github.workspace }}/ .
+        git add --all
+        git remote add viash-hub https://x-access-token:${{ inputs.viash_hub_token }}@viash-hub.com/${{ inputs.viash_hub_repo }}.git
+        git config user.name ${{ github.actor }}
+        git config user.email ${{ github.actor }}@users.noreply.github.com
+        git commit -m "deploy: ${{ github.sha }}"
+        git push -f viash-hub ${{ inputs.dest-branch }}
+      
