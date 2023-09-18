@@ -16,9 +16,9 @@ If the `github_repo` is not specified, the action will first pull the branch fro
   `viash_hub_token`: Viash-Hub token.
   `viash_hub_repo`: user/repo_name on Viash-Hub.
   `github_repo`: user/repo_name on GitHub from where to get the base branch information.
-  `src-branch`: Source Git branch name.
-  `dest-branch`: Destination Git branch name.
-  `commit-message`: Override the commit message for the deployment.
+  `src_branch`: Source Git branch name.
+  `dest_branch`: Destination Git branch name.
+  `commit_message`: Override the commit message for the deployment.
 
 ## Examples
 
@@ -48,6 +48,6 @@ jobs:
         viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
         viash_hub_repo: openpipelines-bio/openpipeline
         github_repo: openpipelines-bio/openpipeline
-        src-branch: main_build
-        dest-branch: main_build
+        src_branch: main_build
+        dest_branch: main_build
 ```
