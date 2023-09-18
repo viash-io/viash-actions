@@ -1,3 +1,9 @@
+# viash-actions v4.1.1
+
+## Minor changes
+
+* `viash-hub/deploy`: Add a `commit-message` input parameter to allow specifying the commit message for the deployment.
+
 # viash-actions v4.1.0
 
 ## Minor changes

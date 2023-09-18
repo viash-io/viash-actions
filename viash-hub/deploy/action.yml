@@ -21,6 +21,9 @@ inputs:
   dest-branch:
     description: Destination Git branch name.
     required: true
+  commit-message:
+    description: User defined custom commit message.
+    required: false
 runs:
   using: 'composite'
   steps:
@@ -54,6 +57,11 @@ runs:
         git remote add viash-hub https://x-access-token:${{ inputs.viash_hub_token }}@viash-hub.com/${{ inputs.viash_hub_repo }}.git
         git config user.name ${{ github.actor }}
         git config user.email ${{ github.actor }}@users.noreply.github.com
-        git commit -m "deploy: ${{ github.sha }}"
+        if [ -z "${{ inputs.commit-message }}" ]
+        then
+          git commit -m "deploy: ${{ github.sha }}"
+        else
+          git commit -m "${{ inputs.commit-message }}"
+        fi
         git push -f viash-hub ${{ inputs.dest-branch }}
       
