@@ -15,12 +15,15 @@ inputs:
   github_repo:
     description: user/repo_name on GitHub from where to get the base branch information.
     required: false
-  src-branch:
+  src_branch:
     description: Source Git branch name.
     required: true
-  dest-branch:
+  dest_branch:
     description: Destination Git branch name.
     required: true
+  commit_message:
+    description: User defined custom commit message.
+    required: false
 runs:
   using: 'composite'
   steps:
@@ -37,13 +40,13 @@ runs:
       id: pullfromgithub
       run: |
         # removed --depth=1 given that we rewrite the remote history.
-        git clone --single-branch --branch ${{ inputs.src-branch }} --no-checkout https://x-access-token:${{ inputs.github_token }}@github.com/${{ inputs.github_repo }}.git ${{ env.REPO_DIR }}
+        git clone --single-branch --branch ${{ inputs.src_branch }} --no-checkout https://x-access-token:${{ inputs.github_token }}@github.com/${{ inputs.github_repo }}.git ${{ env.REPO_DIR }}
     - name: 'Pull existing branch from ViashHub'
       if: ${{ inputs.github_repo == '' }}
       shell: bash
       id: pullfromviashhub
       run: |
-        git clone --single-branch --branch ${{ inputs.src-branch }} --depth=1 --no-checkout https://x-access-token:${{ inputs.viash_hub_token }}@viash-hub.com/${{ inputs.viash_hub_repo }}.git ${{ env.REPO_DIR }}
+        git clone --single-branch --branch ${{ inputs.src_branch }} --depth=1 --no-checkout https://x-access-token:${{ inputs.viash_hub_token }}@viash-hub.com/${{ inputs.viash_hub_repo }}.git ${{ env.REPO_DIR }}
     - name: 'Push to Viash-Hub'
       shell: bash
       id: pushviashhub
@@ -54,6 +57,11 @@ runs:
         git remote add viash-hub https://x-access-token:${{ inputs.viash_hub_token }}@viash-hub.com/${{ inputs.viash_hub_repo }}.git
         git config user.name ${{ github.actor }}
         git config user.email ${{ github.actor }}@users.noreply.github.com
-        git commit -m "deploy: ${{ github.sha }}"
-        git push -f viash-hub ${{ inputs.dest-branch }}
+        if [ -z "${{ inputs.commit_message }}" ]
+        then
+          git commit -m "deploy: ${{ github.sha }}"
+        else
+          git commit -m "${{ inputs.commit_message }}"
+        fi
+        git push -f viash-hub ${{ inputs.dest_branch }}
       
