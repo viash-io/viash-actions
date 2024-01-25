@@ -41,7 +41,7 @@ runs:
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
 
-    - uses: viash-io/viash-actions/ns-list@v5
+    - uses: ./ns-list/
       id: nslistcomponents
       if: inputs.components
       with:
@@ -49,7 +49,7 @@ runs:
         format: "json"
         platform: "nextflow"
 
-    - uses: viash-io/viash-actions/ns-list@v5
+    - uses: ./ns-list/
       id: nslistworkflows
       if: inputs.workflows
       with:
