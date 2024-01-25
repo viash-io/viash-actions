@@ -51,7 +51,7 @@ out <- list(
     )
   ),
   runs = list(
-    using = "node16",
+    using = "node20",
     main = "index.js"
   )
 )

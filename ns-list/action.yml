@@ -50,5 +50,5 @@ outputs:
       if you use this property instead of a static file path, changing the location of
       the output file will not require you to adjust settings for downstream actions as well.
 runs:
-  using: node16
+  using: node20
   main: index.js
