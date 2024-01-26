@@ -1,3 +1,15 @@
+# viash-actions v5.0.0
+
+## Breaking changes
+
+* `ns-build` and `ns-list`: update to node20 (PR #20).
+
+## Minor changes
+
+* Update `actions/checkout@v3` to `actions/checkout@v4` and `actions/cache@v3` to `actions/cache@v4` (PR #20).
+
+* Update several node dependencies (PR #20).
+
 # viash-actions v4.1.1
 
 ## Minor changes
