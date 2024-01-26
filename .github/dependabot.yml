@@ -1,0 +1,23 @@
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: monthly
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "NPM"
+      include: "scope"
+    groups:
+      combine-all:
+        patterns: 
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: monthly
+    labels:
+      - "dependencies"
