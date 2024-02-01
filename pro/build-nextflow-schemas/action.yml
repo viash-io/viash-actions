@@ -106,6 +106,6 @@ runs:
           outputs+=(--output "$component_outputs_schema")
         fi
 
-        echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@] --enable_dataset_input}"
-        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]} --enable_dataset_input"
+        echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]}"
+        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}"
         echo "Created $outputs_schema"
