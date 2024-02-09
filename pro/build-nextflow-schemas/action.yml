@@ -119,7 +119,7 @@ runs:
           extra_params+=("--enable_dataset_input")
         fi
 
-        echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]} {extra_params[@]}"
+        echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]} ${extra_params[@]}"
         viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}" "${extra_params[@]}"
       
         echo "Created $outputs_schema"
