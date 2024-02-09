@@ -114,12 +114,12 @@ runs:
           outputs+=(--output "$component_outputs_schema")
         fi
 
+        extra_params=()
         if [ "${{ inputs.enable_dataset_input }}" == "true" ]; then
-          echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]} --enable_dataset_input"
-          viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}" --enable_dataset_input
-        else
-          echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]}"
-          viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}"
+          extra_params+=("--enable_dataset_input")
         fi
-        
+
+        echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]} {extra_params[@]}"
+        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}" "${extra_params[@]}"
+      
         echo "Created $outputs_schema"
