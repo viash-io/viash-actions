@@ -1,3 +1,9 @@
+# viash-actions v5.0.1
+
+## New functionality
+
+* `pro/build-nextflow-schemas`: Add optional flag to allow dataset input for nf-tower.
+
 # viash-actions v5.0.0
 
 ## Breaking changes
