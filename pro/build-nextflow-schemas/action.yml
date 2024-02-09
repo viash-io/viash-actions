@@ -19,6 +19,10 @@ inputs:
       Release of Viash tools to use.
     required: false
     default: 'latest'
+  enable_dataset_input:
+    description: 'enable nf-tower dataset input'
+    required: false
+    default: false
 runs:
   using: 'composite'
   steps:
@@ -106,6 +110,12 @@ runs:
           outputs+=(--output "$component_outputs_schema")
         fi
 
-        echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]} --enable_dataset_input"
-        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}" --enable_dataset_input
+        if [ "${{ inputs.enable_dataset_input }}" ]; then
+          echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]} --enable_dataset_input"
+          viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}" --enable_dataset_input
+        else
+          echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]}"
+          viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}"
+        fi
+        
         echo "Created $outputs_schema"
