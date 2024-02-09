@@ -8,21 +8,25 @@ inputs:
   components:
     required: false
     description: 'Location of the viash configuration for components.'
+    type: string
   workflows: 
     required: false
     description: 'Location of the viash configurations for workflows.'
   viash_pro_token:
     description: Viash Pro token.
     required: true
+    type: string
   tools_version:
     description: >
       Release of Viash tools to use.
     required: false
     default: 'latest'
+    type: string
   enable_dataset_input:
     description: 'enable nf-tower dataset input'
     required: false
     default: false
+    type: boolean
 runs:
   using: 'composite'
   steps:
