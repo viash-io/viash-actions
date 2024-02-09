@@ -1,4 +1,4 @@
-name: "Build nf-tower schemas"
+name: 'Build nf-tower schemas'
 author: Data Intuitive
 description: >
   This action will build nextflow schemas for Viash workflows and components in a repository.
@@ -7,10 +7,10 @@ description: >
 inputs:
   components:
     required: false
-    description: "Location of the viash configuration for components."
-  workflows:
+    description: 'Location of the viash configuration for components.'
+  workflows: 
     required: false
-    description: "Location of the viash configurations for workflows."
+    description: 'Location of the viash configurations for workflows.'
   viash_pro_token:
     description: Viash Pro token.
     required: true
@@ -18,9 +18,9 @@ inputs:
     description: >
       Release of Viash tools to use.
     required: false
-    default: "latest"
+    default: 'latest'
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Get latest release
       shell: bash
@@ -35,7 +35,7 @@ runs:
         echo "releasetag=$RELEASE_TAG" >> $GITHUB_OUTPUT
 
     - uses: actions/checkout@v4
-      with:
+      with: 
         repository: viash-io/viash_tools
         token: ${{ inputs.viash_pro_token }}
         path: viash_tools
@@ -56,7 +56,7 @@ runs:
         src: ${{ inputs.workflows }}
         format: "json"
 
-    - name: "Generate schemas"
+    - name: 'Generate schemas'
       shell: bash
       id: generate-schemas
       run: |
