@@ -1,4 +1,4 @@
-# viash-actions v5.0.1
+# viash-actions v5.1.0
 
 ## New functionality
 
