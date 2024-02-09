@@ -114,7 +114,7 @@ runs:
           outputs+=(--output "$component_outputs_schema")
         fi
 
-        if [ "${{ inputs.enable_dataset_input }}" ]; then
+        if [ "${{ inputs.enable_dataset_input }}" == "true" ]; then
           echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]} --enable_dataset_input"
           viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}" --enable_dataset_input
         else
