@@ -8,17 +8,25 @@ inputs:
   components:
     required: false
     description: 'Location of the viash configuration for components.'
+    type: string
   workflows: 
     required: false
     description: 'Location of the viash configurations for workflows.'
   viash_pro_token:
     description: Viash Pro token.
     required: true
+    type: string
   tools_version:
     description: >
       Release of Viash tools to use.
     required: false
     default: 'latest'
+    type: string
+  enable_dataset_input:
+    description: 'enable nf-tower dataset input'
+    required: false
+    default: false
+    type: boolean
 runs:
   using: 'composite'
   steps:
@@ -106,8 +114,12 @@ runs:
           outputs+=(--output "$component_outputs_schema")
         fi
 
+        extra_params=()
+        if [ "${{ inputs.enable_dataset_input }}" == "true" ]; then
+          extra_params+=("--enable_dataset_input")
+        fi
 
-        echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]}"
-        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}"
-        echo "Created $outputs_schema"
+        echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]} ${extra_params[@]}"
+        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}" "${extra_params[@]}"
       
+        echo "Created $outputs_schema"
