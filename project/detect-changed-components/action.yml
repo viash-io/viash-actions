@@ -21,7 +21,7 @@ runs:
     id: changed-files
     uses: tj-actions/changed-files@v42.0.2
     with:
-      separator: ","
+      separator: ";"
       diff_relative: true
 
   # Note: a component's resources is detected using a jq statement. 
