@@ -1,3 +1,9 @@
+# viash-actions v5.2.1
+
+## Bug Fixes
+
+* `project/detect-changed-components`: fix changed components not being detected after updating `tj-actions/changed-files` (PR #25).
+
 # viash-actions v5.2.0
 
 ## Minor changes
