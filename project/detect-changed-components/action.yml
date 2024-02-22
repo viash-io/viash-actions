@@ -21,7 +21,7 @@ runs:
     id: changed-files
     uses: tj-actions/changed-files@v42.0.2
     with:
-      separator: ";"
+      separator: ","
       diff_relative: true
 
   # Note: a component's resources is detected using a jq statement. 
@@ -71,8 +71,15 @@ runs:
       # create output array
       declare -a output_array=()
 
+      # The output from changed-files is delimited by \;
+      # So we use delimiter ';' to read the file and trim the backslash from the end.
+      declare -a changed_files=()
+      trim_slash() {
+        line=$2
+        changed_files[$1]="${line/%\\/}"
+      }
       # read changed files as array
-      IFS=$';' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
+      readarray -d ';' -C trim_slash -c 1 -t <<< "${{ steps.changed-files.outputs.all_changed_files }}"
 
       # read components as array
       readarray -t components < <(jq -c '.[]' "${{ inputs.input_file }}")
