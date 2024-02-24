@@ -93,17 +93,18 @@ runs:
         readarray -t resources < <(
           jq -cr '
           (
-            [.info.config] +
+            .info.config // [] +
+            .build_info.config // [] +
             [
               (
-                try .functionality.resources[] catch [] +
-                try .functionality.test_resources[] catch [] + 
-                try .resources[] catch [] + 
-                try .test_resources[] catch []
+                .functionality.resources // [] +
+                .functionality.test_resources // [] +
+                .resources // [] +
+                .test_resources // []
               )
                 | select(.path and .parent)
                 | (.parent | sub("^file:(//)?"; "") | sub("/[^/]*$"; "")) + "/" + .path
-            ]
+            ][]
           )[]
           ' <<< "$component"
         )
