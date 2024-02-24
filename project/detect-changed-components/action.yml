@@ -95,7 +95,12 @@ runs:
           (
             [.info.config] +
             [
-              .functionality.resources[], .functionality.test_resources[]
+              (
+                try .functionality.resources[] catch [] +
+                try .functionality.test_resources[] catch [] + 
+                try .resources[] catch [] + 
+                try .test_resources[] catch []
+              )
                 | select(.path and .parent)
                 | (.parent | sub("^file:(//)?"; "") | sub("/[^/]*$"; "")) + "/" + .path
             ]
