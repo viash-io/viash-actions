@@ -76,6 +76,7 @@ runs:
       declare -a changed_files=()
       trim_slash() {
         line=$2
+        echo "Found changed file: $line"
         changed_files[$1]="${line/%\\/}"
       }
       # read changed files as array
