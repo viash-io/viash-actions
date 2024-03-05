@@ -1,3 +1,9 @@
+# viash-actions v5.2.2
+
+## Minor changes
+
+* `project/detect-changed-components`: bump `tj-actions/changed-files` to `42.0.5` (PR #)
+
 # viash-actions v5.2.1
 
 ## Bug Fixes
