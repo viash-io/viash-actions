@@ -112,13 +112,12 @@ runs:
             exit 1
           fi
           resource_real_path=$(realpath "$resource")
-          resources_arr=()
-          resources_arr+=("$resource_real_path")
+          resources_arr=("$resource_real_path")
           # Resolve resources that are a directory into files
           if [ -d "$resource_real_path" ]; then
             echo "Resource is a directory"
             files_from_directories=()
-            readarray -d '' files_from_directories < <(find $resource -type f -print0)
+            readarray -d '' files_from_directories < <(find $resource_real_path -type f -print0)
             resource_arr+=(${files_from_directories[@]})
           fi
           echo "All resources including files from directories: ${resource_arr[@]}"
