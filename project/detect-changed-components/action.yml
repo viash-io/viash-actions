@@ -124,6 +124,7 @@ runs:
           for changed_file in ${changed_files[@]}; do
             should_add_component=0
             changed_file_real_path=$(realpath "$changed_file")
+            echo "Against $changed_file_real_path"
             for resource_to_check in ${resource_arr[@]}; do
               if [ "$changed_file_real_path" = "$resource_to_check" ]; then
                 echo "Detected changed component!"
