@@ -1,8 +1,8 @@
-# viash-actions v5.2.2
+# viash-actions v5.3.0
 
-## Minor changes
+## New functionality
 
-* `project/detect-changed-components`: bump `tj-actions/changed-files` to `42.0.5` (PR #)
+* `project/detect-changed-components`: Detect changed components when a resource is a directory (PR #28).
 
 # viash-actions v5.2.1
 

@@ -103,7 +103,6 @@ runs:
           )[]
           ' <<< "$component"
         )
-        echo "Found resources: "${resources[@]}""
         # check if resource is in the list of changed resources
         for resource in "${resources[@]}"; do
           echo "Checking resource: $resource"
