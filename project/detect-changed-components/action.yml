@@ -112,7 +112,7 @@ runs:
             exit 1
           fi
           resource_real_path=$(realpath "$resource")
-          resources_arr=("$resource_real_path")
+          resource_arr=("$resource_real_path")
           # Resolve resources that are a directory into files
           if [ -d "$resource_real_path" ]; then
             echo "Resource is a directory"
