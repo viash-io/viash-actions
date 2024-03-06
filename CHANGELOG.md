@@ -1,3 +1,9 @@
+# viash-actions v5.3.1
+
+## Bug fixes
+
+* `project/detect-changed-components`: Fix components being listed more than once (PR #29).
+
 # viash-actions v5.3.0
 
 ## New functionality
