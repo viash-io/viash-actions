@@ -108,7 +108,7 @@ runs:
         for resource in "${resources[@]}"; do
           echo "Checking resource: $resource"
 
-          resource_real_path=$(realpath "$resource_rel_path")
+          resource_real_path=$(realpath "$resource")
           status=$?
           if [ $status -ne 0 ]; then
             echo "Could not resolve path $resource_rel_path to a real path. Please make sure it exists"
