@@ -107,13 +107,11 @@ runs:
         # check if resource is in the list of changed resources
         for resource in "${resources[@]}"; do
           echo "Checking resource: $resource"
-
-          resource_real_path=$(realpath "$resource")
-          status=$?
-          if [ $status -ne 0 ]; then
-            echo "Could not resolve path $resource_rel_path to a real path. Please make sure it exists"
-            exit $status 
+          if [ ! -e "$resource" ]; then
+            echo "Resource $resource does not exist."
+            exit 1
           fi
+          resource_real_path=$(realpath "$resource")
           declare -a resources_arr
           resources_arr+=($resource_real_path)
           # Resolve resources that are a directory into files
