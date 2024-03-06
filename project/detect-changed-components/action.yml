@@ -120,10 +120,10 @@ runs:
             readarray -d '' files_from_directories < <(find $resource -type f -print0)
             resource_arr+=(${files_from_directories[@]})
           fi
-        
+          echo "Checking if resource is in the changes files."
           for changed_file in ${changed_files[@]}; do
             should_add_component=0
-            changed_file_real_path=$(realpath "$resource_rel_path")
+            changed_file_real_path=$(realpath "$changed_file")
             for resource_to_check in ${resource_arr[@]}; do
               if [ "$changed_file_real_path" = "$resource_to_check" ]; then
                 echo "Detected changed component!"
