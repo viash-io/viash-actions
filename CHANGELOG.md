@@ -1,3 +1,9 @@
+# viash-actions v5.3.0
+
+## New functionality
+
+* `project/detect-changed-components`: Detect changed components when a resource is a directory (PR #28).
+
 # viash-actions v5.2.1
 
 ## Bug Fixes
