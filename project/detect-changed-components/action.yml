@@ -107,6 +107,7 @@ runs:
         # check if resource is in the list of changed resources
         for resource_rel_path in "${resources[@]}"; do
           resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
+          echo "Absolute path: $resource_project_path"
           if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " ]]; then
             echo "  Detected changed resources!"
             output_array+="$component"
