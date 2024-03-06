@@ -105,14 +105,39 @@ runs:
         )
         echo "Found resources: "${resources[@]}""
         # check if resource is in the list of changed resources
-        for resource_rel_path in "${resources[@]}"; do
-          resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
-          echo "Absolute path: $resource_project_path"
-          if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " ]]; then
-            echo "  Detected changed resources!"
-            output_array+="$component"
-            break
+        for resource in "${resources[@]}"; do
+          echo "Checking resource: $resource"
+
+          resource_real_path=$(realpath "$resource_rel_path")
+          status=$?
+          if [ $status -ne 0 ]; then
+            echo "Could not resolve path $resource_rel_path to a real path. Please make sure it exists"
+            exit $status 
           fi
+          declare -a resources_arr
+          resources_arr+=($resource_real_path)
+          # Resolve resources that are a directory into files
+          if [ -d "$resource_real_path" ]; then
+            echo "Resource is a directory"
+            readarray -d '' files_from_directories < <(find $resource -type f -print0)
+            resource_arr+=(${files_from_directories[@]})
+          fi
+        
+          for changed_file in ${changed_files[@]}; do
+            should_add_component=0
+            changed_file_real_path=$(realpath "$resource_rel_path")
+            for resource_to_check in ${resource_arr[@]}; do
+              if [ "$changed_file_real_path" = "$resource_to_check" ]; then
+                echo "Detected changed component!"
+                should_add_component=1
+                break
+              fi
+            done
+            if [[ "$should_add_component" -eq 1 ]]; then
+              output_array+="$component"
+              break
+            fi
+          done
         done
       done
 
