@@ -1,5 +1,5 @@
-ns-build
-================
+# ns-build
+
 
 Build a namespace from many viash config files.
 
@@ -22,19 +22,33 @@ We recommend using a Linux or MacOS runner if possible.
   component name. Can be a regex. Example: “^component1”.
 - `src`: - *optional*. A source directory containing viash config files,
   possibly structured in a hierarchical folder structure. Default: src/.
+- `runner`: - *optional*. Acts as a regular expression to filter the
+  runner ids specified in the found config files. If this is not
+  provided, all runners will be used. If no runners are defined in a
+  config, the executable runner will be used.
+- `engine`: - *optional*. Acts as a regular expression to filter the
+  engine ids specified in the found config files. If this is not
+  provided, all engines will be used. If no engines are defined in a
+  config, the native engine will be used.
+- `parallel`: - *optional*. Whether or not to run the process in
+  parallel.
+- `config_mod`: - *optional*. Modify a viash config at runtime using
+  config_mod.
+- `target`: - *optional*. A target directory to build the executables
+  into. Default: target/.
+- `colorize`: - *optional*. Specify whether the console output should be
+  colorized. If not specified, we attempt to detect this automatically.
+  Possible values are: “true”, “false”, “auto”.
+- `loglevel`: - *optional*. Specify the log level in us. Possible values
+  are: “error”, “warn”, “info”, “debug”, “trace”.
+- `setup`: - *optional*. Which docker_setup_strategy for creating the
+  container to use \[Docker Engine only\].
 - `platform`: - *optional*. Acts as a regular expression to filter the
   platform ids specified in the found config files. If this is not
   provided, all platforms will be used. If no platforms are defined in a
   config, the native platform will be used. In addition, the path to a
-  platform yaml file can also be specified.
-- `parallel`: - *optional*. Whether or not to run the process in
-  parallel.
-- `config_mod`: - *optional*. Modify a viash config at runtime using
-  dynamic config modding.
-- `target`: - *optional*. A target directory to build the executables
-  into. Default: target/.
-- `setup`: - *optional*. Which setup strategy for creating the container
-  to use \[Docker Platform only\].
+  platform yaml file can also be specified. Deprecated in Viash 0.9.0,
+  will be removed in Viash 1.0.0.
 
 ## Examples
 

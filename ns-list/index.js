@@ -24,8 +24,8 @@ async function run() {
     // skip "parallel"
     // todo: can I extract these inputNames from the action.yml?
     const inputNames = [
-      "query", "query_namespace", "query_name", "src", "platform",
-      "config_mod", "format", "parse_argument_groups"
+      "query", "query_namespace", "query_name", "src", "runner", "engine",
+      "platform", "config_mod", "format", "parse_argument_groups"
     ]
     const booleanInputs = ["parse_argument_groups"]
     const multilineInputs = ["config_mod"]
