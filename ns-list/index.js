@@ -85,7 +85,7 @@ async function run() {
       return {
         name: comp_name,
         namespace: comp_namespace,
-        fullname: comp_fullname,
+        full_name: comp_fullname,
         config: comp_config,
         dir: comp_dir
       }
