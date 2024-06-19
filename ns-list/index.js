@@ -64,6 +64,41 @@ async function run() {
 
     // pass output
     core.setOutput("output", myOutput);
+
+    // parse json in myOutput
+    let components = []
+    if (core.getInput("format") == "json") {
+      components = JSON.parse(myOutput);
+    } else if (core.getInput("format") == "yaml") {
+      const yaml = require('js-yaml');
+      components = yaml.load(myOutput);
+    }
+
+    // turn into matrix
+    const matrix = components.map(function(component) {
+      const comp_name = component?.name ?? component?.functionality?.name
+      const comp_namespace = component?.namespace ?? component?.functionality?.namespace
+      const comp_fullname = comp_namespace ? comp_namespace + "/" + comp_name : comp_name
+      const comp_config = component?.build_info?.config ?? component?.info?.config
+      const comp_dir = comp_config ? path.dirname(comp_config) : undefined
+      // todo: if component has a test_resource with a nextflow_script, get the entrypoint?
+      return {
+        name: comp_name,
+        namespace: comp_namespace,
+        fullname: comp_fullname,
+        config: comp_config,
+        dir: comp_dir
+      }
+    })
+    // return matrix as json
+    let matrix_str;
+    if (core.getInput("format") == "json") {
+      matrix_str = JSON.stringify(matrix);
+    } else if (core.getInput("format") == "yaml") {
+      const yaml = require('js-yaml');
+      matrix_str = yaml.dump(matrix);
+    }
+    core.setOutput("output_matrix", matrix_str);
   } catch (error) {
     core.setFailed(error.message);
   }
