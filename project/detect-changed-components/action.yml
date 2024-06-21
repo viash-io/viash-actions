@@ -138,9 +138,9 @@ runs:
     run: |
       echo "matrix=$(jq -c '[ .[] | 
         { 
-          "name": .name // .functionality.name,
-          "namespace": .namespace // .functionality.namespace // "",
+          "name": (.name // .functionality.name),
+          "namespace": (.namespace // .functionality.namespace // ""),
           "config": .build_info.config,
           "dir": .build_info.config | capture("^(?<dir>.*\/)").dir
         }
-      ]' ${{ contains(steps.get_head_commit_message.outputs.HEAD_COMMIT_MESSAGE, 'ci force') && steps.ns_list.outputs.output_file || steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
+      ]' ${{ contains(steps.get_head_commit_message.outputs.HEAD_COMMIT_MESSAGE, 'ci force') && inputs.input_file || steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
