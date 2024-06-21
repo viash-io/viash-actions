@@ -18,12 +18,9 @@ outputs:
   version:
     description: 'The version that was used for the build.'
     value: ${{ steps.defaults.outputs.version }}
-  docker_component_matrix:
-    description: Matrix of Docker components
+  docker_matrix:
+    description: Matrix of executables for which Docker containers need to be built.
     value: ${{ steps.ns_list_docker.outputs.output_matrix }}
-  component_matrix:
-    description: Matrix of components
-    value: ${{ steps.ns_list.outputs.output_matrix }}
 
 runs:
   using: 'composite'
@@ -45,11 +42,16 @@ runs:
         fi
         echo "target_branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
 
+        TARGET_DIR=$(yq -r '.target' _viash.yaml)
+        if [ -z "$TARGET_DIR" ]; then
+          TARGET_DIR="target"
+        fi
+        echo "target_dir=$TARGET_DIR" >> $GITHUB_OUTPUT
+
     - name: Remove target folder from .gitignore
       shell: bash
       run: |
-        # allow publishing the target folder
-        sed -i '/^\/?target.*/d' .gitignore
+        sed -i '/^\/?${{ steps.defaults.outputs.target_dir }}.*/d' .gitignore
 
     - name: Set version in _viash.yaml
       shell: bash
@@ -61,15 +63,35 @@ runs:
       with:
         parallel: true
 
-    - name: List Docker components
+    - name: Find Docker Executables that need to be built
       id: ns_list_docker
-      uses: ../../ns-list
-      with:
-        engine: docker
-        format: json
+      shell: bash
+      run: |
+        TARGET_DIR=`${{ steps.defaults.outputs.target_dir }}`
 
-    - name: List components
-      id: ns_list
-      uses: ../../ns-list
-      with:
-        format: json
+        BUILT_CONFIGS=`find "$TARGET_DIR" -name .config.vsh.yaml`
+
+        OUTPUT="["
+
+        for yaml in $BUILT_CONFIGS; do
+          RUNNER=`yq -r ".build_info.runner" $yaml`
+          ENGINE=`yq -r ".build_info.engine // .info.platform" $yaml`
+          NAME=`yq -r ".name // .functionality.name" $yaml`
+          NAMESPACE=`yq -r ".namespace // .functionality.namespace" $yaml`
+          if [ "$NAMESPACE" != "null" ]; then
+            FULL_NAME="$NAMESPACE/$NAME"
+          else
+            FULL_NAME="$NAME"
+          fi
+          CONFIG=`yq -r ".build_info.config // .info.config" $yaml`
+          SRC_DIR=`dirname $CONFIG`
+          TARGET_DIR=`dirname $yaml`
+          EXECUTABLE=`yq -r ".build_info.executable // .info.executable" $yaml`
+
+          JSON="{\"runner\":\"$RUNNER\",\"engine\":\"$ENGINE\",\"name\":\"$FULL_NAME\",\"config\":\"$CONFIG\",\"src_dir\":\"$SRC_DIR\",\"target_dir\":\"$TARGET_DIR\",\"executable\":\"$EXECUTABLE\"}"
+          OUTPUT="$OUTPUT$JSON,"
+        done
+
+        OUTPUT="${OUTPUT%,}]"
+
+        echo "output_matrix=$OUTPUT" >> $GITHUB_OUTPUT

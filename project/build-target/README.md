@@ -11,19 +11,17 @@ Builds a target directory using the viash ns build command.
 
 ### Inputs
 
-- `github_token`: - *required*. GitHub token. If not specified, the
-  default GITHUB_TOKEN will be used.
 - `target_branch`: - *optional*. Branch to deploy to. If not specified,
-  `build-${BRANCH_NAME}` will be used.
+  `${BRANCH_NAME}_build` will be used.
 - `version`: - *optional*. Version name to use for the build. If not
-  specified, `build-${BRANCH_NAME}` will be used.
+  specified, `${BRANCH_NAME}_build` will be used.
 
 ### Outputs
 
 - `target_branch`: The branch that the build was deployed to.
 - `version`: The version that was used for the build.
-- `docker_component_matrix`: Matrix of Docker components
-- `component_matrix`: Matrix of components
+- `docker_matrix`: Matrix of executables for which Docker containers
+  need to be built.
 
 ## Examples
 
