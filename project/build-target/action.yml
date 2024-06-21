@@ -26,7 +26,7 @@ outputs:
     value: ${{ steps.defaults.outputs.target_branch }}
   docker_matrix:
     description: Matrix of executables for which Docker containers need to be built.
-    value: ${{ steps.ns_list_docker.outputs.output_matrix }}
+    value: ${{ steps.find_docker_executables.outputs.output_matrix }}
 
 runs:
   using: 'composite'
@@ -75,14 +75,14 @@ runs:
         jq '.version = "${{ steps.defaults.outputs.version }}"' _viash.yaml > _viash.yaml.tmp && \
           mv _viash.yaml.tmp _viash.yaml
 
-    - uses: ../../ns-build
+    - uses: ./ns-build
       with:
         parallel: true
         config_mod: ${{ steps.defaults.outputs.config_mod }}
 
     - name: Build nextflow schemas
       if: ${{ inputs.viash_pro_token != '' }}
-      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v5
+      uses: ./pro/build-nextflow-schemas
       with:
         components: src
         workflows: src
@@ -92,7 +92,7 @@ runs:
    
     - name: Build parameter files
       if: ${{ inputs.viash_pro_token != '' }}
-      uses: viash-io/viash-actions/pro/build-nextflow-params@v5
+      uses: ./pro/build-nextflow-params
       with:
         workflows: src
         components: src
@@ -100,7 +100,7 @@ runs:
         tools_version: 'main_build'
 
     - name: Find Docker Executables that need to be built
-      id: ns_list_docker
+      id: find_docker_executables
       shell: bash
       run: |
         TARGET_DIR=`${{ steps.defaults.outputs.target_dir }}`
