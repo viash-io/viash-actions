@@ -130,7 +130,7 @@ runs:
           JSON_FIELDS=""
           for key in NAME NAMESPACE RUNNER ENGINE CONFIG EXECUTABLE SRC_DIR TARGET_DIR FULL_NAME; do
             key_lower=`echo $key | tr '[:upper:]' '[:lower:]'`
-            JSON_FIELDS="$JSON_FIELDS\"${key_lower}\":\"${key}\","
+            JSON_FIELDS="$JSON_FIELDS\"${key_lower}\":\"${!key}\","
           done
 
           OUTPUT="$OUTPUT{${JSON_FIELDS%,}},"
