@@ -127,7 +127,7 @@ runs:
 
           echo "Found Docker executable: $FULL_NAME"
 
-          JSON="{\"runner\":\"$RUNNER\",\"engine\":\"$ENGINE\",\"name\":\"$FULL_NAME\",\"config\":\"$CONFIG\",\"src_dir\":\"$SRC_DIR\",\"target_dir\":\"$TARGET_DIR\",\"executable\":\"$EXECUTABLE\"}"
+          JSON="{\"name\":\"$NAME\",\"namespace\":\"$NAMESPACE\",\"full_name\":\"$FULL_NAME\",\"config\":\"$CONFIG\",\"dir\":\"$SRC_DIR\",\"target\":\"$TARGET_DIR\",\"executable\":\"$EXECUTABLE\",\"runner\":\"$RUNNER\",\"engine\":\"$ENGINE\"}"
           OUTPUT="$OUTPUT$JSON,"
         done
 
