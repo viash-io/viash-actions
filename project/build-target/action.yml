@@ -99,7 +99,7 @@ runs:
       id: find_docker_executables
       shell: bash
       run: |
-        TARGET_DIR=`${{ steps.defaults.outputs.target_dir }}`
+        TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
 
         BUILT_CONFIGS=`find "$TARGET_DIR" -name .config.vsh.yaml`
 
