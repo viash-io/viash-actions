@@ -72,8 +72,7 @@ runs:
     - name: Set version in _viash.yaml
       shell: bash
       run: |
-        jq '.version = "${{ steps.defaults.outputs.version }}"' _viash.yaml > _viash.yaml.tmp && \
-          mv _viash.yaml.tmp _viash.yaml
+        yq eval '.version = "${{ steps.defaults.outputs.version }}"' -i _viash.yaml
 
     - uses: ./ns-build
       with:
