@@ -86,7 +86,7 @@ runs:
       with:
         components: src
         workflows: src
-        viash_pro_token: ${{ secrets.GTHB_PAT }}
+        viash_pro_token: ${{ inputs.viash_pro_token }}
         tools_version: 'main_build'
         enable_dataset_input: true
    
@@ -96,7 +96,7 @@ runs:
       with:
         workflows: src
         components: src
-        viash_pro_token: ${{ secrets.GTHB_PAT }}
+        viash_pro_token: ${{ inputs.viash_pro_token }}
         tools_version: 'main_build'
 
     - name: Find Docker Executables that need to be built
