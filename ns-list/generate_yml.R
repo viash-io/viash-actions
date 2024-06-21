@@ -65,7 +65,7 @@ out <- list(
       description = "The output of the 'viash ns list' command, which is a list of all of the components found. By default this will be a yaml, unless the format argument was set to 'json'."
     ),
     output_file = list(
-      description = "Path of a file to which the output was written (same as `inputs.output_file``). We recommend using this property for capturing the action’s output because there is a limit in the object size that github actions can manage. Additionally, if you use this property instead of a static file path, changing the location of the output file will not require you to adjust settings for downstream actions as well."
+      description = "Path of a file to which the output was written (same as `inputs.output_file``). We recommend using this property for capturing the action's output because there is a limit in the object size that github actions can manage. Additionally, if you use this property instead of a static file path, changing the location of the output file will not require you to adjust settings for downstream actions as well."
     ),
     output_matrix = list(
       description = "A simplified version of the output, which is a list of components with fields 'name', 'namespace', 'full_name', 'config', and 'dir'."
