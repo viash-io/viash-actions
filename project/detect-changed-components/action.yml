@@ -96,25 +96,32 @@ runs:
       # iterate over the components
       for component in "${components[@]}"; do
         config_path=$(jq -cr '.build_info.config // .info.config' <<< "$component" )
+        config_dir=`dirname "$config_path"`
         echo "Checking '$config_path'"
 
         # get the components resources
         readarray -t resources < <(
           jq -cr '
           (
-            [.build_info.config // .info.config] +
+            # viash config
+            [.build_info.config // (.info.config)] +
+            # viash >= 0.9 resources
             [
-              (
-                .functionality.resources // [] +
-                .functionality.test_resources // [] +
-                .resources // [] +
-                .test_resources // []
-              )
+              ((.resources // []) + (.test_resources // []))[]
+                | .path
+                | sub("^(?<match>[^/])"; "'$config_dir'/" + .match)
+                | sub("^/"; "")
+            ] +
+            # viash < 0.9 resources
+            [
+              (.functionality.resources // [])[], (.functionality.test_resources // [])[]
                 | select(.path and .parent)
                 | (.parent | sub("^file:(//)?"; "") | sub("/[^/]*$"; "")) + "/" + .path
-            ][]
+            ]
           )[]
-          ' <<< "$component"
+            # resolve paths wrt current dir (only needed for viash < 0.9)
+            | sub("'"`pwd`"'/"; "")
+            ' <<< "$component"
         )
         
         # check if resource is in the list of changed resources
