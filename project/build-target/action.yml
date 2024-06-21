@@ -4,20 +4,26 @@ description: >
   Builds a target directory using the viash ns build command.
 
 inputs:
-  target_branch:
-    description: 'Branch to deploy to. If not specified, `${BRANCH_NAME}_build` will be used.'
-    required: false
   version:
     description: 'Version name to use for the build. If not specified, `${BRANCH_NAME}_build` will be used.'
     required: false
+  target_branch:
+    description: 'Branch to deploy to. If not specified, `${BRANCH_NAME}_build` will be used.'
+    required: false
+  image_tag:
+    description: 'Force the built components to use a specific Docker image tag.'
+    required: false
+  viash_pro_token:
+    description: 'Viash pro token'
+    required: false
 
 outputs:
-  target_branch:
-    description: 'The branch that the build was deployed to.'
-    value: ${{ steps.defaults.outputs.target_branch }}
   version:
     description: 'The version that was used for the build.'
     value: ${{ steps.defaults.outputs.version }}
+  target_branch:
+    description: 'The branch that the build was deployed to.'
+    value: ${{ steps.defaults.outputs.target_branch }}
   docker_matrix:
     description: Matrix of executables for which Docker containers need to be built.
     value: ${{ steps.ns_list_docker.outputs.output_matrix }}
@@ -48,6 +54,16 @@ runs:
         fi
         echo "target_dir=$TARGET_DIR" >> $GITHUB_OUTPUT
 
+        VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
+        if [[ -z "${{inputs.image_tag }}" ]]; then
+          CONFIG_MOD=""
+        elif [ "$(printf '%s\n' "0.9.0" "$VIASH_VERSION" | sort -V | head -n1)" == "0.9.0" ]; then
+          CONFIG_MOD='.platforms[.type == "docker"].target_tag := "${{ inputs.image_tag }}"'
+        else
+          CONFIG_MOD='.engines[.type == "docker"].target_tag := "${{ inputs.image_tag }}"'
+        fi
+        echo "config_mod=$CONFIG_MOD" >> $GITHUB_OUTPUT
+
     - name: Remove target folder from .gitignore
       shell: bash
       run: |
@@ -62,6 +78,26 @@ runs:
     - uses: ../../ns-build
       with:
         parallel: true
+        config_mod: ${{ steps.defaults.outputs.config_mod }}
+
+    - name: Build nextflow schemas
+      if: ${{ inputs.viash_pro_token != '' }}
+      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v5
+      with:
+        components: src
+        workflows: src
+        viash_pro_token: ${{ secrets.GTHB_PAT }}
+        tools_version: 'main_build'
+        enable_dataset_input: true
+   
+    - name: Build parameter files
+      if: ${{ inputs.viash_pro_token != '' }}
+      uses: viash-io/viash-actions/pro/build-nextflow-params@v5
+      with:
+        workflows: src
+        components: src
+        viash_pro_token: ${{ secrets.GTHB_PAT }}
+        tools_version: 'main_build'
 
     - name: Find Docker Executables that need to be built
       id: ns_list_docker

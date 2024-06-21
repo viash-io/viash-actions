@@ -11,15 +11,18 @@ Builds a target directory using the viash ns build command.
 
 ### Inputs
 
-- `target_branch`: - *optional*. Branch to deploy to. If not specified,
-  `${BRANCH_NAME}_build` will be used.
 - `version`: - *optional*. Version name to use for the build. If not
   specified, `${BRANCH_NAME}_build` will be used.
+- `target_branch`: - *optional*. Branch to deploy to. If not specified,
+  `${BRANCH_NAME}_build` will be used.
+- `image_tag`: - *optional*. Force the built components to use a
+  specific Docker image tag.
+- `viash_pro_token`: - *optional*. Viash pro token
 
 ### Outputs
 
-- `target_branch`: The branch that the build was deployed to.
 - `version`: The version that was used for the build.
+- `target_branch`: The branch that the build was deployed to.
 - `docker_matrix`: Matrix of executables for which Docker containers
   need to be built.
 
