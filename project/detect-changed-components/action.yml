@@ -121,13 +121,12 @@ runs:
                 | (.parent | sub("^file:(//)?"; "") | sub("/[^/]*$"; "")) + "/" + .path
             ]
           )[]
-            # resolve paths wrt current dir (only needed for viash < 0.9)
-            | sub("'"`pwd`"'/"; "")
-            ' <<< "$component"
+          ' <<< "$component"
         )
         
         # check if resource is in the list of changed resources
         for resource_rel_path in "${resources[@]}"; do
+          # resolve paths wrt current dir (only needed for viash < 0.9)
           resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
           if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " ]]; then
             echo "  Detected changed resources!"
