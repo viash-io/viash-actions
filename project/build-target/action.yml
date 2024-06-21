@@ -65,7 +65,7 @@ runs:
       shell: bash
       run: |
         TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
-        sed -i "/^\\/?${TARGET_DIR}.*/d" .gitignore
+        sed -i "/^\\/*${TARGET_DIR}.*/d" .gitignore
 
     - name: Set version in _viash.yaml
       shell: bash
