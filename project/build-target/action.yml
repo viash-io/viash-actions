@@ -114,11 +114,11 @@ runs:
             continue
           fi
           NAME=`yq -r ".name // .functionality.name" $yaml`
-          NAMESPACE=`yq -r ".namespace // .functionality.namespace" $yaml`
-          if [ "$NAMESPACE" != "null" ]; then
-            FULL_NAME="$NAMESPACE/$NAME"
-          else
+          NAMESPACE=`yq -r '.namespace // .functionality.namespace // ""' $yaml`
+          if [ -z "$NAMESPACE" ]; then
             FULL_NAME="$NAME"
+          else
+            FULL_NAME="$NAMESPACE/$NAME"
           fi
           CONFIG=`yq -r ".build_info.config // .info.config" $yaml`
           SRC_DIR=`dirname $CONFIG`
@@ -127,8 +127,13 @@ runs:
 
           echo "Found Docker executable: $FULL_NAME"
 
-          JSON="{\"name\":\"$NAME\",\"namespace\":\"$NAMESPACE\",\"full_name\":\"$FULL_NAME\",\"config\":\"$CONFIG\",\"dir\":\"$SRC_DIR\",\"target\":\"$TARGET_DIR\",\"executable\":\"$EXECUTABLE\",\"runner\":\"$RUNNER\",\"engine\":\"$ENGINE\"}"
-          OUTPUT="$OUTPUT$JSON,"
+          JSON_FIELDS=""
+          for key in NAME NAMESPACE RUNNER ENGINE CONFIG EXECUTABLE SRC_DIR TARGET_DIR FULL_NAME; do
+            key_lower=`echo $key | tr '[:upper:]' '[:lower:]'`
+            JSON_FIELDS="$JSON_FIELDS\"${key_lower}\":\"${key}\","
+          done
+
+          OUTPUT="$OUTPUT{${JSON_FIELDS%,}},"
         done
 
         OUTPUT="${OUTPUT%,}]"
