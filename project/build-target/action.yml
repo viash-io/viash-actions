@@ -3,6 +3,9 @@ author: Data Intuitive
 description: >
   Builds a target directory using the viash ns build command.
 inputs:
+  github_token:
+    description: 'GitHub token. If not specified, the default GITHUB_TOKEN will be used.'
+    required: true
   target_branch:
     description: 'Branch to deploy to. If not specified, `build-${BRANCH_NAME}` will be used.'
     required: false
@@ -10,6 +13,12 @@ inputs:
     description: 'Version name to use for the build. If not specified, `build-${BRANCH_NAME}` will be used.'
     required: false
 outputs:
+  target_branch:
+    description: 'The branch that the build was deployed to.'
+    value: ${{ steps.defaults.outputs.target_branch }}
+  version:
+    description: 'The version that was used for the build.'
+    value: ${{ steps.defaults.outputs.version }}
   docker_component_matrix:
     description: Matrix of Docker components
     value: ${{ steps.ns_list_docker.outputs.output_matrix }}
@@ -37,6 +46,12 @@ runs:
         fi
         echo "target_branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
 
+        GTHB_TOKEN=${{ inputs.github_token }}
+        if [ -z "$GTHB_TOKEN" ]; then
+          GTHB_TOKEN=$GITHUB_TOKEN
+        fi
+        echo "github_token=$GTHB_TOKEN" >> $GITHUB_OUTPUT
+
     - name: Remove target folder from .gitignore
       shell: bash
       run: |
@@ -53,13 +68,22 @@ runs:
       with:
         parallel: true
 
-    - id: ns_list_docker
+    - name: Deploy to target branch
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ steps.defaults.outputs.github_token }}
+        publish_branch: ${{ steps.defaults.outputs.target_branch }}
+        publish_dir: .
+
+    - name: List Docker components
+      id: ns_list_docker
       uses: viash-io/viash-actions/ns-list@v5
       with:
         engine: docker
         format: json
 
-    - id: ns_list
+    - name: List components
+      id: ns_list
       uses: viash-io/viash-actions/ns-list@v5
       with:
         format: json
