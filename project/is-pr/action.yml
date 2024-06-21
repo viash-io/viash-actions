@@ -1,0 +1,26 @@
+name: Is PR
+author: Data Intuitive
+description: >
+  Check whether the branch has a PR and if this run was triggered by a push event.
+outputs:
+  check:
+    description: 'Returns "true" if the branch has a PR and this run was not triggered by a push event, else "false".'
+    value: ${{ steps.github_cli.outputs.check }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Check whether the branch has a PR and if this run was triggered by a push event'
+      shell: bash
+      id: github_cli
+      run: |
+        pull_request=$(gh pr list -R ${{ github.repository }} -H ${{ github.ref_name }} --json url --state open --limit 1 | jq '.[0].url')
+
+        # If the branch has a PR and this run was triggered by a push event, do not run
+        if [[ "$pull_request" != "null" && "$GITHUB_REF_NAME" != "main" && "${{ github.event_name == 'push' }}" == "true" && "${{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
+          echo "check=false" >> $GITHUB_OUTPUT
+        else
+          echo "check=true" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

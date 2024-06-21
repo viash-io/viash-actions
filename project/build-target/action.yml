@@ -1,0 +1,65 @@
+name: Build target directory
+author: Data Intuitive
+description: >
+  Builds a target directory using the viash ns build command.
+inputs:
+  target_branch:
+    description: 'Branch to deploy to. If not specified, `build-${BRANCH_NAME}` will be used.'
+    required: false
+  version:
+    description: 'Version name to use for the build. If not specified, `build-${BRANCH_NAME}` will be used.'
+    required: false
+outputs:
+  docker_component_matrix:
+    description: Matrix of Docker components
+    value: ${{ steps.ns_list_docker.outputs.output_matrix }}
+  component_matrix:
+    description: Matrix of components
+    value: ${{ steps.ns_list.outputs.output_matrix }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Determine version tag from branch name
+      shell: bash
+      id: defaults
+      run: |
+        BRANCH_NAME=$(echo $GITHUB_REF | sed 's/refs\/heads\///')
+        VERSION=${{ inputs.version }}
+        if [ -z "$VERSION" ]; then
+          VERSION="build-$BRANCH_NAME"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+        TARGET_BRANCH=${{ inputs.target_branch }}
+        if [ -z "$TARGET_BRANCH" ]; then
+          TARGET_BRANCH="build-$BRANCH_NAME"
+        fi
+        echo "target_branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
+
+    - name: Remove target folder from .gitignore
+      shell: bash
+      run: |
+        # allow publishing the target folder
+        sed -i '/^\/?target.*/d' .gitignore
+
+    - name: Set version in _viash.yaml
+      shell: bash
+      run: |
+        jq '.version = "${{ steps.defaults.outputs.version }}"' _viash.yaml > _viash.yaml.tmp && \
+          mv _viash.yaml.tmp _viash.yaml
+
+    - uses: viash-io/viash-actions/ns-build@v5
+      with:
+        parallel: true
+
+    - id: ns_list_docker
+      uses: viash-io/viash-actions/ns-list@v5
+      with:
+        engine: docker
+        format: json
+
+    - id: ns_list
+      uses: viash-io/viash-actions/ns-list@v5
+      with:
+        format: json
