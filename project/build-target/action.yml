@@ -45,12 +45,6 @@ runs:
         fi
         echo "target_branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
 
-        GTHB_TOKEN=${{ inputs.github_token }}
-        if [ -z "$GTHB_TOKEN" ]; then
-          GTHB_TOKEN=$GITHUB_TOKEN
-        fi
-        echo "github_token=$GTHB_TOKEN" >> $GITHUB_OUTPUT
-
     - name: Remove target folder from .gitignore
       shell: bash
       run: |
