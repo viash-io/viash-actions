@@ -108,6 +108,11 @@ runs:
         for yaml in $BUILT_CONFIGS; do
           RUNNER=`yq -r ".build_info.runner" $yaml`
           ENGINE=`yq -r ".build_info.engine // .info.platform" $yaml`
+
+          # skip if not an executable or does not use a docker engine
+          if [ "$RUNNER" != "executable" ] || [[ "$ENGINE" != *"docker"* ]]; then
+            continue
+          fi
           NAME=`yq -r ".name // .functionality.name" $yaml`
           NAMESPACE=`yq -r ".namespace // .functionality.namespace" $yaml`
           if [ "$NAMESPACE" != "null" ]; then
@@ -119,6 +124,8 @@ runs:
           SRC_DIR=`dirname $CONFIG`
           TARGET_DIR=`dirname $yaml`
           EXECUTABLE=`yq -r ".build_info.executable // .info.executable" $yaml`
+
+          echo "Found Docker executable: $FULL_NAME"
 
           JSON="{\"runner\":\"$RUNNER\",\"engine\":\"$ENGINE\",\"name\":\"$FULL_NAME\",\"config\":\"$CONFIG\",\"src_dir\":\"$SRC_DIR\",\"target_dir\":\"$TARGET_DIR\",\"executable\":\"$EXECUTABLE\"}"
           OUTPUT="$OUTPUT$JSON,"
