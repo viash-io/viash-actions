@@ -2,16 +2,15 @@ name: Build target directory
 author: Data Intuitive
 description: >
   Builds a target directory using the viash ns build command.
+
 inputs:
-  github_token:
-    description: 'GitHub token. If not specified, the default GITHUB_TOKEN will be used.'
-    required: true
   target_branch:
-    description: 'Branch to deploy to. If not specified, `build-${BRANCH_NAME}` will be used.'
+    description: 'Branch to deploy to. If not specified, `${BRANCH_NAME}_build` will be used.'
     required: false
   version:
-    description: 'Version name to use for the build. If not specified, `build-${BRANCH_NAME}` will be used.'
+    description: 'Version name to use for the build. If not specified, `${BRANCH_NAME}_build` will be used.'
     required: false
+
 outputs:
   target_branch:
     description: 'The branch that the build was deployed to.'
@@ -33,16 +32,16 @@ runs:
       shell: bash
       id: defaults
       run: |
-        BRANCH_NAME=$(echo $GITHUB_REF | sed 's/refs\/heads\///')
+        BRANCH_NAME=$(echo $GITHUB_REF | sed 's/refs\/heads\///' | sed 's/[^a-zA-Z0-9_]/_/g')
         VERSION=${{ inputs.version }}
         if [ -z "$VERSION" ]; then
-          VERSION="build-$BRANCH_NAME"
+          VERSION="${BRANCH_NAME}_build"
         fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         
         TARGET_BRANCH=${{ inputs.target_branch }}
         if [ -z "$TARGET_BRANCH" ]; then
-          TARGET_BRANCH="build-$BRANCH_NAME"
+          TARGET_BRANCH="${BRANCH_NAME}_build"
         fi
         echo "target_branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
 
@@ -64,26 +63,19 @@ runs:
         jq '.version = "${{ steps.defaults.outputs.version }}"' _viash.yaml > _viash.yaml.tmp && \
           mv _viash.yaml.tmp _viash.yaml
 
-    - uses: viash-io/viash-actions/ns-build@v5
+    - uses: ../../ns-build
       with:
         parallel: true
 
-    - name: Deploy to target branch
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ steps.defaults.outputs.github_token }}
-        publish_branch: ${{ steps.defaults.outputs.target_branch }}
-        publish_dir: .
-
     - name: List Docker components
       id: ns_list_docker
-      uses: viash-io/viash-actions/ns-list@v5
+      uses: ../../ns-list
       with:
         engine: docker
         format: json
 
     - name: List components
       id: ns_list
-      uses: viash-io/viash-actions/ns-list@v5
+      uses: ../../ns-list
       with:
         format: json
