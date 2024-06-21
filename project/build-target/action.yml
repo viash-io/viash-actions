@@ -64,7 +64,8 @@ runs:
     - name: Remove target folder from .gitignore
       shell: bash
       run: |
-        sed -i '/^\/?${{ steps.defaults.outputs.target_dir }}.*/d' .gitignore
+        TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
+        sed -i "/^\\/?${TARGET_DIR}.*/d" .gitignore
 
     - name: Set version in _viash.yaml
       shell: bash
