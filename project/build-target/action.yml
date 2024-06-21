@@ -74,14 +74,14 @@ runs:
       run: |
         yq eval '.version = "${{ steps.defaults.outputs.version }}"' -i _viash.yaml
 
-    - uses: ./ns-build
+    - uses: viash-io/viash-actions/ns-build@viash-0.9
       with:
         parallel: true
         config_mod: ${{ steps.defaults.outputs.config_mod }}
 
     - name: Build nextflow schemas
       if: ${{ inputs.viash_pro_token != '' }}
-      uses: ./pro/build-nextflow-schemas
+      uses: viash-io/viash-actions/pro/build-nextflow-params@viash-0.9
       with:
         components: src
         workflows: src
@@ -91,7 +91,7 @@ runs:
    
     - name: Build parameter files
       if: ${{ inputs.viash_pro_token != '' }}
-      uses: ./pro/build-nextflow-params
+      uses: viash-io/viash-actions/pro/build-nextflow-params@viash-0.9
       with:
         workflows: src
         components: src
