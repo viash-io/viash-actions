@@ -48,10 +48,7 @@ runs:
         fi
         echo "target_branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
 
-        TARGET_DIR=$(yq -r '.target' _viash.yaml)
-        if [ -z "$TARGET_DIR" ]; then
-          TARGET_DIR="target"
-        fi
+        TARGET_DIR=$(yq -r '.target // "target"' _viash.yaml)
         echo "target_dir=$TARGET_DIR" >> $GITHUB_OUTPUT
 
         VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
