@@ -95,15 +95,14 @@ runs:
 
       # iterate over the components
       for component in "${components[@]}"; do
-        config_path=$(jq -cr '.info.config' <<< "$component" )
+        config_path=$(jq -cr '.build_info.config // .info.config' <<< "$component" )
         echo "Checking '$config_path'"
 
         # get the components resources
         readarray -t resources < <(
           jq -cr '
           (
-            .info.config // [] +
-            .build_info.config // [] +
+            [.build_info.config // .info.config] +
             [
               (
                 .functionality.resources // [] +
