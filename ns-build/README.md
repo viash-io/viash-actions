@@ -76,8 +76,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Viash
-        uses: viash-io/viash-actions/setup@v3
+        uses: viash-io/viash-actions/setup@v6
 
       - name: viash ns build
-        uses: viash-io/viash-actions/ns-build@v3
+        uses: viash-io/viash-actions/ns-build@v6
 ```

@@ -32,5 +32,5 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Update Docker Engine
-        uses: viash-io/viash-actions/update-docker-engine@v3
+        uses: viash-io/viash-actions/update-docker-engine@v6
 ```

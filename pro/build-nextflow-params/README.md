@@ -37,13 +37,13 @@ jobs:
     
     steps:
     - name: Install Viash
-      uses: viash-io/viash-actions/setup@v3
+      uses: viash-io/viash-actions/setup@v6
 
     - name: Check out repository
       uses: actions/checkout@v3
 
     - name: Build parameter yaml
-      uses: viash-io/viash-actions/pro/build-nextflow-params@viash-0.9
+      uses: viash-io/viash-actions/pro/build-nextflow-params@v6
       with:
         target: target/
         token: ${{ secrets.VIASH_PRO_TOKEN }}

@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Is PR
-        uses: viash-io/viash-actions/is-pr@v1
+        uses: viash-io/viash-actions/is-pr@v6
         id: is_pr
         
       - run: |

@@ -38,13 +38,13 @@ jobs:
       - uses: actions/checkout@v3
 
       - id: ns_list
-        uses: viash-io/viash-actions/ns-list@v3
+        uses: viash-io/viash-actions/ns-list@v6
         with:
           format: json  
 
       - name: Detect components with changed files
         id: ns_list_changed
-        uses: viash-io/viash-actions/detect-changed-components@v3
+        uses: viash-io/viash-actions/detect-changed-components@v6
         with:
           input_file: ${{ steps.ns_list.outputs.output_file }}
 ```

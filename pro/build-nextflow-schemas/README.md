@@ -38,13 +38,13 @@ jobs:
     
     steps:
     - name: Install Viash
-      uses: viash-io/viash-actions/setup@v3
+      uses: viash-io/viash-actions/setup@v6
 
     - name: Check out repository
       uses: actions/checkout@v3
 
     - name: Build nf-tower schemas
-      uses: viash-io/viash-actions/pro/build-nextflow-schemas@viash-0.9
+      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v6
       with:
         target: target/
         token: ${{ secrets.VIASH_PRO_TOKEN }}
