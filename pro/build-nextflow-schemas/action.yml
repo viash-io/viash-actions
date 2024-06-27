@@ -73,6 +73,6 @@ runs:
         echo
 
         viash_tools/target/docker/nextflow/generate_schema/generate_schema \
-          --input "$BUILT_CONFIGS" \
-          --output "$NEXTFLOW_SCHEMAS" \
-          ${{ inputs.enable_dataset_input }}
+          --input "$(echo "$BUILT_CONFIGS" | paste -sd ";")" \
+          --output "$(echo "$NEXTFLOW_SCHEMAS" | paste -sd ";")" \
+          ${{ inputs.enable_dataset_input == "true" ? "--enable_dataset_input" : "" }}
