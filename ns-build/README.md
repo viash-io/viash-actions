@@ -28,20 +28,19 @@ We recommend using a Linux or MacOS runner if possible.
   component name. Can be a regex. Example: “^component1”.
 - `src`: - *optional*. A source directory containing viash config files,
   possibly structured in a hierarchical folder structure. Default: src/.
-- `platform`: - *optional*. Deprecated. Use –runner and –engine instead.
-  Acts as a regular expression to filter the platform ids specified in
-  the found config files. If this is not provided, all platforms will be
-  used. If no platforms are defined in a config, the native platform
-  will be used. In addition, the path to a platform yaml file can also
-  be specified.
-- `runner`: - *optional*. Acts as a regular expression to filter the
-  runner ids specified in the found config files. If this is not
-  provided, all runners will be used. If no runners are defined in a
-  config, the executable runner will be used.
-- `engine`: - *optional*. Acts as a regular expression to filter the
-  engine ids specified in the found config files. If this is not
-  provided, all engines will be used. If no engines are defined in a
-  config, the native engine will be used.
+- `platform`: - *optional*. (viash \< 0.9.0) Acts as a regular
+  expression to filter the platform ids specified in the found config
+  files. If this is not provided, all platforms will be used. If no
+  platforms are defined in a config, the native platform will be used.
+  In addition, the path to a platform yaml file can also be specified.
+- `runner`: - *optional*. (viash \>= 0.9.0) Acts as a regular expression
+  to filter the runner ids specified in the found config files. If this
+  is not provided, all runners will be used. If no runners are defined
+  in a config, the executable runner will be used.
+- `engine`: - *optional*. (viash \>= 0.9.0) Acts as a regular expression
+  to filter the engine ids specified in the found config files. If this
+  is not provided, all engines will be used. If no engines are defined
+  in a config, the native engine will be used.
 - `parallel`: - *optional*. Whether or not to run the process in
   parallel.
 - `config_mod`: - *optional*. Modify a viash config at runtime using

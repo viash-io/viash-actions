@@ -23,19 +23,19 @@ inputs:
       in a hierarchical folder structure. Default: src/.'
     required: false
   platform:
-    description: Deprecated. Use --runner and --engine instead. Acts as a regular
+    description: (viash < 0.9.0) Acts as a regular
       expression to filter the platform ids specified in the found config files. If
       this is not provided, all platforms will be used. If no platforms are defined
       in a config, the native platform will be used. In addition, the path to a platform
       yaml file can also be specified.
     required: false
   runner:
-    description: Acts as a regular expression to filter the runner ids specified in
+    description: (viash >= 0.9.0) Acts as a regular expression to filter the runner ids specified in
       the found config files. If this is not provided, all runners will be used. If
       no runners are defined in a config, the executable runner will be used.
     required: false
   engine:
-    description: Acts as a regular expression to filter the engine ids specified in
+    description: (viash >= 0.9.0) Acts as a regular expression to filter the engine ids specified in
       the found config files. If this is not provided, all engines will be used. If
       no engines are defined in a config, the native engine will be used.
     required: false
