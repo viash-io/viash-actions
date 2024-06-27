@@ -55,18 +55,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: viash-io/viash-actions/setup@v3
+        uses: actions/checkout@v3
 
       - name: `r action$name`
-        id: build_target
-        uses: viash-io/viash-actions/build-target@v5
-
-      - name: Check output
-        run: |
-          # view target directory
-          ls -l target/
-
-          # do something with the output
-          echo "${{steps.build_target.outputs.docker_component_matrix}}"
-          echo "${{steps.build_target.outputs.component_matrix}}"
+        uses: viash-io/viash-actions/sync-and-cache-s3
+        with:
+          s3_bucket: s3:/mybucket/resources
+          dest_path: resources
 ```
+
