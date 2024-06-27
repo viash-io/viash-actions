@@ -1,3 +1,21 @@
+# viash-actions v6.0.0
+
+## Breaking changes
+
+* `update-docker-engine` was moved to `project/update-docker-engine` (PR #27).
+
+* `pro/build-nextflow-params` arguments `components` and `workflows` were removed in favour for the `target_dir` argument (PR #27).
+
+* `pro/build-nextflow-schemas` arguments `components` and `workflows` were removed in favour for the `target_dir` argument (PR #27).
+
+## Major changes
+
+* All actions were updated to work with Viash 0.9 and later (PR #27).
+
+## Documentation
+
+* Updated all READMEs to be more consistent (PR #27).
+
 # viash-actions v5.2.1
 
 ## Bug Fixes
