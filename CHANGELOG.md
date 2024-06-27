@@ -20,6 +20,8 @@
 
 * Updated all READMEs to be more consistent (PR #27).
 
+* Added a Makefile for generating READMEs more efficiently (PR #27).
+
 # viash-actions v5.2.1
 
 ## Bug Fixes
