@@ -5,28 +5,21 @@ description: >
   For workflows, will save the build schemas next to the Viash config.
   For components, will output to the target directory (see viash ns build).
 inputs:
-  components:
+  target_dir:
     required: false
-    description: 'Location of the viash configuration for components.'
-    type: string
-  workflows: 
-    required: false
-    description: 'Location of the viash configurations for workflows.'
+    description: 'The target directory. If not specified, the `target` path specified in the Viash project config (`_viash.yaml`) will be used. If that is not specified, the default `target/nextflow` will be used.'
   viash_pro_token:
     description: Viash Pro token.
     required: true
-    type: string
   tools_version:
     description: >
       Release of Viash tools to use.
     required: false
     default: 'latest'
-    type: string
   enable_dataset_input:
     description: 'enable nf-tower dataset input'
     required: false
-    default: false
-    type: boolean
+    default: "false"
 runs:
   using: 'composite'
   steps:
@@ -49,20 +42,17 @@ runs:
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
 
-    - uses: viash-io/viash-actions/ns-list@v5
-      id: nslistcomponents
-      if: inputs.components
-      with:
-        src: ${{ inputs.components }}
-        format: "json"
-        platform: "nextflow"
+    - name: Determine target directory
+      shell: bash
+      id: defaults
+      run: |
+        TARGET_DIR=${{ inputs.target_dir }}
 
-    - uses: viash-io/viash-actions/ns-list@v5
-      id: nslistworkflows
-      if: inputs.workflows
-      with:
-        src: ${{ inputs.workflows }}
-        format: "json"
+        if [ -z "$TARGET_DIR" ]; then
+          TARGET_DIR=$(yq -r '.target // "target/nextflow"' _viash.yaml)
+        fi
+
+        echo "target_dir=$TARGET_DIR" >> $GITHUB_OUTPUT
 
     - name: 'Generate schemas'
       shell: bash
@@ -70,56 +60,19 @@ runs:
       run: |
         command -v viash >/dev/null 2>&1 || { echo >&2 "Viash could not be found."; exit 127; }
 
-        # Check if at least some input is defined.
-        if [ ! -f "${{ steps.nslistcomponents.outputs.output_file }}" ] && [ ! -f "${{ steps.nslistworkflows.outputs.output_file }}" ]; then
-          echo "One of the workflows or components properties must be set."
-          exit 1;
-        fi
+        TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
 
-        # Process components
-        if [ -f "${{ steps.nslistcomponents.outputs.output_file }}" ]; then
-          # Get config paths
-          component_inputs=$(jq -r '[.[] | .info.config] | join(";")' "${{ steps.nslistcomponents.outputs.output_file }}")
+        BUILT_CONFIGS=$(find "$TARGET_DIR" -name .config.vsh.yaml)
+        echo "Detected configs:"
+        echo "$BUILT_CONFIGS"
+        echo
 
-          # Get output paths
-          jq_query='[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")'
-          component_outputs_schema=$(jq -r "$jq_query" "${{ steps.nslistcomponents.outputs.output_file }}")
-        fi
+        NEXTFLOW_SCHEMAS=$(echo "$BUILT_CONFIGS" | sed 's/.config.vsh.yaml/nextflow_schema.json/g')
+        echo "Building Nextflow schema files:"
+        echo "$NEXTFLOW_SCHEMAS"
+        echo
 
-        # Process workflows
-        if [ -f "${{ steps.nslistworkflows.outputs.output_file }}" ]; then
-          # Get config paths
-          workflow_inputs=$(jq -r '[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config] | join(";")' "${{ steps.nslistworkflows.outputs.output_file }}")
-
-          # Get output paths
-          jq_query='[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_schema.json"] | join(";")'
-          workflow_outputs_schema=$(jq -r "$jq_query" "${{ steps.nslistworkflows.outputs.output_file }}")
-        fi
-
-        inputs=()
-        outputs=()
-
-        echo "Workflow inputs: $workflow_inputs"
-        echo "Component inputs: $component_inputs"
-
-        if [ -n "$workflow_inputs" ]; then
-          echo "Adding workflow inputs" 
-          inputs+=(--input "$workflow_inputs")
-          outputs+=(--output "$workflow_outputs_schema")
-        fi
-
-        if [ -n "$component_inputs" ]; then
-          echo "Adding component inputs" 
-          inputs+=(--input "$component_inputs")
-          outputs+=(--output "$component_outputs_schema")
-        fi
-
-        extra_params=()
-        if [ "${{ inputs.enable_dataset_input }}" == "true" ]; then
-          extra_params+=("--enable_dataset_input")
-        fi
-
-        echo "Running viash_tools/target/docker/nextflow/generate_schema/generate_schema ${inputs[@]} ${outputs[@]} ${extra_params[@]}"
-        viash_tools/target/docker/nextflow/generate_schema/generate_schema "${inputs[@]}" "${outputs[@]}" "${extra_params[@]}"
-      
-        echo "Created $outputs_schema"
+        viash_tools/target/docker/nextflow/generate_schema/generate_schema \
+          --input "$BUILT_CONFIGS" \
+          --output "$NEXTFLOW_SCHEMAS" \
+          ${{ inputs.enable_dataset_input }}
