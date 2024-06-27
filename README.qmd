@@ -16,12 +16,12 @@ actions <- tibble(
   action = map(file, yaml::read_yaml),
   action_name = map_chr(action, "name"),
   namespace = ifelse(grepl("/", path), gsub("/.*", "", path), ""),
-  str = paste0("1. [", repo_name, "/", path, "@", latest_stable_version, "](", path, ") - ", action_name, "\n")
+  str = paste0("1. [`", repo_name, "/", path, "@", latest_stable_version, "`](", path, ") - ", action_name, "\n")
 )
 ```
 
 
-This repository stores [Github Actions](https://github.com/features/actions) useful for building and publishing [Viash](https://viash.io) components:
+This repository stores Github Actions useful for building and publishing [Viash](https://viash.io) components:
 
 ```{r output="asis"}
 #| echo: false
