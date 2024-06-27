@@ -12,6 +12,8 @@
 
 * `project/build-target`: Created an action for building a target directory using `viash ns build` and generating a matrix of the components for which Docker images need to be built and pushed (PR #27).
 
+* `project/check-concurrent-pr`: Created an action for checking if a push event is concurrent with a pull request (PR #27).
+
 ## Major changes
 
 * All actions were updated to work with Viash 0.9 and later (PR #27).
