@@ -1,13 +1,15 @@
-# Find all .qmd files
-QMD_FILES := $(shell find . -name "*.qmd")
+# Set up some variables for consistency
+QMD_FILES := $(shell find . -name "README.qmd")  # Find all README.qmd files
+MD_FILES := $(patsubst %.qmd,%.md,$(QMD_FILES)) # Corresponding MD filenames
 
-# Render all .qmd files to md
-all: $(QMD_FILES:.qmd=.md)
+# Default target: build all MD files
+all: $(MD_FILES)
 
-# Recipe to render an individual .qmd file
-%.md: %.qmd
+README.md: README.qmd
+	quarto render $<
+%/README.md: %/README.qmd %/action.yml
 	quarto render $<
 
-# Remove the generated md files
+# Clean up generated MD files
 clean:
-	rm -f $(QMD_FILES:.qmd=.md)
+	rm -f $(MD_FILES) 

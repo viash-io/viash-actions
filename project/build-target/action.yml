@@ -1,7 +1,9 @@
 name: Build target directory
 author: Data Intuitive
 description: >
-  Builds a target directory using the viash ns build command.
+  Build a target directory using the viash ns build command 
+  and create a matrix of the executables which have Docker
+  containers that need to be built.
 
 inputs:
   version:
@@ -81,8 +83,7 @@ runs:
       if: ${{ inputs.viash_pro_token != '' }}
       uses: viash-io/viash-actions/pro/build-nextflow-params@viash-0.9
       with:
-        components: src
-        workflows: src
+        target_dir: ${{ steps.defaults.outputs.target_dir }}
         viash_pro_token: ${{ inputs.viash_pro_token }}
         tools_version: 'main_build'
         enable_dataset_input: true
@@ -91,8 +92,7 @@ runs:
       if: ${{ inputs.viash_pro_token != '' }}
       uses: viash-io/viash-actions/pro/build-nextflow-params@viash-0.9
       with:
-        workflows: src
-        components: src
+        target_dir: ${{ steps.defaults.outputs.target_dir }}
         viash_pro_token: ${{ inputs.viash_pro_token }}
         tools_version: 'main_build'
 
