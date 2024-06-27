@@ -22,6 +22,19 @@
 
 * Added a Makefile for generating READMEs more efficiently (PR #27).
 
+
+# viash-actions v5.3.1
+
+## Bug fixes
+
+* `project/detect-changed-components`: Fix components being listed more than once (PR #29).
+
+# viash-actions v5.3.0
+
+## New functionality
+
+* `project/detect-changed-components`: Detect changed components when a resource is a directory (PR #28).
+
 # viash-actions v5.2.1
 
 ## Bug Fixes
