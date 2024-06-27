@@ -5,24 +5,31 @@ This repository stores [Github
 Actions](https://github.com/features/actions) useful for building and
 publishing [Viash](https://viash.io) components:
 
-    1. [viash-io/viash-actions/ns-build@v6](ns-build) - viash ns build
-    1. [viash-io/viash-actions/ns-list@v6](ns-list) - viash ns list
-    1. [viash-io/viash-actions/setup@v6](setup) - Setup Viash
+1.  [viash-io/viash-actions/ns-build@v6](ns-build) - viash ns build
+2.  [viash-io/viash-actions/ns-list@v6](ns-list) - viash ns list
+3.  [viash-io/viash-actions/setup@v6](setup) - Setup Viash
 
 There are also some actions that are commonly used in Viash projects:
 
-    1. [viash-io/viash-actions/project/build-target@v6](project/build-target) - Build target directory
-    1. [viash-io/viash-actions/project/detect-changed-components@v6](project/detect-changed-components) - Detect components with changed files
-    1. [viash-io/viash-actions/project/is-pr@v6](project/is-pr) - Is PR
-    1. [viash-io/viash-actions/project/sync-and-cache-s3@v6](project/sync-and-cache-s3) - Sync and cache an S3 bucket
-    1. [viash-io/viash-actions/project/update-docker-engine@v6](project/update-docker-engine) - Update Docker Engine
+1.  [viash-io/viash-actions/project/build-target@v6](project/build-target) -
+    Build target directory
+2.  [viash-io/viash-actions/project/detect-changed-components@v6](project/detect-changed-components) -
+    Detect components with changed files
+3.  [viash-io/viash-actions/project/is-pr@v6](project/is-pr) - Is PR
+4.  [viash-io/viash-actions/project/sync-and-cache-s3@v6](project/sync-and-cache-s3) -
+    Sync and cache an S3 bucket
+5.  [viash-io/viash-actions/project/update-docker-engine@v6](project/update-docker-engine) -
+    Update Docker Engine
 
 Finally, there are some [Viash
 Pro](https://www.data-intuitive.com/services/viashpro.html) actions:
 
-    1. [viash-io/viash-actions/pro/build-nextflow-params@v6](pro/build-nextflow-params) - Build parameter yaml
-    1. [viash-io/viash-actions/pro/build-nextflow-schemas@v6](pro/build-nextflow-schemas) - Build nf-tower schemas
-    1. [viash-io/viash-actions/pro/generate-documentation-qmd@v6](pro/generate-documentation-qmd) - Build and publish qmd
+1.  [viash-io/viash-actions/pro/build-nextflow-params@v6](pro/build-nextflow-params) -
+    Build parameter yaml
+2.  [viash-io/viash-actions/pro/build-nextflow-schemas@v6](pro/build-nextflow-schemas) -
+    Build nf-tower schemas
+3.  [viash-io/viash-actions/pro/generate-documentation-qmd@v6](pro/generate-documentation-qmd) -
+    Build and publish qmd
 
 We recommend using `v6` for your actions.
 

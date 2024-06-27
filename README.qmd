@@ -23,21 +23,21 @@ actions <- tibble(
 
 This repository stores [Github Actions](https://github.com/features/actions) useful for building and publishing [Viash](https://viash.io) components:
 
-```{r}
+```{r output="asis"}
 #| echo: false
 cat(actions %>% filter(namespace == "") %>% pull(str) %>% paste(collapse = ""))
 ```
 
 There are also some actions that are commonly used in Viash projects:
 
-```{r}
+```{r output="asis"}
 #| echo: false
 cat(actions %>% filter(namespace == "project") %>% pull(str) %>% paste(collapse = ""))
 ```
 
 Finally, there are some [Viash Pro](https://www.data-intuitive.com/services/viashpro.html) actions:
 
-```{r}
+```{r output="asis"}
 #| echo: false
 cat(actions %>% filter(namespace == "pro") %>% pull(str) %>% paste(collapse = ""))
 ```
