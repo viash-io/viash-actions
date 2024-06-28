@@ -4,9 +4,11 @@
 
 * `update-docker-engine` was moved to `project/update-docker-engine` (PR #27).
 
-* `pro/build-nextflow-params` arguments `components` and `workflows` were removed in favour for the `target_dir` argument (PR #27).
+* `pro/build-nextflow-params`: Arguments `components` and `workflows` were removed in favour for the `target_dir` argument (PR #27).
 
-* `pro/build-nextflow-schemas` arguments `components` and `workflows` were removed in favour for the `target_dir` argument (PR #27).
+* `pro/build-nextflow-schemas`: Arguments `components` and `workflows` were removed in favour for the `target_dir` argument (PR #27).
+
+* Removed `viash-hub/deploy`: Viash Hub pulls source code from GitHub and builds Viash packages accordingly, as opposed to pushing deployments using GitHub Actions (PR #27).
 
 ## New functionality
 
