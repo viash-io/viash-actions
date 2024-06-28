@@ -7,6 +7,10 @@ description: >
     - Return 'true' if the event is not a push event
     - Return 'true' if the commit message contains 'ci force'
     - Return 'false' if a PR exists for the branch, else 'true'
+inputs:
+  github_token:
+    description: 'The GitHub token to use for the GitHub CLI.'
+    required: true
 outputs:
   run:
     description: 'Returns "true" if the branch has a PR and this run was not triggered by a push event, else "false".'
@@ -44,4 +48,4 @@ runs:
           echo "run=false" >> $GITHUB_OUTPUT
         fi
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
