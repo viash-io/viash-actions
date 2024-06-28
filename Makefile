@@ -5,9 +5,10 @@ MD_FILES := $(patsubst %.qmd,%.md,$(QMD_FILES)) # Corresponding MD filenames
 # Default target: build all MD files
 all: $(MD_FILES)
 
-README.md: README.qmd
-	quarto render $<
 %/README.md: %/README.qmd %/action.yml
+	quarto render $<
+
+README.md: README.qmd
 	quarto render $<
 
 # Clean up generated MD files
