@@ -17,6 +17,9 @@ request, this action will:
 
 ### Inputs
 
+- `github_token`: - *required*. The GitHub token to use for the GitHub
+  CLI.
+
 ### Outputs
 
 - `run`: Returns “true” if the branch has a PR and this run was not
