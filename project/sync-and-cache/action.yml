@@ -101,7 +101,8 @@ runs:
           AWS_EC2_METADATA_DISABLED=true \
             aws s3 sync \
             "$s3_path" \
-            "$dest_path"
+            "$dest_path" \
+            --no-sign-request
         }
 
         function sync_resources() {
