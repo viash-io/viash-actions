@@ -12,12 +12,15 @@ There are also some actions that are commonly used in Viash projects:
 
 1.  [`project/build-target`](project/build-target) - Build target
     directory
-2.  [`project/detect-changed-components`](project/detect-changed-components) -
+2.  [`project/check-concurrent-pr`](project/check-concurrent-pr) - Check
+    for concurrent PRs
+3.  [`project/detect-changed-components`](project/detect-changed-components) -
     Detect components with changed files
-3.  [`project/is-pr`](project/is-pr) - Is PR
 4.  [`project/sync-and-cache-s3`](project/sync-and-cache-s3) - Sync and
     cache an S3 bucket
-5.  [`project/update-docker-engine`](project/update-docker-engine) -
+5.  [`project/sync-and-cache`](project/sync-and-cache) - Sync and cache
+    test resources
+6.  [`project/update-docker-engine`](project/update-docker-engine) -
     Update Docker Engine
 
 Finally, there are some [Viash
