@@ -14,9 +14,20 @@ outputs:
       Path to the filtered viash ns list json file, filtered on whether one of the
       resources of the component has been changed or not.
     value: ${{ steps.filter.outputs.output_file }}
+  output_matrix:
+    description: |
+      Matrix of components that have changed resources.
+    value: ${{ steps.set_matrix.outputs.matrix }}
 runs:
   using: 'composite'
   steps:
+  - name: Get head git commit message
+    shell: bash
+    id: get_head_commit_message
+    run: |
+      head_commit_message=$(git show -s --format=%s ${{ github.event.pull_request.head.sha || github.sha }})
+      echo "HEAD_COMMIT_MESSAGE=$head_commit_message" >> "$GITHUB_OUTPUT"
+
   - name: Get changed files
     id: changed-files
     uses: tj-actions/changed-files@v42.0.5
@@ -87,22 +98,33 @@ runs:
 
       # iterate over the components
       for component in "${components[@]}"; do
-        config_path=$(jq -cr '.info.config' <<< "$component" )
+        config_path=$(jq -cr '.build_info.config // .info.config' <<< "$component" )
+        config_dir=`dirname "$config_path"`
         echo "Checking '$config_path'"
 
         # get the components resources
         readarray -t resources < <(
           jq -cr '
           (
-            [.info.config] +
+            # viash config
+            [.build_info.config // (.info.config)] +
+            # viash >= 0.9 resources
             [
-              .functionality.resources[], .functionality.test_resources[]
+              ((.resources // []) + (.test_resources // []))[]
+                | .path
+                | sub("^(?<match>[^/])"; "'$config_dir'/" + .match)
+                | sub("^/"; "")
+            ] +
+            # viash < 0.9 resources
+            [
+              (.functionality.resources // [])[], (.functionality.test_resources // [])[]
                 | select(.path and .parent)
                 | (.parent | sub("^file:(//)?"; "") | sub("/[^/]*$"; "")) + "/" + .path
             ]
           )[]
           ' <<< "$component"
         )
+        
         # check if resource is in the list of changed resources
         should_add_component=0
         for resource in "${resources[@]}"; do
@@ -111,6 +133,7 @@ runs:
             echo "Resource $resource does not exist."
             exit 1
           fi
+          # resolve paths wrt current dir (only needed for viash < 0.9)
           resource_real_path=$(realpath "$resource")
           resource_arr=("$resource_real_path")
           # Resolve resources that are a directory into files
@@ -141,3 +164,19 @@ runs:
       # reformat as json and write to file
       jq -cs '.' <<< "${output_array[*]}" > "$output_file"
       echo "output_file=$output_file" >> $GITHUB_OUTPUT
+
+  - id: set_matrix
+    shell: bash
+    run: |
+      comp_file="${{ contains(steps.get_head_commit_message.outputs.HEAD_COMMIT_MESSAGE, 'ci force') && inputs.input_file || steps.filter.outputs.output_file }}"
+      matrix=$(
+        jq -c '[ .[] | 
+          { 
+            "name": (.name // .functionality.name),
+            "namespace": (.namespace // .functionality.namespace // ""),
+            "config": (.build_info.config // .info.config),
+            "dir": (.build_info.config // .info.config) | capture("^(?<dir>.*\/)").dir
+          }
+        ]' $comp_file
+      )
+      echo "matrix=$matrix" >> $GITHUB_OUTPUT

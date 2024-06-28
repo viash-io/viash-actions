@@ -62,17 +62,11 @@ jobs:
 
     - name: Check out repository
       uses: actions/checkout@v3
-      with:
-        path: project
 
     - name: `r action$name`
-      uses: viash-io/viash-actions/generate-documentation-qmd@v6
+      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v6
       with:
-        project_dir: project
-        src: src
-        output_dir: website
-        dest_path: "{type}s/{namespace}/{name}.qmd"
-        git_repo: openpipelines-bio/openpipelines
-        token: ${{ secrets.GTHB_PAT }}
+        target: target/
+        token: ${{ secrets.VIASH_PRO_TOKEN }}
         tools_version: main_build
 ```

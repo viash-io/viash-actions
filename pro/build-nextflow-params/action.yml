@@ -6,12 +6,9 @@ description: >
   For workflows, will save the build parameter files next to the Viash config.
   For components, will output to the target directory (see viash ns build).
 inputs:
-  components:
+  target_dir:
     required: false
-    description: 'Location of the viash configuration for components.'
-  workflows: 
-    required: false
-    description: 'Location of the viash configurations for workflows.'
+    description: 'The target directory. If not specified, the `target` path specified in the Viash project config (`_viash.yaml`) will be used. If that is not specified, the default `target/nextflow` will be used.'
   viash_pro_token:
     description: Viash Pro token.
     required: true
@@ -41,61 +38,36 @@ runs:
         path: viash_tools
         ref: ${{ steps.latestrelease.outputs.releasetag }}
 
-    - uses: viash-io/viash-actions/ns-list@v5
-      id: nslistcomponents
-      if: inputs.components
-      with:
-        src: ${{ inputs.components }}
-        format: "json"
-        platform: "nextflow"
+    - name: Determine target directory
+      shell: bash
+      id: defaults
+      run: |
+        TARGET_DIR=${{ inputs.target_dir }}
 
-    - uses: viash-io/viash-actions/ns-list@v5
-      id: nslistworkflows
-      if: inputs.workflows
-      with:
-        src: ${{ inputs.workflows }}
-        format: "json"
+        if [ -z "$TARGET_DIR" ]; then
+          TARGET_DIR=$(yq -r '.target // "target/nextflow"' _viash.yaml)
+        fi
+
+        echo "target_dir=$TARGET_DIR" >> $GITHUB_OUTPUT
 
     - name: 'Generate param files'
       shell: bash
       id: generate-params
       run: |
         command -v viash >/dev/null 2>&1 || { echo >&2 "Viash could not be found."; exit 127; }
-        # Check if at least some input is defined.
-        if [ ! -f "${{ steps.nslistcomponents.outputs.output_file }}" ] && [ ! -f "${{ steps.nslistworkflows.outputs.output_file }}" ]; then
-          echo "One of the workflows or components properties must be set."
-          exit 1;
-        fi
-        # Process components
-        if [ -f "${{ steps.nslistcomponents.outputs.output_file }}" ]; then
-          # Get config paths
-          component_inputs=$(jq -r '[.[] | .info.config] | join(";")' "${{ steps.nslistcomponents.outputs.output_file }}")
-          # Get output paths
-          jq_query='[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_params.yaml"] | join(";")'
-          component_outputs_params=$(jq -r "$jq_query" "${{ steps.nslistcomponents.outputs.output_file }}")
-        fi
-        # Process workflows
-        if [ -f "${{ steps.nslistworkflows.outputs.output_file }}" ]; then
-          # Get config paths
-          workflow_inputs=$(jq -r '[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config] | join(";")' "${{ steps.nslistworkflows.outputs.output_file }}")
-          # Get output paths
-          jq_query='[.[] | select((.functionality.resources[].type // []) | contains("nextflow_script")) | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")'
-          workflow_outputs_params=$(jq -r "$jq_query" "${{ steps.nslistworkflows.outputs.output_file }}")
-        fi
-        inputs=()
-        outputs=()
-        echo "Workflow inputs: $workflow_inputs"
-        echo "Component inputs: $component_inputs"
-        if [ -n "$workflow_inputs" ]; then
-          echo "Adding workflow inputs" 
-          inputs+=(--input "$workflow_inputs")
-          outputs+=(--output "$workflow_outputs_params")
-        fi
-        if [ -n "$component_inputs" ]; then
-          echo "Adding component inputs" 
-          inputs+=(--input "$component_inputs")
-          outputs+=(--output "$component_outputs_params")
-        fi
-        echo "Running viash_tools/target/docker/nextflow/generate_params/generate_params ${inputs[@]} ${outputs[@]}"
-        viash_tools/target/docker/nextflow/generate_params/generate_params "${inputs[@]}" "${outputs[@]}"
-        echo "Created $outputs"
+
+        TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
+
+        BUILT_CONFIGS=$(find "$TARGET_DIR" -name .config.vsh.yaml)
+        echo "Detected configs:"
+        echo "$BUILT_CONFIGS"
+        echo
+
+        NEXTFLOW_PARAMS=$(echo "$BUILT_CONFIGS" | sed 's/.config.vsh.yaml/nextflow_params.yaml/g')
+        echo "Building Nextflow param files:"
+        echo "$NEXTFLOW_PARAMS"
+        echo
+
+        viash_tools/target/docker/nextflow/generate_params/generate_params \
+          --input $(echo "$BUILT_CONFIGS" | paste -sd ";") \
+          --output $(echo "$NEXTFLOW_PARAMS" | paste -sd ";")

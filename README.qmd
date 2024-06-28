@@ -1,0 +1,54 @@
+---
+title: Github Actions for Viash
+format: gfm
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+
+repo_name <- "viash-io/viash-actions"
+latest_stable_version <- "v6"
+
+actions <- tibble(
+  file = list.files(".", full.names = TRUE, recursive = TRUE, pattern = "action.yml"),
+  path = gsub("^\\./(.*)/action.yml$", "\\1", file),
+  action = map(file, yaml::read_yaml),
+  action_name = map_chr(action, "name"),
+  namespace = ifelse(grepl("/", path), gsub("/.*", "", path), ""),
+  str = paste0("1. [`", path, "`](", path, ") - ", action_name, "\n")
+)
+```
+
+
+This repository stores Github Actions useful for building and publishing [Viash](https://viash.io) components:
+
+```{r output="asis"}
+#| echo: false
+cat(actions %>% filter(namespace == "") %>% pull(str) %>% paste(collapse = ""))
+```
+
+There are also some actions that are commonly used in Viash projects:
+
+```{r output="asis"}
+#| echo: false
+cat(actions %>% filter(namespace == "project") %>% pull(str) %>% paste(collapse = ""))
+```
+
+Finally, there are some [Viash Pro](https://www.data-intuitive.com/services/viashpro.html) actions:
+
+```{r output="asis"}
+#| echo: false
+cat(actions %>% filter(namespace == "pro") %>% pull(str) %>% paste(collapse = ""))
+```
+
+We recommend using ``r latest_stable_version`` for your actions.
+
+## Release Management
+
+This repository uses [GitHub's recommended release management for actions](https://docs.github.com/en/actions/creating-actions/about-custom-actions#using-release-management-for-actions): 
+
+* GitHub releases with tags are used for updates on the actions. 
+* Semantic versioning is used, with major, minor and possibly patch release. 
+* Major versions (such as `v1`) will always point to the last minor or patch release for this major version. (when `v1.0.2` is out, `v1` will point to this update to). This means using `viash-io/viash-actions/setup@v1` in your workflow file will automatically get the updated versions. Using `viash-io/viash-actions/setup@v1.0.2` will pin a specific release.
+* Major version changes (`v1` to `v2`) will often come with breaking changes, and workflows might require manual updates.

@@ -1,23 +1,50 @@
 # Github Actions for Viash
 
-This repository stores [Github Actions](https://github.com/features/actions) useful for building and publishing [Viash](https://viash.io) components:
 
-1. [viash-io/viash-actions/setup](setup) - Install Viash
-2. [viash-io/viash-actions/ns-list](ns-list) - List Viash components in a repository
-3. [viash-io/viash-actions/ns-build](ns-build) - Build a namespace from many viash config files
+This repository stores Github Actions useful for building and publishing
+[Viash](https://viash.io) components:
 
-There are also a few actions that are commonly used in Viash projects:
+1.  [`ns-build`](ns-build) - viash ns build
+2.  [`ns-list`](ns-list) - viash ns list
+3.  [`setup`](setup) - Setup Viash
 
-1. [viash-io/viash-actions/project/cache-and-sync-s3](project/cache-and-sync-s3) - Sync and cache an S3 bucket
-2. [viash-io/viash_actions/project/detect-changed-components](project/detect-changed-components) - Detect changed Viash components
+There are also some actions that are commonly used in Viash projects:
 
-We recommend using `v3` for your actions.
+1.  [`project/build-target`](project/build-target) - Build target
+    directory
+2.  [`project/detect-changed-components`](project/detect-changed-components) -
+    Detect components with changed files
+3.  [`project/is-pr`](project/is-pr) - Is PR
+4.  [`project/sync-and-cache-s3`](project/sync-and-cache-s3) - Sync and
+    cache an S3 bucket
+5.  [`project/update-docker-engine`](project/update-docker-engine) -
+    Update Docker Engine
+
+Finally, there are some [Viash
+Pro](https://www.data-intuitive.com/services/viashpro.html) actions:
+
+1.  [`pro/build-nextflow-params`](pro/build-nextflow-params) - Build
+    parameter yaml
+2.  [`pro/build-nextflow-schemas`](pro/build-nextflow-schemas) - Build
+    nf-tower schemas
+3.  [`pro/generate-documentation-qmd`](pro/generate-documentation-qmd) -
+    Build and publish qmd
+
+We recommend using `v6` for your actions.
 
 ## Release Management
 
-This repository uses [GitHub's recommended release management for actions](https://docs.github.com/en/actions/creating-actions/about-custom-actions#using-release-management-for-actions): 
+This repository uses [GitHub’s recommended release management for
+actions](https://docs.github.com/en/actions/creating-actions/about-custom-actions#using-release-management-for-actions):
 
-* GitHub releases with tags are used for updates on the actions. 
-* Semantic versioning is used, with major, minor and possibly patch release. 
-* Major versions (such as `v1`) will always point to the last minor or patch release for this major version. (when `v1.0.2` is out, `v1` will point to this update to). This means using `viash-io/viash-actions/setup@v1` in your workflow file will automatically get the updated versions. Using `viash-io/viash-actions/setup@v1.0.2` will pin a specific release.
-* Major version changes (`v1` to `v2`) will often come with breaking changes, and workflows might require manual updates.
+- GitHub releases with tags are used for updates on the actions.
+- Semantic versioning is used, with major, minor and possibly patch
+  release.
+- Major versions (such as `v1`) will always point to the last minor or
+  patch release for this major version. (when `v1.0.2` is out, `v1` will
+  point to this update to). This means using
+  `viash-io/viash-actions/setup@v1` in your workflow file will
+  automatically get the updated versions. Using
+  `viash-io/viash-actions/setup@v1.0.2` will pin a specific release.
+- Major version changes (`v1` to `v2`) will often come with breaking
+  changes, and workflows might require manual updates.

@@ -1,3 +1,32 @@
+# viash-actions v6.0.0
+
+## Breaking changes
+
+* `update-docker-engine` was moved to `project/update-docker-engine` (PR #27).
+
+* `pro/build-nextflow-params`: Arguments `components` and `workflows` were removed in favour for the `target_dir` argument (PR #27).
+
+* `pro/build-nextflow-schemas`: Arguments `components` and `workflows` were removed in favour for the `target_dir` argument (PR #27).
+
+* Removed `viash-hub/deploy`: Viash Hub pulls source code from GitHub and builds Viash packages accordingly, as opposed to pushing deployments using GitHub Actions (PR #27).
+
+## New functionality
+
+* `project/build-target`: Created an action for building a target directory using `viash ns build` and generating a matrix of the components for which Docker images need to be built and pushed (PR #27).
+
+* `project/check-concurrent-pr`: Created an action for checking if a push event is concurrent with a pull request (PR #27).
+
+## Major changes
+
+* All actions were updated to work with Viash 0.9 and later (PR #27).
+
+## Documentation
+
+* Updated all READMEs to be more consistent (PR #27).
+
+* Added a Makefile for generating READMEs more efficiently (PR #27).
+
+
 # viash-actions v5.3.1
 
 ## Bug fixes
@@ -20,13 +49,13 @@
 
 ## Minor changes
 
-* `project/detect-changed-components`: bump `tj-actions/changed-files` to `42.0.2` (PR #24)
+* `project/detect-changed-components`: bump `tj-actions/changed-files` to `42.0.2` (PR #24).
 
 # viash-actions v5.1.0
 
 ## New functionality
 
-* `pro/build-nextflow-schemas`: Add optional flag to allow dataset input for nf-tower (PR #23)
+* `pro/build-nextflow-schemas`: Add optional flag to allow dataset input for nf-tower (PR #23).
 
 # viash-actions v5.0.0
 

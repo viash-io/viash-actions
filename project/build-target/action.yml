@@ -1,0 +1,142 @@
+name: Build target directory
+author: Data Intuitive
+description: >
+  Build a target directory using the viash ns build command 
+  and create a matrix of the executables which have Docker
+  containers that need to be built.
+
+inputs:
+  version:
+    description: 'Version name to use for the build. If not specified, `${BRANCH_NAME}_build` will be used.'
+    required: false
+  target_branch:
+    description: 'Branch to deploy to. If not specified, `${BRANCH_NAME}_build` will be used.'
+    required: false
+  image_tag:
+    description: 'Force the built components to use a specific Docker image tag.'
+    required: false
+  viash_pro_token:
+    description: 'Viash pro token'
+    required: false
+
+outputs:
+  version:
+    description: 'The version that was used for the build.'
+    value: ${{ steps.defaults.outputs.version }}
+  target_branch:
+    description: 'The branch that the build was deployed to.'
+    value: ${{ steps.defaults.outputs.target_branch }}
+  docker_matrix:
+    description: Matrix of executables for which Docker containers need to be built.
+    value: ${{ steps.find_docker_executables.outputs.output_matrix }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Determine version tag from branch name
+      shell: bash
+      id: defaults
+      run: |
+        BRANCH_NAME=$(echo $GITHUB_REF | sed 's/refs\/heads\///' | sed 's/[^a-zA-Z0-9_]/_/g')
+        VERSION=${{ inputs.version }}
+        if [ -z "$VERSION" ]; then
+          VERSION="${BRANCH_NAME}_build"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+        TARGET_BRANCH=${{ inputs.target_branch }}
+        if [ -z "$TARGET_BRANCH" ]; then
+          TARGET_BRANCH="${BRANCH_NAME}_build"
+        fi
+        echo "target_branch=$TARGET_BRANCH" >> $GITHUB_OUTPUT
+
+        TARGET_DIR=$(yq -r '.target // "target"' _viash.yaml)
+        echo "target_dir=$TARGET_DIR" >> $GITHUB_OUTPUT
+
+        VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
+        if [[ -z "${{inputs.image_tag }}" ]]; then
+          CONFIG_MOD=""
+        elif [ "$(printf '%s\n' "0.9.0" "$VIASH_VERSION" | sort -V | head -n1)" == "0.9.0" ]; then
+          CONFIG_MOD='.platforms[.type == "docker"].target_tag := "${{ inputs.image_tag }}"'
+        else
+          CONFIG_MOD='.engines[.type == "docker"].target_tag := "${{ inputs.image_tag }}"'
+        fi
+        echo "config_mod=$CONFIG_MOD" >> $GITHUB_OUTPUT
+
+    - name: Remove target folder from .gitignore
+      shell: bash
+      run: |
+        TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
+        sed -i "/^\\/*${TARGET_DIR}.*/d" .gitignore
+
+    - name: Set version in _viash.yaml
+      shell: bash
+      run: |
+        yq eval '.version = "${{ steps.defaults.outputs.version }}"' -i _viash.yaml
+
+    - uses: viash-io/viash-actions/ns-build@v6
+      with:
+        parallel: true
+        config_mod: ${{ steps.defaults.outputs.config_mod }}
+
+    - name: Build nextflow schemas
+      if: ${{ inputs.viash_pro_token != '' }}
+      uses: viash-io/viash-actions/pro/build-nextflow-params@v6
+      with:
+        target_dir: ${{ steps.defaults.outputs.target_dir }}
+        viash_pro_token: ${{ inputs.viash_pro_token }}
+        tools_version: 'main_build'
+        enable_dataset_input: true
+   
+    - name: Build parameter files
+      if: ${{ inputs.viash_pro_token != '' }}
+      uses: viash-io/viash-actions/pro/build-nextflow-params@v6
+      with:
+        target_dir: ${{ steps.defaults.outputs.target_dir }}
+        viash_pro_token: ${{ inputs.viash_pro_token }}
+        tools_version: 'main_build'
+
+    - name: Find Docker Executables that need to be built
+      id: find_docker_executables
+      shell: bash
+      run: |
+        TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
+
+        BUILT_CONFIGS=`find "$TARGET_DIR" -name .config.vsh.yaml`
+
+        OUTPUT="["
+
+        for yaml in $BUILT_CONFIGS; do
+          RUNNER=`yq -r ".build_info.runner" $yaml`
+          ENGINE=`yq -r ".build_info.engine // .info.platform" $yaml`
+
+          # skip if not an executable or does not use a docker engine
+          if [ "$RUNNER" != "executable" ] || [[ "$ENGINE" != *"docker"* ]]; then
+            continue
+          fi
+          NAME=`yq -r ".name // .functionality.name" $yaml`
+          NAMESPACE=`yq -r '.namespace // .functionality.namespace // ""' $yaml`
+          if [ -z "$NAMESPACE" ]; then
+            FULL_NAME="$NAME"
+          else
+            FULL_NAME="$NAMESPACE/$NAME"
+          fi
+          CONFIG=`yq -r ".build_info.config // .info.config" $yaml`
+          SRC_DIR=`dirname $CONFIG`
+          TARGET_DIR=`dirname $yaml`
+          EXECUTABLE=`yq -r ".build_info.executable // .info.executable" $yaml`
+
+          echo "Found Docker executable: $FULL_NAME"
+
+          JSON_FIELDS=""
+          for key in NAME NAMESPACE RUNNER ENGINE CONFIG EXECUTABLE SRC_DIR TARGET_DIR FULL_NAME; do
+            key_lower=`echo $key | tr '[:upper:]' '[:lower:]'`
+            JSON_FIELDS="$JSON_FIELDS\"${key_lower}\":\"${!key}\","
+          done
+
+          OUTPUT="$OUTPUT{${JSON_FIELDS%,}},"
+        done
+
+        OUTPUT="${OUTPUT%,}]"
+
+        echo "output_matrix=$OUTPUT" >> $GITHUB_OUTPUT
