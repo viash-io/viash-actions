@@ -1,0 +1,139 @@
+name: Sync and cache test resources
+author: Data Intuitive
+description: |
+  Sync and cache test resources. This action will sync test resources from
+  different sources (e.g. S3) and cache them for later use. The cache key is
+  based on the hash of the test resources.
+
+  For this action to work, the Viash project config should contain a list of
+  test resources to sync.
+
+  Example:
+
+  ```yaml
+  info:
+    test_resources:
+      - type: s3
+        path: s3://my-bucket/my-folder
+        dest: my-folder
+  ```
+inputs:
+  project_config:
+    required: false
+    description: Path to the project configuration file.
+    default: _viash.yaml
+  cache_key_prefix:
+    required: false
+    description: A prefix for the cache hash key. Prefix is also used for restoring stale cache if no cache hit occurred for key.
+    default: cachekey__
+outputs:
+  cache_key:
+    description: Caching key.
+    value: ${{ steps.cache_hash.outputs.cache_hash }}
+  dest_paths:
+    description: Paths to the synced resources.
+    value: ${{ steps.test_resources.outputs.dest_paths }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Test resources
+      id: test_resources
+      shell: bash
+      run: |
+        # todo: use basename of path if dest is missing
+        test_resources=$(yq e '.info.test_resources[] | "{type: " + (.type // "s3") + ", path: " + .path + ", dest: " + .dest + "}"' "${{ inputs.project_config }}")
+        echo "test_resources=$test_resources" >> $GITHUB_OUTPUT
+
+        echo "dest_paths=$(echo "$test_resources" | yq e '.dest')" >> $GITHUB_OUTPUT
+
+    # create cache_hash key
+    # this is the combined hash of all of the files across the different test resource sources
+    - name: Create hash key
+      shell: bash
+      id: cache_hash
+      run: |
+        function hash_s3() {
+          local s3_path="$1"
+          AWS_EC2_METADATA_DISABLED=true \
+            aws s3 ls \
+            "$s3_path" \
+            --recursive \
+            --no-sign-request | \
+            md5sum | \
+            awk '{ print $1 }'
+        }
+
+        function hash_resources() {
+          local test_resources="$1"
+          echo "$test_resources" | \
+          while read -r line; do
+            type=$(echo "$line" | yq e '.type')
+            path=$(echo "$line" | yq e '.path')
+            dest=$(echo "$line" | yq e '.dest')
+            if [ "$type" == "s3" ]; then
+              hash=$(hash_s3 "$path")
+            fi
+            echo "dest: $dest, hash: $hash"
+          done |
+          md5sum | \
+          awk '{ print $1 }'
+        }
+
+        hash=$(hash_resources "${{ steps.test_resources.outputs.test_resources }}")
+
+        echo "cache_hash=${{ inputs.cache_key_prefix }}$hash" >> $GITHUB_OUTPUT
+    
+    # initialize cache
+    - name: Cache resources
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.test_resources.outputs.dest_paths }}
+        key: ${{ steps.cache_hash.outputs.cache_hash }}
+        restore-keys: ${{ inputs.cache_key_prefix }}
+
+    # sync if need be
+    - name: Sync resources
+      shell: bash
+      run: |
+        function sync_s3() {
+          local s3_path="$1"
+          local dest_path="$2"
+          AWS_EC2_METADATA_DISABLED=true \
+            aws s3 sync \
+            "$s3_path" \
+            "$dest_path"
+        }
+
+        function sync_resources() {
+          local test_resources="$1"
+          echo "$test_resources" | \
+          while read -r line; do
+            type=$(echo "$line" | yq e '.type')
+            path=$(echo "$line" | yq e '.path')
+            dest=$(echo "$line" | yq e '.dest')
+            if [ "$type" == "s3" ]; then
+              sync_s3 "$path" "$dest"
+            fi
+          done
+        }
+
+        sync_resources "${{ steps.test_resources.outputs.test_resources }}"
+        
+    - name: List resources
+      shell: bash
+      run: |
+        echo "${{ steps.test_resources.outputs.test_resources }}" | \
+          while read -r line; do
+            type=$(echo "$line" | yq e '.type')
+            path=$(echo "$line" | yq e '.path')
+            dest=$(echo "$line" | yq e '.dest')
+
+            echo "===================================="
+            echo "type: $type"
+            echo "path: $path"
+            echo "dest: $dest"
+            tree $dest -L 3
+            echo ""
+            echo "===================================="
+          done
+        tree ${{ inputs.dest_path }} -L 3
