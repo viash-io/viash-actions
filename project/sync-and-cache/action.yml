@@ -40,11 +40,17 @@ runs:
       id: test_resources
       shell: bash
       run: |
-        # todo: use basename of path if dest is missing
+        # todo: use basename of path if dest is missing?
         test_resources=$(yq e '.info.test_resources[] | "{type: " + (.type // "s3") + ", path: " + .path + ", dest: " + .dest + "}"' "${{ inputs.project_config }}")
-        echo "test_resources=$test_resources" >> $GITHUB_OUTPUT
+        dest_paths=$(echo "$test_resources" | yq e '.dest')
 
-        echo "dest_paths=$(echo "$test_resources" | yq e '.dest')" >> $GITHUB_OUTPUT
+        # escape
+        test_resources="${test_resources//$'\n'/'%0A'}"
+        dest_paths="${dest_paths//$'\n'/'%0A'}"
+
+        # output
+        echo "test_resources=$test_resources" >> $GITHUB_OUTPUT
+        echo "dest_paths=$dest_paths" >> $GITHUB_OUTPUT
 
     # create cache_hash key
     # this is the combined hash of all of the files across the different test resource sources
