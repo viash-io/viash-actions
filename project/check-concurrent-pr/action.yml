@@ -48,4 +48,4 @@ runs:
           echo "run=false" >> $GITHUB_OUTPUT
         fi
       env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GH_TOKEN: ${{ inputs.github_token }}
