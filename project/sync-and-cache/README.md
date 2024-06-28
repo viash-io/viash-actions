@@ -53,6 +53,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Sync and cache test resources
+      - name: Sync and cache test resources specified by the project config
         uses: viash-io/viash-actions/sync-and-cache
 ```

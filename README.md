@@ -19,7 +19,7 @@ There are also some actions that are commonly used in Viash projects:
 4.  [`project/sync-and-cache-s3`](project/sync-and-cache-s3) - Sync and
     cache an S3 bucket
 5.  [`project/sync-and-cache`](project/sync-and-cache) - Sync and cache
-    test resources
+    test resources specified by the project config
 6.  [`project/update-docker-engine`](project/update-docker-engine) -
     Update Docker Engine
 
