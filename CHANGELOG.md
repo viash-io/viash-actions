@@ -1,3 +1,13 @@
+# viash-actions v6.0.1
+
+## New functionality
+
+* `sync-and-cache`: Added an action for syncing and caching test resources (PR #31).
+
+## Bug fixes
+
+* `check-concurrent-pr`: Added input parameter `github_token` for checking concurrent PRs (PR #31).
+
 # viash-actions v6.0.0
 
 ## Breaking changes
