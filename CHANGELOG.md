@@ -2,9 +2,9 @@
 
 ## Minor changes
 
-* `ns-list`: Output the `main_script_type` of each component.
+* `ns-list`: Output the `main_script_type` of each component (PR #33).
 
-* `project/detect-changed-components`: Output the `full_name` and `main_script_type` of each component.
+* `project/detect-changed-components`: Output the `full_name` and `main_script_type` of each component (PR #33).
 
 # viash-actions v6.0.0
 
