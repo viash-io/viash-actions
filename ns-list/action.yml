@@ -75,8 +75,15 @@ outputs:
       of the output file will not require you to adjust settings for downstream actions
       as well.
   output_matrix:
-    description: A simplified version of the output, which is a list of components
-      with fields 'name', 'namespace', 'full_name', 'config', and 'dir'.
+    description: |
+      Matrix of components. The matrix is a json array with the following fields: 
+        
+        - name: The name of the component
+        - namespace: The namespace of the component
+        - full_name: The full name of the component
+        - config: The path to the config file of the component
+        - dir: The directory of the config file of the component
+        - main_script_type: The type of the main script of the component
 runs:
   using: node20
   main: index.js
