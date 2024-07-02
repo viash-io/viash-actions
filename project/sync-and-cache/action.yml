@@ -46,7 +46,7 @@ runs:
         echo "EOF" >> $GITHUB_OUTPUT
 
         echo "dest_paths<<EOF" >> $GITHUB_OUTPUT
-        echo "$test_resources" | yq e '.dest' >> $GITHUB_OUTPUT
+        yq e '.info.test_resources[] | .dest' "${{ inputs.project_config }}" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
 
     # create cache_key key
