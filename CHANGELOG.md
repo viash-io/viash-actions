@@ -2,7 +2,7 @@
 
 ## Minor changes
 
-* `detect-changed-components`: Make action less verbose by not printing out every changed file for every component (PR #xx).
+* `detect-changed-components`: Make action less verbose by not printing out every changed file for every component (PR #32).
 
 # viash-actions v6.0.0
 
