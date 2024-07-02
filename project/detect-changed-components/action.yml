@@ -16,7 +16,15 @@ outputs:
     value: ${{ steps.filter.outputs.output_file }}
   output_matrix:
     description: |
-      Matrix of components that have changed resources.
+      Matrix of components that have changed resources. The matrix is a json array with the following fields: 
+
+      - name: The name of the component
+      - namespace: The namespace of the component
+      - full_name: The full name of the component
+      - config: The path to the config file of the component
+      - dir: The directory of the config file of the component
+      - main_script_type: The type of the main script of the component
+
     value: ${{ steps.set_matrix.outputs.matrix }}
 runs:
   using: 'composite'
@@ -174,8 +182,10 @@ runs:
             "name": (.name // .functionality.name),
             "namespace": (.namespace // .functionality.namespace // ""),
             "config": (.build_info.config // .info.config),
-            "dir": (.build_info.config // .info.config) | capture("^(?<dir>.*\/)").dir
-          }
+            "dir": (.build_info.config // .info.config) | capture("^(?<dir>.*\/)").dir,
+            "main_script_type": (.resources // .functionality.resources)[0].type
+          } |
+          .full_name = if .namespace == "" then .name else .namespace + "/" + .name end
         ]' $comp_file
       )
       echo "matrix=$matrix" >> $GITHUB_OUTPUT

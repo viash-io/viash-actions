@@ -63,6 +63,7 @@ We recommend using a Linux or MacOS runner if possible.
 - `output`: The output of the ‘viash ns list’ command, which is a list
   of all of the components found. By default this will be a yaml, unless
   the format argument was set to ‘json’.
+
 - `output_file`: Path of a file to which the output was written (same as
   \`inputs.output_file\`\`). We recommend using this property for
   capturing the action’s output because there is a limit in the object
@@ -70,9 +71,16 @@ We recommend using a Linux or MacOS runner if possible.
   property instead of a static file path, changing the location of the
   output file will not require you to adjust settings for downstream
   actions as well.
-- `output_matrix`: A simplified version of the output, which is a list
-  of components with fields ‘name’, ‘namespace’, ‘full_name’, ‘config’,
-  and ‘dir’.
+
+- `output_matrix`: Matrix of components. The matrix is a json array with
+  the following fields:
+
+  - name: The name of the component
+  - namespace: The namespace of the component
+  - full_name: The full name of the component
+  - config: The path to the config file of the component
+  - dir: The directory of the config file of the component
+  - main_script_type: The type of the main script of the component
 
 ## Usage
 
