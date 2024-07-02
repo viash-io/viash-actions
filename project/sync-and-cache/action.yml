@@ -29,7 +29,7 @@ inputs:
 outputs:
   cache_key:
     description: Caching key.
-    value: ${{ steps.cache_hash.outputs.cache_hash }}
+    value: ${{ steps.cache_key.outputs.cache_key }}
   dest_paths:
     description: Paths to the synced resources.
     value: ${{ steps.test_resources.outputs.dest_paths }}
@@ -40,7 +40,6 @@ runs:
       id: test_resources
       shell: bash
       run: |
-        # todo: use basenfix
         # output multiline string
         echo "test_resources<<EOF" >> $GITHUB_OUTPUT
         yq e '.info.test_resources[] | "{type: " + (.type // "s3") + ", path: " + .path + ", dest: " + .dest + "}"' "${{ inputs.project_config }}" >> $GITHUB_OUTPUT
@@ -50,11 +49,11 @@ runs:
         echo "$test_resources" | yq e '.dest' >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
 
-    # create cache_hash key
+    # create cache_key key
     # this is the combined hash of all of the files across the different test resource sources
     - name: Create hash key
       shell: bash
-      id: cache_hash
+      id: cache_key
       run: |
         function hash_s3() {
           local s3_path="$1"
@@ -67,9 +66,9 @@ runs:
             awk '{ print $1 }'
         }
 
-        function hash_resources() {
-          local test_resources="$1"
-          echo "$test_resources" | \
+        hashes=()
+
+        echo "${{ steps.test_resources.outputs.test_resources }}" | \
           while read -r line; do
             type=$(echo "$line" | yq e '.type')
             path=$(echo "$line" | yq e '.path')
@@ -78,21 +77,35 @@ runs:
               hash=$(hash_s3 "$path")
             fi
             echo "dest: $dest, hash: $hash"
-          done |
-          md5sum | \
-          awk '{ print $1 }'
-        }
+            hashes+=( "dest: $dest, hash: $hash" )
+          done
+        
+        hash=$(echo "${hashes[@]}" | md5sum | awk '{ print $1 }')
 
-        hash=$(hash_resources "${{ steps.test_resources.outputs.test_resources }}")
+        echo "cache_key=${{ inputs.cache_key_prefix }}$hash" >> $GITHUB_OUTPUT
+    
+    - name: Print resources
+      shell: bash
+      run: |
+        echo "### Cache key: ${{ steps.cache_key.outputs.cache_key }}"
+        echo
 
-        echo "cache_hash=${{ inputs.cache_key_prefix }}$hash" >> $GITHUB_OUTPUT
+        echo "### Contents of 'test_resources':"
+        echo
+        echo "${{ steps.test_resources.outputs.test_resources }}"
+        echo
+
+        echo "### Contents of 'dest_paths':"
+        echo
+        echo "${{ steps.test_resources.outputs.dest_paths }}"
+        echo
     
     # initialize cache
     - name: Cache resources
       uses: actions/cache@v4
       with:
         path: ${{ steps.test_resources.outputs.dest_paths }}
-        key: ${{ steps.cache_hash.outputs.cache_hash }}
+        key: ${{ steps.cache_key.outputs.cache_key }}
         restore-keys: ${{ inputs.cache_key_prefix }}
 
     # sync if need be
@@ -109,20 +122,18 @@ runs:
             --no-sign-request
         }
 
-        function sync_resources() {
-          local test_resources="$1"
-          echo "$test_resources" | \
+        echo "${{ steps.test_resources.outputs.test_resources }}" | \
           while read -r line; do
             type=$(echo "$line" | yq e '.type')
             path=$(echo "$line" | yq e '.path')
             dest=$(echo "$line" | yq e '.dest')
+
+            echo "Syncing '$path' to '$dest'..."
+
             if [ "$type" == "s3" ]; then
               sync_s3 "$path" "$dest"
             fi
           done
-        }
-
-        sync_resources "${{ steps.test_resources.outputs.test_resources }}"
         
     - name: List resources
       shell: bash
@@ -141,4 +152,3 @@ runs:
             echo ""
             echo "===================================="
           done
-        tree ${{ inputs.dest_path }} -L 3
