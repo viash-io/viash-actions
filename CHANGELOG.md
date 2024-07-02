@@ -4,6 +4,14 @@
 
 * `sync-and-cache`: Added an action for syncing and caching test resources (PR #31).
 
+## Minor changes
+
+* `project/detect-changed-components`: Make action less verbose by not printing out every changed file for every component (PR #32).
+
+* `ns-list`: Output the `main_script_type` of each component (PR #33).
+
+* `project/detect-changed-components`: Output the `full_name` and `main_script_type` of each component (PR #33).
+
 ## Bug fixes
 
 * `check-concurrent-pr`: Added input parameter `github_token` for checking concurrent PRs (PR #31).

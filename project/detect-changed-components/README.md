@@ -20,7 +20,20 @@ has been changed with respect to the default branch.
   on whether one of the resources of the component has been changed or
   not.
 
-- `output_matrix`: Matrix of components that have changed resources.
+- `output_matrix`: Matrix of components that have changed resources. The
+  matrix is a json array with the following fields:
+
+- name: The name of the component
+
+- namespace: The namespace of the component
+
+- full_name: The full name of the component
+
+- config: The path to the config file of the component
+
+- dir: The directory of the config file of the component
+
+- main_script_type: The type of the main script of the component
 
 ## Examples
 

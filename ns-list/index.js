@@ -81,13 +81,16 @@ async function run() {
       const comp_fullname = comp_namespace ? comp_namespace + "/" + comp_name : comp_name
       const comp_config = component?.build_info?.config ?? component?.info?.config
       const comp_dir = comp_config ? path.dirname(comp_config) : undefined
+      const resources = component?.resources ?? component?.functionality?.resources
+      const comp_main_script_type = resources ? resources[0]?.type : undefined
       // todo: if component has a test_resource with a nextflow_script, get the entrypoint?
       return {
         name: comp_name,
         namespace: comp_namespace,
         full_name: comp_fullname,
         config: comp_config,
-        dir: comp_dir
+        dir: comp_dir,
+        main_script_type: comp_main_script_type
       }
     })
     // return matrix as json
