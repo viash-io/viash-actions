@@ -40,14 +40,27 @@ runs:
       id: test_resources
       shell: bash
       run: |
-        # output multiline string
-        echo "test_resources<<EOF" >> $GITHUB_OUTPUT
-        yq e '.info.test_resources[] | "{type: " + (.type // "s3") + ", path: " + .path + ", dest: " + .dest + "}"' "${{ inputs.project_config }}" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        # reformat the test resources into a pseudo-json that can be read line-by-line by bash
+        test_resources=$(
+          yq e \
+            '.info.test_resources[] | "{type: " + (.type // "s3") + ", path: " + .path + ", dest: " + .dest + "}"' \
+            "${{ inputs.project_config }}"
+        )
 
-        echo "dest_paths<<EOF" >> $GITHUB_OUTPUT
-        yq e '.info.test_resources[] | .dest' "${{ inputs.project_config }}" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        # fetch the test resource destination paths
+        dest_paths=$(
+          yq e '.info.test_resources[] | .dest' "${{ inputs.project_config }}"
+        )
+
+        # output multiline string
+        cat >> $GITHUB_OUTPUT <<HERE
+        test_resources<<EOF
+        $test_resources
+        EOF
+        dest_paths<<EOF
+        $dest_paths
+        EOF
+        HERE
 
     # create cache_key key
     # this is the combined hash of all of the files across the different test resource sources
