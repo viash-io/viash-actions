@@ -1,3 +1,9 @@
+# viash-actions v6.3.1
+
+## Bug fixes
+
+* `project/sync-and-cache`: Skip caching steps in action if no test resources are found (PR #xx).
+
 # viash-actions v6.3.0
 
 ## New functionality
