@@ -2,7 +2,7 @@
 
 ## New functionality
 
-`pro/generate_documentation_qmd`: add `--query` parameter.
+`pro/generate_documentation_qmd`: add `--query` parameter (PR #35).
 
 # viash-actions v6.1.0
 
