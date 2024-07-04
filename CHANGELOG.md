@@ -2,7 +2,7 @@
 
 ## New functionality
 
-* `pro/generate_documentation_qmd`: add `--clean` parameter (PR #).
+* `pro/generate_documentation_qmd`: add `--clean` parameter (PR #36).
 
 # viash-actions v6.2.0
 
