@@ -34,6 +34,12 @@ inputs:
       Template for output paths. Can contain `{type}`, `{namespace}` and `{name}` 
       wildcards to create a custom folder hierarchy for storing the output for different components
     default: "{type}s/{namespace}/{name}.qmd"
+  clean:
+    type: boolean
+    required: false
+    default: false
+    description: >
+      Whether or not to start from a clean directory.
   ref:
     required: false
     description: >
@@ -102,7 +108,11 @@ runs:
 
         if [ ! -z "${{ inputs.query }}" ]; then
           extra_args+=(--query "${{ inputs.query }}")
-        fi 
+        fi
+
+        if [ "${{ inputs.clean }}" == "true" ]; then
+          extra_args+=(--clean")
+        fi
 
         $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
           --input "./" "${extra_args[@]}" \
