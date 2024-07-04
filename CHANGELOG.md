@@ -1,4 +1,10 @@
-# viash-actions v6.3.1
+# viash-actions v6.4.0
+
+## New functionality
+
+`.github/workflows/build.yaml`: Added a callable workflow for building Viash components (PR #xx).
+
+`.github/workflows/test.yaml`: Added a callable workflow for testing Viash components (PR #xx).
 
 ## Bug fixes
 
