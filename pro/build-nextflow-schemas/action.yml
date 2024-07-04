@@ -1,9 +1,7 @@
-name: 'Build nf-tower schemas'
+name: 'Build nf-tower schemas for Viash components'
 author: Data Intuitive
 description: >
   This action will build nextflow schemas for Viash workflows and components in a repository.
-  For workflows, will save the build schemas next to the Viash config.
-  For components, will output to the target directory (see viash ns build).
 inputs:
   target_dir:
     required: false

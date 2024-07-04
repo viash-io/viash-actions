@@ -27,11 +27,11 @@ Finally, there are some [Viash
 Pro](https://www.data-intuitive.com/services/viashpro.html) actions:
 
 1.  [`pro/build-nextflow-params`](pro/build-nextflow-params) - Build
-    parameter yaml
+    parameter yaml examples for Viash components
 2.  [`pro/build-nextflow-schemas`](pro/build-nextflow-schemas) - Build
-    nf-tower schemas
+    nf-tower schemas for Viash components
 3.  [`pro/generate-documentation-qmd`](pro/generate-documentation-qmd) -
-    Build and publish qmd
+    Build quarto markdown documentation files for Viash components
 
 We recommend using `v6` for your actions.
 
