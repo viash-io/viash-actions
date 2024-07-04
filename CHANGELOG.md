@@ -2,7 +2,7 @@
 
 ## Bug fixes
 
-* `project/sync-and-cache`: Skip caching steps in action if no test resources are found (PR #xx).
+* `project/sync-and-cache`: Skip caching steps in action if no test resources are found (PR #37).
 
 # viash-actions v6.3.0
 
