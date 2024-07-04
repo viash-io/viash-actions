@@ -12,7 +12,7 @@
 
 * `project/detect-changed-components`: Output the `full_name` and `main_script_type` of each component (PR #33).
 
-* Update documentation for various components (PR #xx).
+* Update documentation for various components (PR #34).
 
 ## Bug fixes
 
