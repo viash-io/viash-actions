@@ -1,0 +1,170 @@
+name: Sync and cache test resources specified by the project config
+author: Data Intuitive
+description: |
+  Sync and cache test resources. This action will sync test resources from
+  different sources (e.g. S3) and cache them for later use. The cache key is
+  based on the hash of the test resources. For this action to work, the Viash
+  project config should contain a list of test resources to sync.
+
+  Supported storage types:
+
+    - `s3`: Syncs resources from an S3 bucket.
+    - Create a GitHub issue if you need support for other storage types.
+
+  Example:
+
+  ```yaml
+  info:
+    test_resources:
+      - type: s3
+        path: s3://my-bucket/my-folder
+        dest: my-folder
+  ```
+inputs:
+  project_config:
+    required: false
+    description: Path to the project configuration file.
+    default: _viash.yaml
+  cache_key_prefix:
+    required: false
+    description: A prefix for the cache hash key. Prefix is also used for restoring stale cache if no cache hit occurred for key.
+    default: cachekey__
+outputs:
+  cache_key:
+    description: Caching key.
+    value: ${{ steps.cache_key.outputs.cache_key }}
+  dest_paths:
+    description: Paths to the synced resources.
+    value: ${{ steps.test_resources.outputs.dest_paths }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Test resources
+      id: test_resources
+      shell: bash
+      run: |
+        # reformat the test resources into a pseudo-json that can be read line-by-line by bash
+        test_resources=$(
+          yq e \
+            '.info.test_resources[] | "{type: " + (.type // "s3") + ", path: " + .path + ", dest: " + .dest + "}"' \
+            "${{ inputs.project_config }}"
+        )
+
+        # fetch the test resource destination paths
+        dest_paths=$(
+          yq e '.info.test_resources[] | .dest' "${{ inputs.project_config }}"
+        )
+
+        # output multiline string
+        cat >> $GITHUB_OUTPUT <<HERE
+        test_resources<<EOF
+        $test_resources
+        EOF
+        dest_paths<<EOF
+        $dest_paths
+        EOF
+        HERE
+
+    # create cache_key key
+    # this is the combined hash of all of the files across the different test resource sources
+    - name: Create hash key
+      shell: bash
+      id: cache_key
+      run: |
+        function hash_s3() {
+          local s3_path="$1"
+          AWS_EC2_METADATA_DISABLED=true \
+            aws s3 ls \
+            "$s3_path" \
+            --recursive \
+            --no-sign-request | \
+            md5sum | \
+            awk '{ print $1 }'
+        }
+
+        hashes=()
+
+        echo "${{ steps.test_resources.outputs.test_resources }}" | \
+          while read -r line; do
+            type=$(echo "$line" | yq e '.type')
+            path=$(echo "$line" | yq e '.path')
+            dest=$(echo "$line" | yq e '.dest')
+            if [ "$type" == "s3" ]; then
+              hash=$(hash_s3 "$path")
+            fi
+            echo "dest: $dest, hash: $hash"
+            hashes+=( "dest: $dest, hash: $hash" )
+          done
+        
+        hash=$(echo "${hashes[@]}" | md5sum | awk '{ print $1 }')
+
+        echo "cache_key=${{ inputs.cache_key_prefix }}$hash" >> $GITHUB_OUTPUT
+    
+    - name: Print resources
+      shell: bash
+      run: |
+        echo "### Cache key: ${{ steps.cache_key.outputs.cache_key }}"
+        echo
+
+        echo "### Contents of 'test_resources':"
+        echo
+        echo "${{ steps.test_resources.outputs.test_resources }}"
+        echo
+
+        echo "### Contents of 'dest_paths':"
+        echo
+        echo "${{ steps.test_resources.outputs.dest_paths }}"
+        echo
+    
+    # initialize cache
+    - name: Cache resources
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.test_resources.outputs.dest_paths }}
+        key: ${{ steps.cache_key.outputs.cache_key }}
+        restore-keys: ${{ inputs.cache_key_prefix }}
+
+    # sync if need be
+    - name: Sync resources
+      shell: bash
+      run: |
+        function sync_s3() {
+          local s3_path="$1"
+          local dest_path="$2"
+          AWS_EC2_METADATA_DISABLED=true \
+            aws s3 sync \
+            "$s3_path" \
+            "$dest_path" \
+            --no-sign-request
+        }
+
+        echo "${{ steps.test_resources.outputs.test_resources }}" | \
+          while read -r line; do
+            type=$(echo "$line" | yq e '.type')
+            path=$(echo "$line" | yq e '.path')
+            dest=$(echo "$line" | yq e '.dest')
+
+            echo "Syncing '$path' to '$dest'..."
+
+            if [ "$type" == "s3" ]; then
+              sync_s3 "$path" "$dest"
+            fi
+          done
+        
+    - name: List resources
+      shell: bash
+      run: |
+        echo "${{ steps.test_resources.outputs.test_resources }}" | \
+          while read -r line; do
+            type=$(echo "$line" | yq e '.type')
+            path=$(echo "$line" | yq e '.path')
+            dest=$(echo "$line" | yq e '.dest')
+
+            echo "===================================="
+            echo "type: $type"
+            echo "path: $path"
+            echo "dest: $dest"
+            tree $dest -L 3
+            echo ""
+            echo "===================================="
+          done
