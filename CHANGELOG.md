@@ -1,8 +1,8 @@
-# viash-actions v6.0.1
+# viash-actions v6.1.0
 
 ## New functionality
 
-* `sync-and-cache`: Added an action for syncing and caching test resources (PR #31).
+* `project/sync-and-cache`: Added an action for syncing and caching test resources (PR #31).
 
 ## Minor changes
 
@@ -12,9 +12,12 @@
 
 * `project/detect-changed-components`: Output the `full_name` and `main_script_type` of each component (PR #33).
 
+* Update documentation for various components (PR #34).
+
 ## Bug fixes
 
 * `check-concurrent-pr`: Added input parameter `github_token` for checking concurrent PRs (PR #31).
+
 
 # viash-actions v6.0.0
 

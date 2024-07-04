@@ -1,11 +1,11 @@
-name: 'Build and publish qmd'
+name: 'Build quarto markdown documentation files for Viash components'
 author: 'Dries Schaumont'
 description: |
-  Create quarto markdown files for viash components or workflows, based on a jinja template.
+  Create quarto markdown files for Viash components or workflows, based on a jinja template.
 
-  This action will look for viash configs for workflows and components in a directory, 
+  This action will look for Viash configs for workflows and components in a directory, 
   and will apply information for each of these configs to a jinja template to generate qmd files.
-  This component required Viash to be installed and available in `$PATH`.
+  This component requires Viash to be installed and available in `$PATH`.
   
   We recommend to use [viash-actions/setup](https://github.com/viash-io/viash-actions/tree/main/setup) before you run `generate_documentation_qmd`.
 inputs:
