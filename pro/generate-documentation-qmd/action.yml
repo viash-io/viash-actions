@@ -58,6 +58,10 @@ inputs:
     required: false
     description: |
       An override for the `--src` parameter in `viash ns list`. Example: `src/`.
+  query:
+    required: false
+    description: |
+      Filter which components get selected by component and namespace name. Can be a regex.
 runs:
   using: 'composite'
   steps:
@@ -95,6 +99,10 @@ runs:
         if [ ! -z "${{ inputs.dest_path }}" ]; then
           extra_args+=(--dest_path "${{ inputs.dest_path }}")
         fi
+
+        if [ ! -z "${{ inputs.query }}" ]; then
+          extra_args+=(--query "${{ inputs.query }}")
+        fi 
 
         $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
           --input "./" "${extra_args[@]}" \
