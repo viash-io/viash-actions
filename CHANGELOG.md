@@ -2,9 +2,9 @@
 
 ## New functionality
 
-`.github/workflows/build.yaml`: Added a callable workflow for building Viash components (PR #xx).
+`.github/workflows/build.yaml`: Added a callable workflow for building Viash components (PR #38).
 
-`.github/workflows/test.yaml`: Added a callable workflow for testing Viash components (PR #xx).
+`.github/workflows/test.yaml`: Added a callable workflow for testing Viash components (PR #38).
 
 ## Bug fixes
 
