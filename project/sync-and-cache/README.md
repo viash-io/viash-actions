@@ -37,8 +37,10 @@ info:
 
 ### Outputs
 
-- `cache_key`: Caching key.
-- `dest_paths`: Paths to the synced resources.
+- `cache_key`: Caching key to use to restore the cache. If no test
+  resources are detected, this will be an empty string.
+- `dest_paths`: Paths to the synced resources. If no test resources are
+  detected, this will be an empty string.
 
 ## Examples
 
