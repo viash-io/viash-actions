@@ -5,6 +5,7 @@ on:
 
 jobs:
   run_ci_check_job:
+    name: Check if branch has an existing pull request and the trigger was a push
     runs-on: ubuntu-latest
     outputs:
       run: ${{ steps.github_cli.outputs.run }}
@@ -17,6 +18,7 @@ jobs:
 
   # phase 1
   list:
+    name: List components to test
     needs: run_ci_check_job
     runs-on: ubuntu-latest
     if: ${{ needs.run_ci_check_job.outputs.run == 'true' }}
@@ -55,7 +57,8 @@ jobs:
         echo "output_matrix=$OUTPUT_MATRIX" >> $GITHUB_OUTPUT
 
   # phase 2
-  viash_test:
+  test:
+    name: Test component
     needs: list
     if: ${{ needs.list.outputs.matrix != '[]' && needs.list.outputs.matrix != '' }}
     runs-on: ubuntu-latest
