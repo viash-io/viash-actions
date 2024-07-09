@@ -6,6 +6,8 @@
 
 `.github/workflows/test.yaml`: Added a callable workflow for testing Viash components (PR #38).
 
+# viash-actions v6.3.1
+
 ## Bug fixes
 
 * `project/sync-and-cache`: Skip caching steps in action if no test resources are found (PR #37).
