@@ -75,13 +75,13 @@ runs:
         
         if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
           IFS=';'; viash_tools/target/docker/nextflow/generate_schema_v9/generate_schema_v9 \
-          --input "${BUILT_CONFIGS[*]@Q}" \
-          --output  "${NEXTFLOW_SCHEMAS[*]@Q}" \
+          --input "${BUILT_CONFIGS[*]}" \
+          --output  "${NEXTFLOW_SCHEMAS[*]}" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input") 
         else
           IFS=';'; viash_tools/target/docker/nextflow/generate_schema/generate_schema \
-          --input "${BUILT_CONFIGS[*]@Q}" \
-          --output "${NEXTFLOW_SCHEMAS[*]@Q}" \
+          --input "${BUILT_CONFIGS[*]}" \
+          --output "${NEXTFLOW_SCHEMAS[*]}" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input")
         fi
 
