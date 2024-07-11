@@ -70,7 +70,18 @@ runs:
         echo "$NEXTFLOW_SCHEMAS"
         echo
 
-        viash_tools/target/docker/nextflow/generate_schema/generate_schema \
+        VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
+        IFS=. read -r major minor patch <<< $VIASH_VERSION
+        
+        if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
+          viash_tools/target/docker/nextflow/generate_schema/generate_schema_v9 \
+          --input "$(echo "$BUILT_CONFIGS" | paste -sd ";")" \
+          --output "$(echo "$NEXTFLOW_SCHEMAS" | paste -sd ";")" \
+          $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input") 
+        else
+          viash_tools/target/docker/nextflow/generate_schema/generate_schema \
           --input "$(echo "$BUILT_CONFIGS" | paste -sd ";")" \
           --output "$(echo "$NEXTFLOW_SCHEMAS" | paste -sd ";")" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input")
+        fi
+
