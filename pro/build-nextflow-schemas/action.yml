@@ -74,14 +74,14 @@ runs:
         IFS=. read -r major minor patch <<< $VIASH_VERSION
         
         if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
-          viash_tools/target/docker/nextflow/generate_schema_v9/generate_schema_v9 \
-          --input $(IFS=';'; echo "${BUILT_CONFIGS[*]@Q}")  \
-          --output $(IFS=';'; echo "${NEXTFLOW_SCHEMAS[*]@Q}") \
+          IFS=';'; viash_tools/target/docker/nextflow/generate_schema_v9/generate_schema_v9 \
+          --input "${BUILT_CONFIGS[*]@Q}" \
+          --output  "${NEXTFLOW_SCHEMAS[*]@Q}" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input") 
         else
-          viash_tools/target/docker/nextflow/generate_schema/generate_schema \
-          --input $(IFS=';'; echo "${BUILT_CONFIGS[*]@Q}") \
-          --output $(IFS=';'; echo "${NEXTFLOW_SCHEMAS[*]@Q}") \
+          IFS=';'; viash_tools/target/docker/nextflow/generate_schema/generate_schema \
+          --input "${BUILT_CONFIGS[*]@Q}" \
+          --output "${NEXTFLOW_SCHEMAS[*]@Q}" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input")
         fi
 
