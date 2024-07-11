@@ -60,14 +60,14 @@ runs:
 
         TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
 
-        BUILT_CONFIGS=$(find "$TARGET_DIR" -name .config.vsh.yaml)
+        readarray -d '' BUILT_CONFIGS < <(find "$TARGET_DIR" -name .config.vsh.yaml -print0)
         echo "Detected configs:"
-        echo "$BUILT_CONFIGS"
+        printf "%s\n" "${BUILT_CONFIGS[@]}"
         echo
 
         NEXTFLOW_SCHEMAS=$(echo "$BUILT_CONFIGS" | sed 's/.config.vsh.yaml/nextflow_schema.json/g')
         echo "Building Nextflow schema files:"
-        echo "$NEXTFLOW_SCHEMAS"
+        printf "%s\n" "${NEXTFLOW_SCHEMAS[@]}"
         echo
 
         VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
