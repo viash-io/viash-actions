@@ -94,9 +94,8 @@ runs:
       # also remove newline if any
       declare -a changed_files=()
       trim_slash() {
-        local line=$2
-        echo "Found changed file: '$trimmed_line'"
-        changed_files[$1]="${trimmed_line}"
+        echo "Found changed file: '$2'"
+        changed_files[$1]="$2"
       }
       # read changed files as array, but remove the last newline
       changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
