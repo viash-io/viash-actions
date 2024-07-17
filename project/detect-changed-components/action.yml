@@ -92,14 +92,7 @@ runs:
 
       # The output from changed-files is delimited by ,
       # also remove newline if any
-      declare -a changed_files=()
-      trim_slash() {
-        echo "Found changed file: '$2'"
-        changed_files[$1]="$2"
-      }
-      # read changed files as array, but remove the last newline
-      changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-      readarray -d ',' -C trim_slash -c 1 -t <<< "${changed_files%$'\n'}"
+      IFS=$',' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
 
       # read components as array
       readarray -t components < <(jq -c '.[]' "${{ inputs.input_file }}")
