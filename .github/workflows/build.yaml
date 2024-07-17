@@ -16,6 +16,15 @@ on:
           based on the branch name will be built. Otherwise, a release
           build with the provided version will be built.
         required: false
+      retag_image_tag:
+        type: string
+        description: |
+          A previously known tag that was used to build the Docker
+          images. When provided, these images will be retagged and
+          reused for the current build. This is useful when creating
+          bug fix releases where the Docker images are known to be
+          working.
+        required: false
 
 jobs:
   # phase 1
@@ -111,8 +120,27 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image
+        if: ${{ inputs.retag_image_tag == '' }}
         run: |
           ${{matrix.component.executable}} ---engine docker ---setup build ---verbose
+        
+      - name: Retag image
+        if: ${{ inputs.retag_image_tag != '' }}
+        run: |
+          source_image_tag="${{ inputs.retag_image_tag }}"
+
+          # get image id from executable
+          # format: VIASH_DOCKER_IMAGE_ID='annotate/popv:latest'
+          dest_image_id=$(grep -oP "VIASH_DOCKER_IMAGE_ID='[^']+'" ${{matrix.component.executable}} | cut -d"'" -f2)
+
+          # for viash 0.9 and later, use the following line instead
+          # dest_image_id=$(${{matrix.component.executable}} ---engine docker ---docker_image_id)
+
+          # strip tag from dest_image_id and replace with source_image_tag using bash variable substitution
+          source_image_id="${dest_image_id%:*}:${source_image_tag}"
+
+          echo "Retagging image '$source_image_id' to '$dest_image_id'"
+          docker tag "$source_image_id" "$dest_image_id"
   
       - name: Push image
         run: |
