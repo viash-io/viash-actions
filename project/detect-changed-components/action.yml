@@ -99,9 +99,8 @@ runs:
         changed_files[$1]="${trimmed_line}"
       }
       # read changed files as array, but remove the last newline
-      local changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-      local changed_files_trimmed="${changed_files%$'\n'}"
-      readarray -d ',' -C trim_slash -c 1 -t <<< "$changed_files_trimmed"
+      changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
+      readarray -d ',' -C trim_slash -c 1 -t <<< "${changed_files%$'\n'}"
 
       # read components as array
       readarray -t components < <(jq -c '.[]' "${{ inputs.input_file }}")
