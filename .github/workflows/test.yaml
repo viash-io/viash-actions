@@ -2,6 +2,28 @@ name: Test
 
 on:
   workflow_call:
+    inputs:
+      test_timeout:
+        type: number
+        description: |
+          The maximum time in minutes that a test is allowed to run.
+          Default: 30.
+        required: false
+        default: 30
+      test_num_cpus:
+        type: number
+        description: |
+          The number of CPUs to use for testing.
+          Default: 2.
+        required: false
+        default: 2
+      test_memory:
+        type: string
+        description: |
+          The amount of memory to use for testing.
+          Default: 14gb.
+        required: false
+        default: "14gb"
 
 jobs:
   run_ci_check_job:
@@ -92,10 +114,10 @@ jobs:
         key: ${{ needs.list.outputs.cache_key }}
 
     - name: Run test
-      timeout-minutes: 30
+      timeout-minutes: ${{ github.event.inputs.test_timeout }}
       run: |
         export VIASH_TEMP=$RUNNER_TEMP/viash_test_temp
         viash test \
           "${{ matrix.component.config }}" \
-          --cpus 2 \
-          --memory "16gb"
+          --cpus ${{ github.event.inputs.test_num_cpus }} \
+          --memory ${{ github.event.inputs.test_memory }}
