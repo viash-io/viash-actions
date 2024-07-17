@@ -1,17 +1,3 @@
-# ## Usage:
-#  
-# name: Component Testing
-#
-# on:
-#   pull_request:
-#   push:
-#     branches:
-#       - main
-#
-# jobs:
-#   test:
-#     uses: viash-io/viash-actions/.github/workflows/test.yaml@v6
-
 name: Test
 
 on:
