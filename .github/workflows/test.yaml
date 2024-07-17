@@ -101,11 +101,11 @@ jobs:
         key: ${{ needs.list.outputs.cache_key }}
 
     - name: Run test
-      timeout-minutes: ${{ github.event.inputs.timeout }}
+      timeout-minutes: ${{ inputs.timeout }}
       env:
         RUNNER_TEMP: "${{ runner.temp }}/viash_temp"
       run: |
         viash test \
           "${{ matrix.component.config }}" \
-          --cpus ${{ github.event.inputs.num_cpus }} \
-          --memory ${{ github.event.inputs.memory }}
+          --cpus ${{ inputs.num_cpus }} \
+          --memory ${{ inputs.memory }}

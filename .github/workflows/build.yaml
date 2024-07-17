@@ -1,7 +1,7 @@
 name: Build
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.version }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.version }}
   cancel-in-progress: true
 
 on:
@@ -52,7 +52,7 @@ jobs:
       - name: Determine variables
         id: variables
         run: |
-          VERSION="${{ github.event.inputs.version }}"
+          VERSION="${{ inputs.version }}"
           SOURCE_BRANCH=$(echo "$GITHUB_REF" | sed 's/refs\/heads\///')
 
           if [[ -z $VERSION ]]; then
