@@ -6,6 +6,11 @@
 
 `.github/workflows/test.yaml`: Added a callable workflow for testing Viash components (PR #38).
 
+## Bug fixes
+
+* `project/detect-changed-components`: Fix realpath not being able to resolve changed files (PR #39).
+
+
 # viash-actions v6.3.1
 
 ## Bug fixes
