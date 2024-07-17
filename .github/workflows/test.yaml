@@ -3,21 +3,21 @@ name: Test
 on:
   workflow_call:
     inputs:
-      test_timeout:
+      timeout:
         type: number
         description: |
           The maximum time in minutes that a test is allowed to run.
           Default: 30.
         required: false
         default: 30
-      test_num_cpus:
+      num_cpus:
         type: number
         description: |
           The number of CPUs to use for testing.
           Default: 2.
         required: false
         default: 2
-      test_memory:
+      memory:
         type: string
         description: |
           The amount of memory to use for testing.
@@ -26,24 +26,11 @@ on:
         default: "14gb"
 
 jobs:
-  run_ci_check_job:
-    name: Check if branch has an existing pull request and the trigger was a push
-    runs-on: ubuntu-latest
-    outputs:
-      run: ${{ steps.github_cli.outputs.run }}
-    steps:
-      - name: 'Check if branch has an existing pull request and the trigger was a push'
-        id: github_cli
-        uses: viash-io/viash-actions/project/check-concurrent-pr@v6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
 
   # phase 1
   list:
     name: List components to test
-    needs: run_ci_check_job
     runs-on: ubuntu-latest
-    if: ${{ needs.run_ci_check_job.outputs.run == 'true' }}
 
     outputs:
       matrix: ${{ steps.ns_list_filter_nextflow.outputs.output_matrix }}
@@ -80,7 +67,7 @@ jobs:
 
   # phase 2
   test:
-    name: Test component
+    name: Test
     needs: list
     if: ${{ needs.list.outputs.matrix != '[]' && needs.list.outputs.matrix != '' }}
     runs-on: ubuntu-latest
@@ -114,10 +101,11 @@ jobs:
         key: ${{ needs.list.outputs.cache_key }}
 
     - name: Run test
-      timeout-minutes: ${{ github.event.inputs.test_timeout }}
+      timeout-minutes: ${{ github.event.inputs.timeout }}
+      env:
+        RUNNER_TEMP: "${{ runner.temp }}/viash_temp"
       run: |
-        export VIASH_TEMP=$RUNNER_TEMP/viash_test_temp
         viash test \
           "${{ matrix.component.config }}" \
-          --cpus ${{ github.event.inputs.test_num_cpus }} \
-          --memory ${{ github.event.inputs.test_memory }}
+          --cpus ${{ github.event.inputs.num_cpus }} \
+          --memory ${{ github.event.inputs.memory }}
