@@ -94,9 +94,10 @@ runs:
       # So we use delimiter ';' to read the file and trim the backslash from the end.
       declare -a changed_files=()
       trim_slash() {
-        line=$2
-        echo "Found changed file: $line"
-        changed_files[$1]="${line/%\\/}"
+        local line=$2
+        local trimmed_line=${line/%\\/}
+        echo "Found changed file: '$trimmed_line'"
+        changed_files[$1]="${trimmed_line}"
       }
       # read changed files as array
       readarray -d ';' -C trim_slash -c 1 -t <<< "${{ steps.changed-files.outputs.all_changed_files }}"
@@ -153,7 +154,7 @@ runs:
           fi
           echo "All resources including files from directories: ${resource_arr[@]}"
           for changed_file in ${changed_files[@]}; do
-            changed_file_real_path=$(realpath "$changed_file")
+            changed_file_real_path="$(pwd)/${changed_file}"
             for resource_to_check in ${resource_arr[@]}; do
               if [ "$changed_file_real_path" = "$resource_to_check" ]; then
                 echo "Detected changed component!"

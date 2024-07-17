@@ -1,3 +1,7 @@
+# viash-actions v6.3.2
+
+* `project/detect-changed-components`: Fix realpath not being able to resolve changed files (PR #xx).
+
 # viash-actions v6.3.1
 
 ## Bug fixes
