@@ -67,26 +67,27 @@ runs:
 
         NEXTFLOW_SCHEMAS=()
         for config_path in "${BUILT_CONFIGS[@]}"; do
-          dir=$(dirname "$config_path")
-          NEXTFLOW_SCHEMAS+=("$dir/nextflow_schema.json") 
+          dir=$(basename "$config_path")
+          NEXTFLOW_SCHEMAS+=("$dir/nextflow_schema.json) 
         done
 
+        NEXTFLOW_SCHEMAS=$(echo "$BUILT_CONFIGS" | sed 's/.config.vsh.yaml/nextflow_schema.json/g')
         echo "Building Nextflow schema files:"
         printf "%s\n" "${NEXTFLOW_SCHEMAS[@]}"
         echo
 
         VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
         IFS=. read -r major minor patch <<< $VIASH_VERSION
-        
+        IFS=";" 
         if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
           viash_tools/target/docker/nextflow/generate_schema_v9/generate_schema_v9 \
-          --input (IFS=";"; echo -n "${BUILT_CONFIGS[*]}") \
-          --output  (IFS=";"; echo -n "${NEXTFLOW_SCHEMAS[*]}")  \
+          --input "${BUILT_CONFIGS[*]}" \
+          --output  "${NEXTFLOW_SCHEMAS[*]}" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input") 
         else
           viash_tools/target/docker/nextflow/generate_schema/generate_schema \
-          --input (IFS=";"; echo -n "${BUILT_CONFIGS[*]}") \
-          --output (IFS=";"; echo -n "${NEXTFLOW_SCHEMAS[*]}") \
+          --input "${BUILT_CONFIGS[*]}" \
+          --output "${NEXTFLOW_SCHEMAS[*]}" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input")
         fi
 
