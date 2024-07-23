@@ -71,7 +71,7 @@ runs:
         
         VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
         IFS=. read -r major minor patch <<< $VIASH_VERSION
-        IFS=";"
+        IFS=';'
         if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
           VIASH_VERSION_LONG=$(viash -v | grep -oP 'viash \K[0-9.]+.\w+')
           eval viash_tools/target/docker/nextflow/generate_params_v9/generate_params_v9 \

@@ -78,7 +78,7 @@ runs:
 
         VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
         IFS=. read -r major minor patch <<< $VIASH_VERSION
-        IFS=";" 
+        IFS=';' 
         if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
           eval viash_tools/target/docker/nextflow/generate_schema_v9/generate_schema_v9 \
           --input "${BUILT_CONFIGS[*]}" \
