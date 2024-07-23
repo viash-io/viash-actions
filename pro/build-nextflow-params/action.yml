@@ -62,7 +62,7 @@ runs:
         echo
         NEXTFLOW_PARAMS=()
         for config_path in "${BUILT_CONFIGS[@]}"; do
-          dir=$(basename "$config_path")
+          dir=$(dirname "$config_path")
           NEXTFLOW_PARAMS+=("$dir/nextflow_params.yaml") 
         done
         echo "Building Nextflow param files:"

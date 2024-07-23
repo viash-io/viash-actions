@@ -67,7 +67,7 @@ runs:
 
         NEXTFLOW_SCHEMAS=()
         for config_path in "${BUILT_CONFIGS[@]}"; do
-          dir=$(basename "$config_path")
+          dir=$(dirname "$config_path")
           NEXTFLOW_SCHEMAS+=("$dir/nextflow_schema.json") 
         done
 
