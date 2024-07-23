@@ -56,16 +56,26 @@ runs:
 
         TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
 
-        BUILT_CONFIGS=$(find "$TARGET_DIR" -name .config.vsh.yaml)
+        readarray -d '' BUILT_CONFIGS < <(find "$TARGET_DIR" -name .config.vsh.yaml -print0)
         echo "Detected configs:"
-        echo "$BUILT_CONFIGS"
+        printf "%s\n" "${BUILT_CONFIGS[@]}"
         echo
 
         NEXTFLOW_PARAMS=$(echo "$BUILT_CONFIGS" | sed 's/.config.vsh.yaml/nextflow_params.yaml/g')
         echo "Building Nextflow param files:"
-        echo "$NEXTFLOW_PARAMS"
+        printf "%s\n" "${NEXTFLOW_SCHEMAS[@]}"
         echo
-
-        viash_tools/target/docker/nextflow/generate_params/generate_params \
+        
+        VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
+        IFS=. read -r major minor patch <<< $VIASH_VERSION
+        
+        if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
+          eval IFS=';' viash_tools/target/docker/nextflow/generate_params/generate_params_v9 \
+          --input $(echo "$BUILT_CONFIGS" | paste -sd ";") \
+          --output $(echo "$NEXTFLOW_PARAMS" | paste -sd ";") \
+          --viash_version $VIASH_VERSION
+        else
+          eval IFS=';' viash_tools/target/docker/nextflow/generate_params/generate_params \
           --input $(echo "$BUILT_CONFIGS" | paste -sd ";") \
           --output $(echo "$NEXTFLOW_PARAMS" | paste -sd ";")
+        fi
