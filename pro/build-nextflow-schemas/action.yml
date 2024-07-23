@@ -65,7 +65,12 @@ runs:
         printf "%s\n" "${BUILT_CONFIGS[@]}"
         echo
 
-        NEXTFLOW_SCHEMAS=$(echo "$BUILT_CONFIGS" | sed 's/.config.vsh.yaml/nextflow_schema.json/g')
+        NEXTFLOW_SCHEMAS=()
+        for config_path in "${BUILT_CONFIGS[@]}"; do
+          dir=$(basename "$config_path")
+          NEXTFLOW_SCHEMAS+=("$dir/nextflow_schema.json") 
+        done
+
         echo "Building Nextflow schema files:"
         printf "%s\n" "${NEXTFLOW_SCHEMAS[@]}"
         echo
