@@ -74,12 +74,12 @@ runs:
         IFS=";"
         if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
           VIASH_VERSION_LONG=$(viash -v | grep -oP 'viash \K[0-9.]+.\w+')
-          viash_tools/target/docker/nextflow/generate_params_v9/generate_params_v9 \
+          eval viash_tools/target/docker/nextflow/generate_params_v9/generate_params_v9 \
           --input "${BUILT_CONFIGS[*]}" \
           --output "${NEXTFLOW_PARAMS[*]}" \
           --viash_version $VIASH_VERSION_LONG
         else
-          viash_tools/target/docker/nextflow/generate_params/generate_params \
+          eval viash_tools/target/docker/nextflow/generate_params/generate_params \
           --input "${BUILT_CONFIGS[*]}" \
           --output "${NEXTFLOW_PARAMS[*]}"
         fi
