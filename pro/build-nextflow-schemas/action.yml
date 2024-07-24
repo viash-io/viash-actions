@@ -78,16 +78,16 @@ runs:
 
         VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
         IFS=. read -r major minor patch <<< $VIASH_VERSION
-        JOINED_CONFIGS=$(IFS=';'; echo "${BUILT_CONFIGS[*]}")
-        JOINED_SCHEMAS=$(IFS=';'; echo "${NEXTFLOW_SCHEMAS[*]}")
+        JOINED_CONFIGS=$(IFS=';'; printf '%s' "${BUILT_CONFIGS[*]}")
+        JOINED_SCHEMAS=$(IFS=';'; printf '%s' "${NEXTFLOW_SCHEMAS[*]}")
         if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
-          eval viash_tools/target/docker/nextflow/generate_schema_v9/generate_schema_v9 \
+          viash_tools/target/docker/nextflow/generate_schema_v9/generate_schema_v9 \
           --input "$JOINED_CONFIGS" \
-          --output  "$JOINED_SCHEMAS" \
+          --output "$JOINED_SCHEMAS" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input") 
         else
-          eval viash_tools/target/docker/nextflow/generate_schema/generate_schema \
-          --input  "$JOINED_CONFIGS" \
+          viash_tools/target/docker/nextflow/generate_schema/generate_schema \
+          --input "$JOINED_CONFIGS" \
           --output "$JOINED_SCHEMAS" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input")
         fi
