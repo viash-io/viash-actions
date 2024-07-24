@@ -1,3 +1,9 @@
+# viash-actions v6.5.0
+
+## New functionality
+
+* `build-nextflow-params` and `build-nextflow-schemas`: allow using viash versions starting from `0.9.0` (PR #41).
+
 # viash-actions v6.4.0
 
 ## New functionality
@@ -5,8 +11,6 @@
 * `.github/workflows/build.yaml`: Added a callable workflow for building Viash components (PR #38).
 
 * `.github/workflows/test.yaml`: Added a callable workflow for testing Viash components (PR #38).
-
-* `build-nextflow-params` and `build-nextflow-schemas`: allow using viash versions starting from `0.9.0` (PR #41).
 
 ## Minor changes
 
