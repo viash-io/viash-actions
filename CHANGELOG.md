@@ -6,6 +6,8 @@
 
 * `.github/workflows/test.yaml`: Added a callable workflow for testing Viash components (PR #38).
 
+* `build-nextflow-params` and `build-nextflow-schemas`: allow using viash versions starting from `0.9.0` (PR #41).
+
 ## Minor changes
 
 * `project/detect-changed-components`: Simplify separator handling of changed files array (PR #40).
