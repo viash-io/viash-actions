@@ -35,9 +35,8 @@ inputs:
       wildcards to create a custom folder hierarchy for storing the output for different components
     default: "{type}s/{namespace}/{name}.qmd"
   clean:
-    type: boolean
     required: false
-    default: false
+    default: "false"
     description: >
       Whether or not to start from a clean directory.
   ref:

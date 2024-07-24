@@ -1,3 +1,20 @@
+# viash-actions v6.4.0
+
+## New functionality
+
+* `.github/workflows/build.yaml`: Added a callable workflow for building Viash components (PR #38).
+
+* `.github/workflows/test.yaml`: Added a callable workflow for testing Viash components (PR #38).
+
+## Minor changes
+
+* `project/detect-changed-components`: Simplify separator handling of changed files array (PR #40).
+
+## Bug fixes
+
+* `project/detect-changed-components`: Fix realpath not being able to resolve changed files (PR #39).
+
+
 # viash-actions v6.3.1
 
 ## Bug fixes
