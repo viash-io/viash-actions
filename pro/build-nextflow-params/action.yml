@@ -56,16 +56,31 @@ runs:
 
         TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
 
-        BUILT_CONFIGS=$(find "$TARGET_DIR" -name .config.vsh.yaml)
+        readarray -d '' BUILT_CONFIGS < <(find "$TARGET_DIR" -name .config.vsh.yaml -print0)
         echo "Detected configs:"
-        echo "$BUILT_CONFIGS"
+        printf "%s\n" "${BUILT_CONFIGS[@]}"
         echo
-
-        NEXTFLOW_PARAMS=$(echo "$BUILT_CONFIGS" | sed 's/.config.vsh.yaml/nextflow_params.yaml/g')
+        NEXTFLOW_PARAMS=()
+        for config_path in "${BUILT_CONFIGS[@]}"; do
+          dir=$(dirname "$config_path")
+          NEXTFLOW_PARAMS+=("$dir/nextflow_params.yaml") 
+        done
         echo "Building Nextflow param files:"
-        echo "$NEXTFLOW_PARAMS"
+        printf "%s\n" "${NEXTFLOW_PARAMS[@]}"
         echo
-
-        viash_tools/target/docker/nextflow/generate_params/generate_params \
-          --input $(echo "$BUILT_CONFIGS" | paste -sd ";") \
-          --output $(echo "$NEXTFLOW_PARAMS" | paste -sd ";")
+        
+        VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
+        IFS=. read -r major minor patch <<< $VIASH_VERSION
+        JOINED_CONFIGS=$(IFS=';'; printf '%s' "${BUILT_CONFIGS[*]}")
+        JOINED_PARAMS=$(IFS=';'; printf '%s' "${NEXTFLOW_PARAMS[*]}")
+        if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
+          VIASH_VERSION_LONG=$(viash -v | grep -oP 'viash \K[0-9.]+.\w+')
+          viash_tools/target/docker/nextflow/generate_params_v9/generate_params_v9 \
+          --input "$JOINED_CONFIGS" \
+          --output "$JOINED_PARAMS" \
+          --viash_version $VIASH_VERSION_LONG
+        else
+          viash_tools/target/docker/nextflow/generate_params/generate_params \
+          --input "$JOINED_CONFIGS" \
+          --output "$JOINED_PARAMS"
+        fi

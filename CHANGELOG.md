@@ -1,3 +1,9 @@
+# viash-actions v6.5.0
+
+## New functionality
+
+* `build-nextflow-params` and `build-nextflow-schemas`: allow using viash versions starting from `0.9.0` (PR #41).
+
 # viash-actions v6.4.0
 
 ## New functionality

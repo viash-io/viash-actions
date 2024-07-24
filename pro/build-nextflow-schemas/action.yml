@@ -60,17 +60,35 @@ runs:
 
         TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
 
-        BUILT_CONFIGS=$(find "$TARGET_DIR" -name .config.vsh.yaml)
+        readarray -d '' BUILT_CONFIGS < <(find "$TARGET_DIR" -name .config.vsh.yaml -print0)
         echo "Detected configs:"
-        echo "$BUILT_CONFIGS"
+        printf "%s\n" "${BUILT_CONFIGS[@]}"
         echo
+
+        NEXTFLOW_SCHEMAS=()
+        for config_path in "${BUILT_CONFIGS[@]}"; do
+          dir=$(dirname "$config_path")
+          NEXTFLOW_SCHEMAS+=("$dir/nextflow_schema.json") 
+        done
 
         NEXTFLOW_SCHEMAS=$(echo "$BUILT_CONFIGS" | sed 's/.config.vsh.yaml/nextflow_schema.json/g')
         echo "Building Nextflow schema files:"
-        echo "$NEXTFLOW_SCHEMAS"
+        printf "%s\n" "${NEXTFLOW_SCHEMAS[@]}"
         echo
 
-        viash_tools/target/docker/nextflow/generate_schema/generate_schema \
-          --input "$(echo "$BUILT_CONFIGS" | paste -sd ";")" \
-          --output "$(echo "$NEXTFLOW_SCHEMAS" | paste -sd ";")" \
+        VIASH_VERSION=`viash -v | grep -oP 'viash \K[0-9.]+'`
+        IFS=. read -r major minor patch <<< $VIASH_VERSION
+        JOINED_CONFIGS=$(IFS=';'; printf '%s' "${BUILT_CONFIGS[*]}")
+        JOINED_SCHEMAS=$(IFS=';'; printf '%s' "${NEXTFLOW_SCHEMAS[*]}")
+        if (( "$major" > 0 )) || (( "$minor" >= 9 )); then
+          viash_tools/target/docker/nextflow/generate_schema_v9/generate_schema_v9 \
+          --input "$JOINED_CONFIGS" \
+          --output "$JOINED_SCHEMAS" \
+          $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input") 
+        else
+          viash_tools/target/docker/nextflow/generate_schema/generate_schema \
+          --input "$JOINED_CONFIGS" \
+          --output "$JOINED_SCHEMAS" \
           $([[ "${{ inputs.enable_dataset_input }}" == "true" ]] && echo "--enable_dataset_input")
+        fi
+
