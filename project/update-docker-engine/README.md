@@ -32,5 +32,5 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Update Docker Engine
-        uses: viash-io/viash-actions/project/update-docker-engine@v6
+        uses: viash-io/viash-actions/project/update-docker-engine@add-working-dir-input
 ```

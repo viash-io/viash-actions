@@ -97,13 +97,13 @@ jobs:
     
     steps:
       - name: Install Viash
-        uses: viash-io/viash-actions/setup@v6
+        uses: viash-io/viash-actions/setup@add-working-dir-input
 
       - name: Check out repository
         uses: actions/checkout@v3
 
       - name: viash ns list
-        uses: viash-io/viash-actions/ns-list@v6
+        uses: viash-io/viash-actions/ns-list@add-working-dir-input
 
       - name: View output
         run: |

@@ -80,8 +80,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Viash
-        uses: viash-io/viash-actions/setup@v6
+        uses: viash-io/viash-actions/setup@add-working-dir-input
 
       - name: viash ns build
-        uses: viash-io/viash-actions/ns-build@v6
+        uses: viash-io/viash-actions/ns-build@add-working-dir-input
 ```

@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Check for concurrent PRs
-        uses: viash-io/viash-actions/is-pr@v6
+        uses: viash-io/viash-actions/is-pr@add-working-dir-input
         id: is_pr
         
       - run: |

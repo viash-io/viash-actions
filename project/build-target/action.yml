@@ -80,7 +80,7 @@ runs:
       run: |
         yq eval '.version = "${{ steps.defaults.outputs.version }}"' -i _viash.yaml
 
-    - uses: viash-io/viash-actions/ns-build@v6
+    - uses: viash-io/viash-actions/ns-build@add-working-dir-input
       with:
         parallel: true
         config_mod: ${{ steps.defaults.outputs.config_mod }}
@@ -88,7 +88,7 @@ runs:
 
     - name: Build nextflow schemas
       if: ${{ inputs.viash_pro_token != '' }}
-      uses: viash-io/viash-actions/pro/build-nextflow-params@v6
+      uses: viash-io/viash-actions/pro/build-nextflow-params@add-working-dir-input
       with:
         target_dir: ${{ inputs.project_directory }}/${{ steps.defaults.outputs.target_dir }}
         viash_pro_token: ${{ inputs.viash_pro_token }}
@@ -97,7 +97,7 @@ runs:
    
     - name: Build parameter files
       if: ${{ inputs.viash_pro_token != '' }}
-      uses: viash-io/viash-actions/pro/build-nextflow-params@v6
+      uses: viash-io/viash-actions/pro/build-nextflow-params@add-working-dir-input
       with:
         target_dir: ${{ inputs.project_directory }}/${{ steps.defaults.outputs.target_dir }}
         viash_pro_token: ${{ inputs.viash_pro_token }}
