@@ -134,7 +134,6 @@ runs:
     # initialize cache
     - name: Cache resources
       uses: actions/cache@v4
-      working-directory: ${{ inputs.project_directory }}
       if: ${{ steps.cache_key.outputs.cache_key != '' }}
       with:
         path: ${{ steps.test_resources.outputs.dest_paths }}
