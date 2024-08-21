@@ -12,6 +12,8 @@ has been changed with respect to the default branch.
 
 ### Inputs
 
+- `project_directory`: - *optional*. Path to the project directory. This
+  is the directory where the project config `_viash.yaml` is located.
 - `input_file`: - *required*. Path to a viash ns list json file
 
 ### Outputs

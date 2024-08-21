@@ -5,6 +5,9 @@ description: >
   the component has been changed with respect to the
   default branch.
 inputs:
+  project_directory:
+    required: false
+    description: Path to the project directory. This is the directory where the project config `_viash.yaml` is located.
   input_file:
     required: true
     description: 'Path to a viash ns list json file'
@@ -32,6 +35,7 @@ runs:
   - name: Get head git commit message
     shell: bash
     id: get_head_commit_message
+    working-directory: ${{ inputs.project_directory }}
     run: |
       head_commit_message=$(git show -s --format=%s ${{ github.event.pull_request.head.sha || github.sha }})
       echo "HEAD_COMMIT_MESSAGE=$head_commit_message" >> "$GITHUB_OUTPUT"
@@ -39,6 +43,7 @@ runs:
   - name: Get changed files
     id: changed-files
     uses: tj-actions/changed-files@v44
+    working-directory: ${{ inputs.project_directory }}
     with:
       separator: ","
       diff_relative: true
@@ -77,6 +82,7 @@ runs:
   - name: Set matrix to only run tests for components that had their config or resources changed.
     id: filter
     shell: bash
+    working-directory: ${{ inputs.project_directory }}
     run: |
       # create output path
       output_file=$(mktemp $RUNNER_TEMP/viash_ns_changed_files.XXXXXX.json)
@@ -167,6 +173,7 @@ runs:
 
   - id: set_matrix
     shell: bash
+    working-directory: ${{ inputs.project_directory }}
     run: |
       comp_file="${{ contains(steps.get_head_commit_message.outputs.HEAD_COMMIT_MESSAGE, 'ci force') && inputs.input_file || steps.filter.outputs.output_file }}"
       matrix=$(

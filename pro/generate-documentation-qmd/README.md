@@ -35,6 +35,8 @@ before you run `generate_documentation_qmd`.
   `{type}`, `{namespace}` and `{name}` wildcards to create a custom
   folder hierarchy for storing the output for different component.
   Default: `{type}s/{namespace}/{name}.qmd`.
+- `clean`: *(Optional)* Whether or not to start from a clean directory.
+  Default: `false`.
 - `ref`: *(Optional)* The git tag. Used to create links to the source
   code and to build nextflow commands in the generated documentation.
   Default: `${{ github.ref_name }}`.
@@ -49,6 +51,8 @@ before you run `generate_documentation_qmd`.
   `latest`.
 - `src`: *(Optional)* An override for the `--src` parameter in
   `viash ns list`. Example: `src/`.
+- `query`: *(Optional)* Filter which components get selected by
+  component and namespace name. Can be a regex.
 
 ## Usage
 

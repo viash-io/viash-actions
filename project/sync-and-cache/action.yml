@@ -21,10 +21,9 @@ description: |
         dest: my-folder
   ```
 inputs:
-  project_config:
+  project_directory:
     required: false
-    description: Path to the project configuration file.
-    default: _viash.yaml
+    description: Path to the project directory. This is the directory where the project config `_viash.yaml` is located.
   cache_key_prefix:
     required: false
     description: A prefix for the cache hash key. Prefix is also used for restoring stale cache if no cache hit occurred for key.
@@ -42,6 +41,7 @@ runs:
     - name: Detect test resources
       id: test_resources
       shell: bash
+      working-directory: ${{ inputs.project_directory }}
       run: |
         resources_detected=$(yq e '.info | has("test_resources")' "${{ inputs.project_config }}")
         if [ "$resources_detected" == "false" ]; then
@@ -59,7 +59,7 @@ runs:
 
         # fetch the test resource destination paths
         dest_paths=$(
-          yq e '.info.test_resources[] | .dest' "${{ inputs.project_config }}"
+          yq e '.info.test_resources[] | "${{inputs.project_directory}}/" + .dest' "${{ inputs.project_config }}"
         )
 
         # output multiline string
@@ -77,6 +77,7 @@ runs:
     - name: Create hash key
       shell: bash
       id: cache_key
+      working-directory: ${{ inputs.project_directory }}
       run: |
         if [ -z "${{ steps.test_resources.outputs.test_resources }}" ]; then
           echo "cache_key=" >> $GITHUB_OUTPUT
@@ -115,6 +116,7 @@ runs:
     - name: Print resources
       shell: bash
       if: ${{ steps.cache_key.outputs.cache_key != '' }}
+      working-directory: ${{ inputs.project_directory }}
       run: |
         echo "### Cache key: ${{ steps.cache_key.outputs.cache_key }}"
         echo
@@ -132,6 +134,7 @@ runs:
     # initialize cache
     - name: Cache resources
       uses: actions/cache@v4
+      working-directory: ${{ inputs.project_directory }}
       if: ${{ steps.cache_key.outputs.cache_key != '' }}
       with:
         path: ${{ steps.test_resources.outputs.dest_paths }}
@@ -142,6 +145,7 @@ runs:
     - name: Sync resources
       shell: bash
       if: ${{ steps.cache_key.outputs.cache_key != '' }}
+      working-directory: ${{ inputs.project_directory }}
       run: |
         function sync_s3() {
           local s3_path="$1"
@@ -169,6 +173,7 @@ runs:
     - name: List resources
       shell: bash
       if: ${{ steps.cache_key.outputs.cache_key != '' }}
+      working-directory: ${{ inputs.project_directory }}
       run: |
         echo "${{ steps.test_resources.outputs.test_resources }}" | \
           while read -r line; do

@@ -20,6 +20,12 @@ async function run() {
     };
     options.silent = true;
 
+    // set up workdir
+    const workdir = core.getInput("project_directory");
+    if (workdir) {
+      options.cwd = workdir;
+    }
+
     // fetch arguments for command
     // skip "parallel"
     // todo: can I extract these inputNames from the action.yml?
