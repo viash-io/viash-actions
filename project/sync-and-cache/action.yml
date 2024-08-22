@@ -43,7 +43,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.project_directory }}
       run: |
-        resources_detected=$(yq e '.info | has("test_resources")' "${{ inputs.project_config }}")
+        resources_detected=$(yq e '.info | has("test_resources")' "_viash.yaml")
         if [ "$resources_detected" == "false" ]; then
           echo "No test resources detected."
           echo "dest_paths=" >> $GITHUB_OUTPUT
@@ -54,12 +54,13 @@ runs:
         test_resources=$(
           yq e \
             '.info.test_resources[] | "{type: " + (.type // "s3") + ", path: " + .path + ", dest: " + .dest + "}"' \
-            "${{ inputs.project_config }}"
+            "_viash.yaml"
         )
 
         # fetch the test resource destination paths
+        # todo: convert to absolute paths
         dest_paths=$(
-          yq e '.info.test_resources[] | "${{inputs.project_directory}}/" + .dest' "${{ inputs.project_config }}"
+          yq e '.info.test_resources[] | .dest' "_viash.yaml" | sed "s#.*#$(pwd)/&#"
         )
 
         # output multiline string
