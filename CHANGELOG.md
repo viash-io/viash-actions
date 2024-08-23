@@ -1,4 +1,4 @@
-# viash-acitons v6.6.0
+# viash-actions v6.6.0
 
 ## New functionality
 
@@ -14,6 +14,8 @@
 * `project/build-target`: Do not throw an error if there is no `.gitignore` in place (PR #42).
 
 * `ns-build`, `ns-list`: If Viash throws an error, make sure that the error message gets printed (PR #42).
+
+* `project/detect-changed-components`: Fix the action not listening to 'ci force' in commit messages (PR #42).
 
 # viash-actions v6.5.0
 
