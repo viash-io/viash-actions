@@ -42,23 +42,26 @@ runs:
       id: detect_changed
       working-directory: ${{ inputs.project_directory }}
       run: |
-        # if the commit message contains 'ci force' or the branch is the default branch, detect changed components
+        # if the current branch is the default branch, we don't need to detect changed components
         if [[ ${{ github.ref }} == 'refs/heads/${{ github.event.repository.default_branch }}' ]]; then
           echo "Current branch is the default branch."
-          echo "detect_changed=true" >> $GITHUB_OUTPUT
+          echo "detect_changed=false" >> $GITHUB_OUTPUT
           exit 0
         fi
+        
+        # if the commit message contains 'ci force', we don't need to detect changed components
         if [[ ${{ github.event_name }} == 'pull_request' ]]; then
           head_sha="${{(github.event.pull_request.head.sha)}}"
           commit_msg=$(git log --format=%B -n 1 $head_sha)
           if [[ $commit_msg == *"ci force"* ]]; then
             echo "PR commit message contains 'ci force'."
-            echo "detect_changed=true" >> $GITHUB_OUTPUT
+            echo "detect_changed=false" >> $GITHUB_OUTPUT
             exit 0
           fi
         fi
 
-        echo "detect_changed=false" >> $GITHUB_OUTPUT
+        # if we get here, we do need to detect changed components
+        echo "detect_changed=true" >> $GITHUB_OUTPUT
 
     - name: Get changed files
       id: changed-files
