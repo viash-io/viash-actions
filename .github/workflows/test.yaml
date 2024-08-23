@@ -3,6 +3,10 @@ name: Test
 on:
   workflow_call:
     inputs:
+      project_directory:
+        type: string
+        description: 'The path to a Viash project'
+        required: false
       timeout:
         type: number
         description: |
@@ -45,22 +49,27 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v6
 
-    - uses: viash-io/viash-actions/project/sync-and-cache@main
+    - uses: viash-io/viash-actions/project/sync-and-cache@v6
       id: cache
+      with:
+        project_directory: ${{ inputs.project_directory }}
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v6
       with:
+        project_directory: ${{ inputs.project_directory }}
         format: json
         runner: executable
 
     - id: ns_list_filter_changed
       uses: viash-io/viash-actions/project/detect-changed-components@v6
       with:
+        project_directory: ${{ inputs.project_directory }}
         input_file: "${{ steps.ns_list.outputs.output_file }}"
 
     - name: Filter out Nextflow scripts (testing currently not supported)
       id: ns_list_filter_nextflow
+      working-directory: ${{ inputs.project_directory }}
       run: |
         OUTPUT_MATRIX=$(echo '${{ steps.ns_list_filter_changed.outputs.output_matrix }}' | jq -c 'map(select(.main_script_type != "nextflow_script"))')
         echo "output_matrix=$OUTPUT_MATRIX" >> $GITHUB_OUTPUT
@@ -104,6 +113,7 @@ jobs:
       timeout-minutes: ${{ inputs.timeout }}
       env:
         RUNNER_TEMP: "${{ runner.temp }}/viash_temp"
+      working-directory: ${{ inputs.project_directory }}
       run: |
         viash test \
           "${{ matrix.component.config }}" \

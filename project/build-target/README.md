@@ -13,6 +13,8 @@ built.
 
 ### Inputs
 
+- `project_directory`: - *optional*. Path to the project directory. This
+  is the directory where the project config `_viash.yaml` is located.
 - `version`: - *optional*. Version name to use for the build. If not
   specified, `${BRANCH_NAME}_build` will be used.
 - `target_branch`: - *optional*. Branch to deploy to. If not specified,

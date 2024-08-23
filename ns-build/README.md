@@ -26,6 +26,8 @@ We recommend using a Linux or MacOS runner if possible.
   by namespace name. Can be a regex. Example: “^mynamespace\$”.
 - `query_name`: - *optional*. Filter which components get selected by
   component name. Can be a regex. Example: “^component1”.
+- `config`: - *optional*. Filter which component get selected by
+  specifying the config path.
 - `src`: - *optional*. A source directory containing viash config files,
   possibly structured in a hierarchical folder structure. Default: src/.
 - `platform`: - *optional*. (viash \< 0.9.0) Acts as a regular
@@ -54,6 +56,9 @@ We recommend using a Linux or MacOS runner if possible.
   are: “error”, “warn”, “info”, “debug”, “trace”.
 - `setup`: - *optional*. Which docker_setup_strategy for creating the
   container to use \[Docker Engine only\].
+- `project_directory`: - *optional*. Path to the project directory. This
+  is the directory where the project’s `_viash.yaml` file is located. If
+  not provided, the current working directory is used.
 
 ### Outputs
 

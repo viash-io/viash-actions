@@ -41,13 +41,11 @@ input_values <- sapply(selected_opts, function(opt) {
   )
   setNames(list(out), opt$name)
 })
-# workaround for viash 0.9.0-RC6, should be fixed in 0.9.0
-if (!"platform" %in% names(input_values)) {
-  input_values$platform <- list(
-    description = "Acts as a regular expression to filter the platform ids specified in the found config files. If this is not provided, all platforms will be used. If no platforms are defined in a config, the native platform will be used. In addition, the path to a platform yaml file can also be specified. Deprecated in Viash 0.9.0, will be removed in Viash 1.0.0.",
-    required = FALSE
-  )
-}
+
+input_values$project_directory <- list(
+  description = "Path to the project directory. This is the directory where the project's `_viash.yaml` file is located. If not provided, the current working directory is used.",
+  required = FALSE
+)
 
 out <- list(
   name = schema$bannerCommand,

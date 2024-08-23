@@ -29,8 +29,8 @@ info:
 
 ### Inputs
 
-- `project_config`: - *optional*. Path to the project configuration
-  file.
+- `project_directory`: - *optional*. Path to the project directory. This
+  is the directory where the project config `_viash.yaml` is located.
 - `cache_key_prefix`: - *optional*. A prefix for the cache hash key.
   Prefix is also used for restoring stale cache if no cache hit occurred
   for key.

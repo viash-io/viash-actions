@@ -1,3 +1,22 @@
+# viash-actions v6.6.0
+
+## New functionality
+
+* Many actions: Add input `project_directory` to allow specifying the project directory (PR #42):
+  - `ns-build`
+  - `ns-list`
+  - `project/build-target`
+  - `project/detect-changed-components`
+  - `project/sync-and-cache`
+
+## Bug fixes
+
+* `project/build-target`: Do not throw an error if there is no `.gitignore` in place (PR #42).
+
+* `ns-build`, `ns-list`: If Viash throws an error, make sure that the error message gets printed (PR #42).
+
+* `project/detect-changed-components`: Fix the action not listening to 'ci force' in commit messages (PR #42).
+
 # viash-actions v6.5.0
 
 ## New functionality

@@ -6,6 +6,9 @@ description: >
   containers that need to be built.
 
 inputs:
+  project_directory:
+    required: false
+    description: Path to the project directory. This is the directory where the project config `_viash.yaml` is located.
   version:
     description: 'Version name to use for the build. If not specified, `${BRANCH_NAME}_build` will be used.'
     required: false
@@ -36,6 +39,7 @@ runs:
     - name: Determine version tag from branch name
       shell: bash
       id: defaults
+      working-directory: ${{ inputs.project_directory }}
       run: |
         BRANCH_NAME=$(echo $GITHUB_REF | sed 's/refs\/heads\///' | sed 's/[^a-zA-Z0-9_]/_/g')
         VERSION=${{ inputs.version }}
@@ -65,12 +69,20 @@ runs:
 
     - name: Remove target folder from .gitignore
       shell: bash
+      working-directory: ${{ inputs.project_directory }}
       run: |
         TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
-        sed -i "/^\\/*${TARGET_DIR}.*/d" .gitignore
+        if [ -f .gitignore ]; then
+          sed -i "/^\\/*${TARGET_DIR}.*/d" .gitignore
+        fi
+        if [ -f "$TARGET_DIR/.gitignore" ]; then
+          # just remove it
+          rm "$TARGET_DIR/.gitignore"
+        fi
 
     - name: Set version in _viash.yaml
       shell: bash
+      working-directory: ${{ inputs.project_directory }}
       run: |
         yq eval '.version = "${{ steps.defaults.outputs.version }}"' -i _viash.yaml
 
@@ -78,12 +90,13 @@ runs:
       with:
         parallel: true
         config_mod: ${{ steps.defaults.outputs.config_mod }}
+        project_directory: ${{ inputs.project_directory }}
 
     - name: Build nextflow schemas
       if: ${{ inputs.viash_pro_token != '' }}
       uses: viash-io/viash-actions/pro/build-nextflow-params@v6
       with:
-        target_dir: ${{ steps.defaults.outputs.target_dir }}
+        target_dir: ${{ inputs.project_directory }}/${{ steps.defaults.outputs.target_dir }}
         viash_pro_token: ${{ inputs.viash_pro_token }}
         tools_version: 'main_build'
         enable_dataset_input: true
@@ -92,13 +105,14 @@ runs:
       if: ${{ inputs.viash_pro_token != '' }}
       uses: viash-io/viash-actions/pro/build-nextflow-params@v6
       with:
-        target_dir: ${{ steps.defaults.outputs.target_dir }}
+        target_dir: ${{ inputs.project_directory }}/${{ steps.defaults.outputs.target_dir }}
         viash_pro_token: ${{ inputs.viash_pro_token }}
         tools_version: 'main_build'
 
     - name: Find Docker Executables that need to be built
       id: find_docker_executables
       shell: bash
+      working-directory: ${{ inputs.project_directory }}
       run: |
         TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
 

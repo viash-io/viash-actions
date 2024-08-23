@@ -18,6 +18,9 @@ inputs:
     description: 'Filter which components get selected by component name. Can be a
       regex. Example: "^component1".'
     required: false
+  config:
+    description: Filter which component get selected by specifying the config path.
+    required: false
   src:
     description: 'A source directory containing viash config files, possibly structured
       in a hierarchical folder structure. Default: src/.'
@@ -60,6 +63,11 @@ inputs:
   setup:
     description: Which docker_setup_strategy for creating the container to use [Docker
       Engine only].
+    required: false
+  project_directory:
+    description: Path to the project directory. This is the directory where the project's
+      `_viash.yaml` file is located. If not provided, the current working directory
+      is used.
     required: false
 outputs:
   output:

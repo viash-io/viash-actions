@@ -1,10 +1,18 @@
 name: Detect components with changed files
 author: Data Intuitive
-description: >
+description: |
   Filter a json file produced by viash ns list on whether
   the component has been changed with respect to the
   default branch.
+
+  The action will simply return the contents of the input file if:
+
+  - The current branch is the default branch
+  - The event is a pull request and the commit message contains 'ci force'
 inputs:
+  project_directory:
+    required: false
+    description: Path to the project directory. This is the directory where the project config `_viash.yaml` is located.
   input_file:
     required: true
     description: 'Path to a viash ns list json file'
@@ -29,156 +37,179 @@ outputs:
 runs:
   using: 'composite'
   steps:
-  - name: Get head git commit message
-    shell: bash
-    id: get_head_commit_message
-    run: |
-      head_commit_message=$(git show -s --format=%s ${{ github.event.pull_request.head.sha || github.sha }})
-      echo "HEAD_COMMIT_MESSAGE=$head_commit_message" >> "$GITHUB_OUTPUT"
-
-  - name: Get changed files
-    id: changed-files
-    uses: tj-actions/changed-files@v44
-    with:
-      separator: ","
-      diff_relative: true
-
-  # Note: a component's resources is detected using a jq statement. 
-  # Example usage of the jq statement:
-  #
-  # Input:
-  # functionality:
-  #   resources:
-  #     - type: python_script
-  #       path: script.py
-  #       parent: file:/home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/config.vsh.yaml
-  #     - type: file
-  #       path: file.txt
-  #       parent: file:///home/rcannood/workspace/openproblems/openproblems-v2/
-  #     - type: "file"
-  #       path: "resources_test/label_projection/pancreas"
-  #       parent: "file:///home/rcannood/workspace/openproblems/openproblems-v2/"
-  #   test_resources:
-  #     - type: "file"
-  #       path: "LICENSE"
-  #       parent: "file:///home/rcannood/workspace/openproblems/openproblems-v2/"
-  #     - type: "file"
-  #       text: "content"
-  #       dest: "foo.txt"
-  # info:
-  #   config: /home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/config.vsh.yaml
-  #
-  # Output:
-  # /home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/config.vsh.yaml
-  # /home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/script.py
-  # /home/rcannood/workspace/openproblems/openproblems-v2/file.txt
-  # /home/rcannood/workspace/openproblems/openproblems-v2/resources_test/label_projection/pancreas
-  # /home/rcannood/workspace/openproblems/openproblems-v2/LICENSE
-  - name: Set matrix to only run tests for components that had their config or resources changed.
-    id: filter
-    shell: bash
-    run: |
-      # create output path
-      output_file=$(mktemp $RUNNER_TEMP/viash_ns_changed_files.XXXXXX.json)
-
-      if [[ "$GITHUB_REF" == "refs/heads/${{ github.event.repository.default_branch }}" || "${{ contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
-        cp "${{ inputs.input_file }}" "$output_file"
-        echo "output_file=$output_file" >> $GITHUB_OUTPUT
-        exit 0
-      fi
-
-      # create output array
-      declare -a output_array=()
-
-      # The output from changed-files is delimited by ,
-      # also remove newline if any
-      IFS=$',' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
-
-      # read components as array
-      readarray -t components < <(jq -c '.[]' "${{ inputs.input_file }}")
-
-      # iterate over the components
-      for component in "${components[@]}"; do
-        config_path=$(jq -cr '.build_info.config // .info.config' <<< "$component" )
-        config_dir=`dirname "$config_path"`
-        echo "Checking '$config_path'"
-
-        # get the components resources
-        readarray -t resources < <(
-          jq -cr '
-          (
-            # viash config
-            [.build_info.config // (.info.config)] +
-            # viash >= 0.9 resources
-            [
-              ((.resources // []) + (.test_resources // []))[]
-                | .path
-                | sub("^(?<match>[^/])"; "'$config_dir'/" + .match)
-                | sub("^/"; "")
-            ] +
-            # viash < 0.9 resources
-            [
-              (.functionality.resources // [])[], (.functionality.test_resources // [])[]
-                | select(.path and .parent)
-                | (.parent | sub("^file:(//)?"; "") | sub("/[^/]*$"; "")) + "/" + .path
-            ]
-          )[]
-          ' <<< "$component"
-        )
+    - name: Decide whether to detect changed components or just return all components
+      shell: bash
+      id: detect_changed
+      working-directory: ${{ inputs.project_directory }}
+      run: |
+        # if the current branch is the default branch, we don't need to detect changed components
+        if [[ ${{ github.ref }} == 'refs/heads/${{ github.event.repository.default_branch }}' ]]; then
+          echo "Current branch is the default branch."
+          echo "detect_changed=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
         
-        # check if resource is in the list of changed resources
-        should_add_component=0
-        for resource in "${resources[@]}"; do
-          echo "Checking resource: $resource"
-          if [ ! -e "$resource" ]; then
-            echo "Resource $resource does not exist."
-            exit 1
+        # if the commit message contains 'ci force', we don't need to detect changed components
+        if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+          head_sha="${{(github.event.pull_request.head.sha)}}"
+          commit_msg=$(git log --format=%B -n 1 $head_sha)
+          if [[ $commit_msg == *"ci force"* ]]; then
+            echo "PR commit message contains 'ci force'."
+            echo "detect_changed=false" >> $GITHUB_OUTPUT
+            exit 0
           fi
-          # resolve paths wrt current dir (only needed for viash < 0.9)
-          resource_real_path=$(realpath "$resource")
-          resource_arr=("$resource_real_path")
-          # Resolve resources that are a directory into files
-          if [ -d "$resource_real_path" ]; then
-            echo "Resource is a directory"
-            files_from_directories=()
-            readarray -d '' files_from_directories < <(find $resource_real_path -type f -print0)
-            resource_arr+=(${files_from_directories[@]})
-          fi
-          echo "All resources including files from directories: ${resource_arr[@]}"
-          for changed_file in ${changed_files[@]}; do
-            changed_file_real_path="$(pwd)/${changed_file}"
-            for resource_to_check in ${resource_arr[@]}; do
-              if [ "$changed_file_real_path" = "$resource_to_check" ]; then
-                echo "Detected changed component!"
-                should_add_component=1
-                break
-              fi
+        fi
+
+        # if we get here, we do need to detect changed components
+        echo "detect_changed=true" >> $GITHUB_OUTPUT
+
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v44
+      if: steps.detect_changed.outputs.detect_changed == 'true'
+      with:
+        path: ${{ inputs.project_directory }}
+        separator: ","
+        diff_relative: true
+
+    # Note: a component's resources is detected using a jq statement. 
+    # Example usage of the jq statement:
+    #
+    # Input:
+    # functionality:
+    #   resources:
+    #     - type: python_script
+    #       path: script.py
+    #       parent: file:/home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/config.vsh.yaml
+    #     - type: file
+    #       path: file.txt
+    #       parent: file:///home/rcannood/workspace/openproblems/openproblems-v2/
+    #     - type: "file"
+    #       path: "resources_test/label_projection/pancreas"
+    #       parent: "file:///home/rcannood/workspace/openproblems/openproblems-v2/"
+    #   test_resources:
+    #     - type: "file"
+    #       path: "LICENSE"
+    #       parent: "file:///home/rcannood/workspace/openproblems/openproblems-v2/"
+    #     - type: "file"
+    #       text: "content"
+    #       dest: "foo.txt"
+    # info:
+    #   config: /home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/config.vsh.yaml
+    #
+    # Output:
+    # /home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/config.vsh.yaml
+    # /home/rcannood/workspace/openproblems/openproblems-v2/src/label_projection/methods/knn/script.py
+    # /home/rcannood/workspace/openproblems/openproblems-v2/file.txt
+    # /home/rcannood/workspace/openproblems/openproblems-v2/resources_test/label_projection/pancreas
+    # /home/rcannood/workspace/openproblems/openproblems-v2/LICENSE
+    - name: Set matrix to only run tests for components that had their config or resources changed.
+      id: filter
+      shell: bash
+      working-directory: ${{ inputs.project_directory }}
+      run: |
+        # create output path
+        output_file=$(mktemp $RUNNER_TEMP/viash_ns_changed_files.XXXXXX.json)
+
+        if [[ "${{steps.detect_changed.outputs.detect_changed}}" == "false" ]]; then
+          echo "Skip filtering components, returning all components."
+          cp "${{ inputs.input_file }}" "$output_file"
+          echo "output_file=$output_file" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # create output array
+        declare -a output_array=()
+
+        # The output from changed-files is delimited by ,
+        # also remove newline if any
+        IFS=$',' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
+
+        # read components as array
+        readarray -t components < <(jq -c '.[]' "${{ inputs.input_file }}")
+
+        # iterate over the components
+        for component in "${components[@]}"; do
+          config_path=$(jq -cr '.build_info.config // .info.config' <<< "$component" )
+          config_dir=`dirname "$config_path"`
+          echo "Checking '$config_path'"
+
+          # get the components resources
+          readarray -t resources < <(
+            jq -cr '
+            (
+              # viash config
+              [.build_info.config // (.info.config)] +
+              # viash >= 0.9 resources
+              [
+                ((.resources // []) + (.test_resources // []))[]
+                  | .path
+                  | sub("^(?<match>[^/])"; "'$config_dir'/" + .match)
+                  | sub("^/"; "")
+              ] +
+              # viash < 0.9 resources
+              [
+                (.functionality.resources // [])[], (.functionality.test_resources // [])[]
+                  | select(.path and .parent)
+                  | (.parent | sub("^file:(//)?"; "") | sub("/[^/]*$"; "")) + "/" + .path
+              ]
+            )[]
+            ' <<< "$component"
+          )
+          
+          # check if resource is in the list of changed resources
+          should_add_component=0
+          for resource in "${resources[@]}"; do
+            echo "Checking resource: $resource"
+            if [ ! -e "$resource" ]; then
+              echo "Resource $resource does not exist."
+              exit 1
+            fi
+            # resolve paths wrt current dir (only needed for viash < 0.9)
+            resource_real_path=$(realpath "$resource")
+            resource_arr=("$resource_real_path")
+            # Resolve resources that are a directory into files
+            if [ -d "$resource_real_path" ]; then
+              echo "Resource is a directory"
+              files_from_directories=()
+              readarray -d '' files_from_directories < <(find $resource_real_path -type f -print0)
+              resource_arr+=(${files_from_directories[@]})
+            fi
+            echo "All resources including files from directories: ${resource_arr[@]}"
+            for changed_file in ${changed_files[@]}; do
+              changed_file_real_path="$(pwd)/${changed_file}"
+              for resource_to_check in ${resource_arr[@]}; do
+                if [ "$changed_file_real_path" = "$resource_to_check" ]; then
+                  echo "Detected changed component!"
+                  should_add_component=1
+                  break
+                fi
+              done
             done
           done
+          if [[ "$should_add_component" -eq 1 ]]; then
+            output_array+="$component"
+          fi
         done
-        if [[ "$should_add_component" -eq 1 ]]; then
-          output_array+="$component"
-        fi
-      done
 
-      # reformat as json and write to file
-      jq -cs '.' <<< "${output_array[*]}" > "$output_file"
-      echo "output_file=$output_file" >> $GITHUB_OUTPUT
+        # reformat as json and write to file
+        jq -cs '.' <<< "${output_array[*]}" > "$output_file"
+        echo "output_file=$output_file" >> $GITHUB_OUTPUT
 
-  - id: set_matrix
-    shell: bash
-    run: |
-      comp_file="${{ contains(steps.get_head_commit_message.outputs.HEAD_COMMIT_MESSAGE, 'ci force') && inputs.input_file || steps.filter.outputs.output_file }}"
-      matrix=$(
-        jq -c '[ .[] | 
-          { 
-            "name": (.name // .functionality.name),
-            "namespace": (.namespace // .functionality.namespace // ""),
-            "config": (.build_info.config // .info.config),
-            "dir": (.build_info.config // .info.config) | capture("^(?<dir>.*\/)").dir,
-            "main_script_type": (.resources // .functionality.resources)[0].type
-          } |
-          .full_name = if .namespace == "" then .name else .namespace + "/" + .name end
-        ]' $comp_file
-      )
-      echo "matrix=$matrix" >> $GITHUB_OUTPUT
+    - id: set_matrix
+      shell: bash
+      working-directory: ${{ inputs.project_directory }}
+      run: |
+        matrix=$(
+          jq -c '[ .[] | 
+            { 
+              "name": (.name // .functionality.name),
+              "namespace": (.namespace // .functionality.namespace // ""),
+              "config": (.build_info.config // .info.config),
+              "dir": (.build_info.config // .info.config) | capture("^(?<dir>.*\/)").dir,
+              "main_script_type": (.resources // .functionality.resources)[0].type
+            } |
+            .full_name = if .namespace == "" then .name else .namespace + "/" + .name end
+          ]' "${{steps.filter.outputs.output_file }}"
+        )
+        echo "matrix=$matrix" >> $GITHUB_OUTPUT

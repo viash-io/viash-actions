@@ -18,6 +18,9 @@ inputs:
     description: 'Filter which components get selected by component name. Can be a
       regex. Example: "^component1".'
     required: false
+  config:
+    description: Filter which component get selected by specifying the config path.
+    required: false
   src:
     description: 'A source directory containing viash config files, possibly structured
       in a hierarchical folder structure. Default: src/.'
@@ -58,6 +61,11 @@ inputs:
     description: DEPRECATED. This is now always enabled. Whether or not to postprocess
       each component's argument_groups.
     required: false
+  project_directory:
+    description: Path to the project directory. This is the directory where the project's
+      `_viash.yaml` file is located. If not provided, the current working directory
+      is used.
+    required: false
   output_file:
     description: Path of a file to which the output will be written. If not set, this
       action will create a file with a random name in `RUNNER_TEMP`.
@@ -75,15 +83,8 @@ outputs:
       of the output file will not require you to adjust settings for downstream actions
       as well.
   output_matrix:
-    description: |
-      Matrix of components. The matrix is a json array with the following fields: 
-        
-        - name: The name of the component
-        - namespace: The namespace of the component
-        - full_name: The full name of the component
-        - config: The path to the config file of the component
-        - dir: The directory of the config file of the component
-        - main_script_type: The type of the main script of the component
+    description: A simplified version of the output, which is a list of components
+      with fields 'name', 'namespace', 'full_name', 'config', and 'dir'.
 runs:
   using: node20
   main: index.js

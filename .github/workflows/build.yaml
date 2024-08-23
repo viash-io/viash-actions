@@ -7,6 +7,10 @@ concurrency:
 on:
   workflow_call: 
     inputs:
+      project_directory:
+        type: string
+        description: 'The path to a Viash project'
+        required: false
       version:
         type: string
         description: |
@@ -51,6 +55,7 @@ jobs:
       
       - name: Determine variables
         id: variables
+        working-directory: ${{ inputs.project_directory }}
         run: |
           VERSION="${{ inputs.version }}"
           SOURCE_BRANCH=$(echo "$GITHUB_REF" | sed 's/refs\/heads\///')
@@ -76,6 +81,7 @@ jobs:
       - uses: viash-io/viash-actions/project/build-target@v6
         id: build-target
         with:
+          project_directory: ${{ inputs.project_directory }}
           target_branch: ${{ steps.variables.outputs.target_branch }}
           version: ${{ steps.variables.outputs.version }}
       
@@ -84,7 +90,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: ${{ steps.variables.outputs.target_branch }}
-          publish_dir: .
+          publish_dir: ${{ inputs.project_directory }}
 
   # phase 2
   docker:
@@ -121,11 +127,13 @@ jobs:
 
       - name: Build image
         if: ${{ inputs.retag_image_tag == '' }}
+        working-directory: ${{ inputs.project_directory }}
         run: |
           ${{matrix.component.executable}} ---engine docker ---setup build ---verbose
         
       - name: Retag image
         if: ${{ inputs.retag_image_tag != '' }}
+        working-directory: ${{ inputs.project_directory }}
         run: |
           source_image_tag="${{ inputs.retag_image_tag }}"
 
@@ -143,5 +151,6 @@ jobs:
           docker tag "$source_image_id" "$dest_image_id"
   
       - name: Push image
+        working-directory: ${{ inputs.project_directory }}
         run: |
           ${{matrix.component.executable}} ---engine docker ---setup push ---verbose
