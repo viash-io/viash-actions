@@ -90,7 +90,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: ${{ steps.variables.outputs.target_branch }}
-          publish_dir: ${{ inputs.project_directory }}
+          publish_dir: .
 
   # phase 2
   docker:
