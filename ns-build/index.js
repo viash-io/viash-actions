@@ -14,7 +14,6 @@ async function run() {
     },
     stderr: (data) => {
       myError += data.toString();
-      core.error(data.toString());
     }
   };
 

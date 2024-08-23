@@ -12,11 +12,9 @@ async function run() {
   options.listeners = {
     stdout: (data) => {
       myOutput += data.toString();
-      core.info(data.toString());
     },
     stderr: (data) => {
       myError += data.toString();
-      core.error(data.toString());
     }
   };
   options.silent = true;
