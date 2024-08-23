@@ -72,7 +72,13 @@ runs:
       working-directory: ${{ inputs.project_directory }}
       run: |
         TARGET_DIR="${{ steps.defaults.outputs.target_dir }}"
-        sed -i "/^\\/*${TARGET_DIR}.*/d" .gitignore
+        if [ -f .gitignore ]; then
+          sed -i "/^\\/*${TARGET_DIR}.*/d" .gitignore
+        fi
+        if [ -f "$TARGET_DIR/.gitignore" ]; then
+          # just remove it
+          rm "$TARGET_DIR/.gitignore"
+        fi
 
     - name: Set version in _viash.yaml
       shell: bash

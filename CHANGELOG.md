@@ -1,3 +1,18 @@
+# viash-acitons v6.6.0
+
+## New functionality
+
+* Many actions: Add input `project_directory` to allow specifying the project directory (PR #42):
+  - `ns-build`
+  - `ns-list`
+  - `project/build-target`
+  - `project/detect-changed-components`
+  - `project/sync-and-cache`
+
+## Bug fixes
+
+* `project/build-target`: Do not throw an error if there is no `.gitignore` in place (PR #42).
+
 # viash-actions v6.5.0
 
 ## New functionality
