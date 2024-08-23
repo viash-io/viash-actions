@@ -63,6 +63,7 @@ runs:
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v44
+      if: steps.detect_changed.outputs.detect_changed == 'true'
       with:
         path: ${{ inputs.project_directory }}
         separator: ","
@@ -108,6 +109,7 @@ runs:
         output_file=$(mktemp $RUNNER_TEMP/viash_ns_changed_files.XXXXXX.json)
 
         if [[ "${{steps.detect_changed.outputs.detect_changed}}" == "false" ]]; then
+          echo "Skip filtering components, returning all components."
           cp "${{ inputs.input_file }}" "$output_file"
           echo "output_file=$output_file" >> $GITHUB_OUTPUT
           exit 0
