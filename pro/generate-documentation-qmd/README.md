@@ -68,7 +68,7 @@ jobs:
     
     steps:
     - name: Install Viash
-      uses: viash-io/viash-actions/setup@add-working-dir-input
+      uses: viash-io/viash-actions/setup@v6
 
     - name: Check out repository
       uses: actions/checkout@v3
@@ -76,7 +76,7 @@ jobs:
         path: project
 
     - name: Build quarto markdown documentation files for Viash components
-      uses: viash-io/viash-actions/generate-documentation-qmd@add-working-dir-input
+      uses: viash-io/viash-actions/generate-documentation-qmd@v6
       with:
         project_dir: project
         src: src
