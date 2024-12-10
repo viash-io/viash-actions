@@ -2,7 +2,7 @@
 
 ## Bug fixes
 
-* `project/sync-and-cache`: Fix incorrect sha calculation for caching (PR #xx).
+* `project/sync-and-cache`: Fix incorrect sha calculation for caching (PR #43).
 
 # viash-actions v6.6.0
 
