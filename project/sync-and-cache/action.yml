@@ -85,32 +85,34 @@ runs:
           exit 0
         fi
 
-        function hash_s3() {
+        function s3_ls() {
           local s3_path="$1"
           AWS_EC2_METADATA_DISABLED=true \
             aws s3 ls \
             "$s3_path" \
             --recursive \
-            --no-sign-request | \
-            md5sum | \
-            awk '{ print $1 }'
+            --no-sign-request
         }
 
-        hashes=()
+        ls_content=$(
+          echo "${{ steps.test_resources.outputs.test_resources }}" | \
+            while read -r line; do
+              type=$(echo "$line" | yq e '.type')
+              path=$(echo "$line" | yq e '.path')
+              dest=$(echo "$line" | yq e '.dest')
 
-        echo "${{ steps.test_resources.outputs.test_resources }}" | \
-          while read -r line; do
-            type=$(echo "$line" | yq e '.type')
-            path=$(echo "$line" | yq e '.path')
-            dest=$(echo "$line" | yq e '.dest')
-            if [ "$type" == "s3" ]; then
-              hash=$(hash_s3 "$path")
-            fi
-            echo "dest: $dest, hash: $hash"
-            hashes+=( "dest: $dest, hash: $hash" )
-          done
+              echo "# type: $type, path: $path, dest: $dest"
+              echo ""
+
+              if [ "$type" == "s3" ]; then
+                s3_ls "$path"
+              fi
+
+              echo ""
+            done
+        )
         
-        hash=$(echo "${hashes[@]}" | md5sum | awk '{ print $1 }')
+        hash=$(echo "${ls_content}" | md5sum | awk '{ print $1 }')
 
         echo "cache_key=${{ inputs.cache_key_prefix }}$hash" >> $GITHUB_OUTPUT
     
