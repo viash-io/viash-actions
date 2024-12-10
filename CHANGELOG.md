@@ -1,3 +1,9 @@
+# viash-actions v6.6.1
+
+## Bug fixes
+
+* `project/sync-and-cache`: Fix incorrect sha calculation for caching (PR #xx).
+
 # viash-actions v6.6.0
 
 ## New functionality
