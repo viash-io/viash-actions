@@ -2,7 +2,7 @@
 
 ## New functionality
 
-* `project/sync-and-cache`: Add support for gs buckets. Infer type from path if not provided.
+* `project/sync-and-cache`: Add support for gs buckets. Infer type from path if not provided (PR #44).
 
 ## Minor changes
 
