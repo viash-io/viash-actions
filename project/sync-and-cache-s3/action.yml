@@ -20,6 +20,12 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    # show deprecation warning
+    - name: "Warning: deprecated!"
+      shell: bash
+      run: |
+        echo "This action will be deprecated in viash-actions@v7. Please use 'viash-io/viash-actions/project/sync-and-cache' instead."
+
     # create cache_hash key
     - name: Create hash key
       shell: bash

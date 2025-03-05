@@ -2,13 +2,14 @@ name: Sync and cache test resources specified by the project config
 author: Data Intuitive
 description: |
   Sync and cache test resources. This action will sync test resources from
-  different sources (e.g. S3) and cache them for later use. The cache key is
+  different sources (e.g. s3, gs) and cache them for later use. The cache key is
   based on the hash of the test resources. For this action to work, the Viash
   project config should contain a list of test resources to sync.
 
   Supported storage types:
 
     - `s3`: Syncs resources from an S3 bucket.
+    - `gs`: Syncs resources from a Google Cloud Storage bucket.
     - Create a GitHub issue if you need support for other storage types.
 
   Example:
@@ -19,6 +20,9 @@ description: |
       - type: s3
         path: s3://my-bucket/my-folder
         dest: my-folder
+      - type: gs
+        path: gs://my-bucket/my-other-folder
+        dest: my-other-folder
   ```
 inputs:
   project_directory:
@@ -51,11 +55,15 @@ runs:
         fi
 
         # reformat the test resources into a pseudo-json that can be read line-by-line by bash
-        test_resources=$(
-          yq e \
-            '.info.test_resources[] | "{type: " + (.type // "s3") + ", path: " + .path + ", dest: " + .dest + "}"' \
-            "_viash.yaml"
-        )
+        # infer the type from the path if not specified
+        yq_script="
+          .info.test_resources | 
+            map_values(.type = .type // (.path | sub(\"://.*\", \"\"))) |
+            .[] |
+            \"{type: \" + .type + \", path: \" + .path + \", dest: \" + .dest + \"}\"
+        "
+
+        test_resources=$(yq e "$yq_script" "_viash.yaml")
 
         # fetch the test resource destination paths
         # todo: convert to absolute paths
@@ -93,6 +101,10 @@ runs:
             --recursive \
             --no-sign-request
         }
+        function gs_ls() {
+          local gs_path="$1"
+          gsutil ls -l "${gs_path%/*}/**"
+        }
 
         ls_content=$(
           echo "${{ steps.test_resources.outputs.test_resources }}" | \
@@ -106,6 +118,11 @@ runs:
 
               if [ "$type" == "s3" ]; then
                 s3_ls "$path"
+              elif [ "$type" == "gs" ]; then
+                gs_ls "$path"
+              else 
+                echo "Unsupported storage type: '$type' for bucket '$path'."
+                exit 1
               fi
 
               echo ""
@@ -158,6 +175,11 @@ runs:
             "$dest_path" \
             --no-sign-request
         }
+        function sync_gs() {
+          local gs_path="$1"
+          local dest_path="$2"
+          gsutil -m rsync -r "$gs_path" "$dest_path"
+        }
 
         echo "${{ steps.test_resources.outputs.test_resources }}" | \
           while read -r line; do
@@ -169,6 +191,11 @@ runs:
 
             if [ "$type" == "s3" ]; then
               sync_s3 "$path" "$dest"
+            elif [ "$type" == "gs" ]; then
+              sync_gs "$path" "$dest"
+            else 
+              echo "Unsupported storage type: '$type' for bucket '$path'."
+              exit 1
             fi
           done
         

@@ -1,3 +1,13 @@
+# viash-actions v6.7.0
+
+## New functionality
+
+* `project/sync-and-cache`: Add support for gs buckets. Infer type from path if not provided (PR #44).
+
+## Minor changes
+
+* `project/sync-and-cache-s3`: Added deprecation warning in favor of `project/sync-and-cache` (PR #44).
+
 # viash-actions v6.6.1
 
 ## Bug fixes
