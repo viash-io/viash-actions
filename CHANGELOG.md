@@ -6,7 +6,7 @@
 
 ## Minor changes
 
-* `project/sync-and-cache-s3`: Added deprecation warning in favor of `project/sync-and-cache`.
+* `project/sync-and-cache-s3`: Added deprecation warning in favor of `project/sync-and-cache` (PR #44).
 
 # viash-actions v6.6.1
 
