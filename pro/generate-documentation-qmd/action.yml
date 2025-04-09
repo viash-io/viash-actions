@@ -59,10 +59,6 @@ inputs:
       Release of Viash tools to use.
     required: false
     default: 'latest'
-  src:
-    required: false
-    description: |
-      An override for the `--src` parameter in `viash ns list`. Example: `src/`.
   query:
     required: false
     description: |
@@ -114,7 +110,7 @@ runs:
         fi
 
         $RUNNER_TEMP/viash_tools/target/docker/quarto/generate_documentation_qmd/generate_documentation_qmd \
-          --input "${{ inputs.src }}" "${extra_args[@]}" \
+          --input "./" "${extra_args[@]}" \
           --output "${{ inputs.output_dir }}" \
           --git_repo "${{ inputs.repository }}" \
           --git_browse_url "https://github.com/${{ inputs.repository }}/blob/${{ inputs.ref }}/" \
