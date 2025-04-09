@@ -1,3 +1,11 @@
+# viash-actions v6.7.1
+
+## Minor changes
+
+* `project/sync-and-cache`: Rerender readme (PR #45).
+
+* `pro/generate-documentation-qmd`: Remove deprecated argument (PR #45).
+
 # viash-actions v6.7.0
 
 ## New functionality

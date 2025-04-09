@@ -49,8 +49,6 @@ before you run `generate_documentation_qmd`.
   file. Options are ‘true’ or ‘false’. Default: `false`.
 - `tools_version`: *(Optional)* Release of Viash tools to use. Default:
   `latest`.
-- `src`: *(Optional)* An override for the `--src` parameter in
-  `viash ns list`. Example: `src/`.
 - `query`: *(Optional)* Filter which components get selected by
   component and namespace name. Can be a regex.
 
