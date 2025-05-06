@@ -1,3 +1,9 @@
+# viash-actions v6.7.2
+
+## Minor changes
+
+* `project/sync-and-cache`: Fix google storage sync (PR #xx).
+
 # viash-actions v6.7.1
 
 ## Minor changes

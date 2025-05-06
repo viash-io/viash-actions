@@ -178,7 +178,7 @@ runs:
         function sync_gs() {
           local gs_path="$1"
           local dest_path="$2"
-          gsutil -m rsync -r "$gs_path" "$dest_path"
+          gcloud storage rsync -r "$gs_path" "$dest_path"
         }
 
         echo "${{ steps.test_resources.outputs.test_resources }}" | \
