@@ -178,7 +178,10 @@ runs:
         function sync_gs() {
           local gs_path="$1"
           local dest_path="$2"
+          local orig_setting=`gcloud config get-value auth/disable_credentials`
+          gcloud config set auth/disable_credentials true
           gcloud storage rsync -r "$gs_path" "$dest_path"
+          gcloud config set auth/disable_credentials $orig_setting
         }
 
         echo "${{ steps.test_resources.outputs.test_resources }}" | \
