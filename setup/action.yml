@@ -27,8 +27,9 @@ runs:
         mkdir -p "$HOME/.local/bin"
 
         # download installer script
-        wget https://dl.viash.io -O $RUNNER_TEMP/viash_install || \
-          wget https://github.com/viash-io/viash/releases/latest/download/viash_install -O $RUNNER_TEMP/viash_install
+        # note: this sometimes times out so pointing directly to the latest release
+        # wget https://dl.viash.io -O $RUNNER_TEMP/viash_install || \
+        wget https://github.com/viash-io/viash/releases/latest/download/viash_install -O $RUNNER_TEMP/viash_install
         
         # install viash
         bash "$RUNNER_TEMP/viash_install" "${extra_params[@]}" --output "$HOME/.local/bin/viash"

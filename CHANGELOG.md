@@ -1,3 +1,9 @@
+# viash-actions v6.7.3
+
+## Minor changes
+
+* `setup`: Directly download the latest Viash installer script from GitHub releases instead of using `dl.viash.io` (PR #47).
+
 # viash-actions v6.7.2
 
 ## Minor changes
