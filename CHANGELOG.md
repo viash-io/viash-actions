@@ -2,7 +2,7 @@
 
 ## Minor changes
 
-* `setup`: Directly download the latest Viash installer script from GitHub releases instead of using `dl.viash.io` (PR #47).
+* `setup`: Use parallel downloads to circumvent timeouts (PR #47).
 
 # viash-actions v6.7.2
 
