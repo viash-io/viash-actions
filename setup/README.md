@@ -18,6 +18,7 @@ https://github.com/viash-io/viash/
 
 ### Outputs
 
+- `path`: The path to the installed Viash executable.
 - `version`: The installed version of viash.
 
 ## Examples
