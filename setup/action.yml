@@ -6,13 +6,43 @@ inputs:
     description: 'The version of Viash to use. Either a release tag (e.g. 0.6.0) or "@develop" for latest development version. If missing, uses latest stable version.'
     required: false
 outputs:
+  path:
+    description: 'The path to the installed Viash executable.'
+    value: ${{ steps.install-viash.outputs.path }}
   version:
     description: 'The installed version of viash.'
     value: ${{ steps.install-viash.outputs.version }}
 runs:
-  using: 'composite'
+  using: composite
   steps: 
-    - name: 'Install Viash'
+    - name: Download Viash Installer
+      id: download-installer
+      shell: bash
+      run: |
+        INSTALLER_PATH="$RUNNER_TEMP/viash_install"
+        URL1="https://dl.viash.io"
+        URL2="https://github.com/viash-io/viash/releases/latest/download/viash_install"
+
+        # ensure cleanup
+        cleanup() {
+          # The 'jobs -p' command lists the process IDs (PIDs) of all background jobs.
+          # 'kill' attempts to terminate them.
+          # The '2>/dev/null' suppresses errors if a job has already finished.
+          kill $(jobs -p) 2>/dev/null
+        }
+        trap cleanup EXIT
+
+        # start both downloads in the background
+        (curl --fail -L "$URL1" -o "$INSTALLER_PATH" --create-dirs) &
+        (curl --fail -L "$URL2" -o "$INSTALLER_PATH" --create-dirs) &
+
+        # wait for either download to finish
+        wait -n
+
+        echo "Download finished!"
+        echo "INSTALLER_PATH=$INSTALLER_PATH" >> "$GITHUB_OUTPUT"
+
+    - name: Install Viash
       id: install-viash 
       env: 
         GITHUB_TOKEN: ${{ github.token }}
@@ -23,23 +53,23 @@ runs:
           extra_params+=( "--tag" "${{inputs.version}}" )
         fi
 
-        # create dir
-        mkdir -p "$HOME/.local/bin"
+        # set envs
+        export VIASH_INSTALLER="${{steps.download-installer.outputs.INSTALLER_PATH}}"
+        export VIASH_DEST="$HOME/.local/bin/viash"
 
-        # download installer script
-        # note: this sometimes times out so pointing directly to the latest release
-        # wget https://dl.viash.io -O $RUNNER_TEMP/viash_install || \
-        wget https://github.com/viash-io/viash/releases/latest/download/viash_install -O $RUNNER_TEMP/viash_install
+        # create dir
+        mkdir -p $(dirname "$VIASH_DEST")
         
         # install viash
-        bash "$RUNNER_TEMP/viash_install" "${extra_params[@]}" --output "$HOME/.local/bin/viash"
-        rm "$RUNNER_TEMP/viash_install"
+        bash "$VIASH_INSTALLER" "${extra_params[@]}" --output "$VIASH_DEST"
 
         # add dir to path
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        echo  $(dirname "$VIASH_DEST") >> "$GITHUB_PATH"
         
         # check version
-        viash -v | sed 's#viash #version=#;s# (c).*##' >> $GITHUB_OUTPUT
+        viash -v | sed 's#viash #version=#;s# (c).*##' >> "$GITHUB_OUTPUT"
 
-        echo "Viash Installed !"
+        echo "Viash installed successfully!"
+
+        echo "path=$VIASH_DEST" >> "$GITHUB_OUTPUT"
       shell: bash
