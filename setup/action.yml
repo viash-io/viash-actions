@@ -20,24 +20,10 @@ runs:
       shell: bash
       run: |
         INSTALLER_PATH="$RUNNER_TEMP/viash_install"
-        URL1="https://dl.viash.io"
-        URL2="https://github.com/viash-io/viash/releases/latest/download/viash_install"
+        URL="https://github.com/viash-io/viash/releases/latest/download/viash_install"
 
-        # ensure cleanup
-        cleanup() {
-          # The 'jobs -p' command lists the process IDs (PIDs) of all background jobs.
-          # 'kill' attempts to terminate them.
-          # The '2>/dev/null' suppresses errors if a job has already finished.
-          kill $(jobs -p) 2>/dev/null
-        }
-        trap cleanup EXIT
-
-        # start both downloads in the background
-        (curl --fail -L "$URL1" -o "$INSTALLER_PATH" --create-dirs) &
-        (curl --fail -L "$URL2" -o "$INSTALLER_PATH" --create-dirs) &
-
-        # wait for either download to finish
-        wait -n
+        # download viash installer
+        curl --fail -L "$URL" -o "$INSTALLER_PATH" --create-dirs
 
         echo "Download finished!"
         echo "INSTALLER_PATH=$INSTALLER_PATH" >> "$GITHUB_OUTPUT"
