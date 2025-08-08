@@ -13,11 +13,12 @@ https://github.com/viash-io/viash/
 ### Inputs
 
 - `version`: - *optional*. The version of Viash to use. Either a release
-  tag (eg. 0.6.0) or “@develop” for latest development version. If
+  tag (e.g. 0.6.0) or “@develop” for latest development version. If
   missing, uses latest stable version.
 
 ### Outputs
 
+- `path`: The path to the installed Viash executable.
 - `version`: The installed version of viash.
 
 ## Examples

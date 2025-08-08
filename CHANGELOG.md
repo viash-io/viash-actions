@@ -1,3 +1,9 @@
+# viash-actions v6.7.3
+
+## Minor changes
+
+* `setup`: Use parallel downloads to circumvent timeouts (PR #47).
+
 # viash-actions v6.7.2
 
 ## Minor changes

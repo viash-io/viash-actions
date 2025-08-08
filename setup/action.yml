@@ -3,16 +3,32 @@ author: Data Intuitive
 description: 'This action will setup Viash from the git repository https://github.com/viash-io/viash/'
 inputs:
   version:
-    description: 'The version of Viash to use. Either a release tag (eg. 0.6.0) or "@develop" for latest development version. If missing, uses latest stable version.'
+    description: 'The version of Viash to use. Either a release tag (e.g. 0.6.0) or "@develop" for latest development version. If missing, uses latest stable version.'
     required: false
 outputs:
+  path:
+    description: 'The path to the installed Viash executable.'
+    value: ${{ steps.install-viash.outputs.path }}
   version:
     description: 'The installed version of viash.'
     value: ${{ steps.install-viash.outputs.version }}
 runs:
-  using: 'composite'
+  using: composite
   steps: 
-    - name: 'Install Viash'
+    - name: Download Viash Installer
+      id: download-installer
+      shell: bash
+      run: |
+        INSTALLER_PATH="$RUNNER_TEMP/viash_install"
+        URL="https://github.com/viash-io/viash/releases/latest/download/viash_install"
+
+        # download viash installer
+        curl --fail -L "$URL" -o "$INSTALLER_PATH" --create-dirs
+
+        echo "Download finished!"
+        echo "INSTALLER_PATH=$INSTALLER_PATH" >> "$GITHUB_OUTPUT"
+
+    - name: Install Viash
       id: install-viash 
       env: 
         GITHUB_TOKEN: ${{ github.token }}
@@ -23,22 +39,23 @@ runs:
           extra_params+=( "--tag" "${{inputs.version}}" )
         fi
 
-        # create dir
-        mkdir -p "$HOME/.local/bin"
+        # set envs
+        export VIASH_INSTALLER="${{steps.download-installer.outputs.INSTALLER_PATH}}"
+        export VIASH_DEST="$HOME/.local/bin/viash"
 
-        # download installer script
-        wget https://dl.viash.io -O $RUNNER_TEMP/viash_install || \
-          wget https://github.com/viash-io/viash/releases/latest/download/viash_install -O $RUNNER_TEMP/viash_install
+        # create dir
+        mkdir -p $(dirname "$VIASH_DEST")
         
         # install viash
-        bash "$RUNNER_TEMP/viash_install" "${extra_params[@]}" --output "$HOME/.local/bin/viash"
-        rm "$RUNNER_TEMP/viash_install"
+        bash "$VIASH_INSTALLER" "${extra_params[@]}" --output "$VIASH_DEST"
 
         # add dir to path
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        echo  $(dirname "$VIASH_DEST") >> "$GITHUB_PATH"
         
         # check version
-        viash -v | sed 's#viash #version=#;s# (c).*##' >> $GITHUB_OUTPUT
+        viash -v | sed 's#viash #version=#;s# (c).*##' >> "$GITHUB_OUTPUT"
 
-        echo "Viash Installed !"
+        echo "Viash installed successfully!"
+
+        echo "path=$VIASH_DEST" >> "$GITHUB_OUTPUT"
       shell: bash
