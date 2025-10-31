@@ -29,6 +29,13 @@ on:
           bug fix releases where the Docker images are known to be
           working.
         required: false
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+        description: "GitHub token to push to the target branch"
+      VIASH_PRO_TOKEN:
+        required: false
+        description: "Viash pro token"
 
 jobs:
   # phase 1
@@ -84,7 +91,7 @@ jobs:
           project_directory: ${{ inputs.project_directory }}
           target_branch: ${{ steps.variables.outputs.target_branch }}
           version: ${{ steps.variables.outputs.version }}
-      
+          viash_pro_token: ${{ secrets.VIASH_PRO_TOKEN }}
       - name: Deploy to target branch
         uses: peaceiris/actions-gh-pages@v4
         with:
