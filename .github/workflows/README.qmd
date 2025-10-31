@@ -53,4 +53,9 @@ on:
 jobs:
   test:
     uses: viash-io/viash-actions/.github/workflows/build.yaml@v6
+    permissions:
+      contents: write
+      packages: write
+    secrets:
+      VIASH_PRO_TOKEN: ${{ secrets.VIASH_PRO_TOKEN }}
 ```
