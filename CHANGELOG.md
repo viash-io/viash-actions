@@ -6,6 +6,10 @@
 
 * Update `actions/checkout` from v4 to v5 (PR #50).
 
+## Bug fixes
+
+* `project/build-target`: Fix schema generation (PR #50).
+
 # viash-actions v6.7.3
 
 ## Minor changes
