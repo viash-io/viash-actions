@@ -51,6 +51,5 @@ jobs:
   test:
     uses: viash-io/viash-actions/.github/workflows/build.yaml@v6
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       VIASH_PRO_TOKEN: ${{ secrets.VIASH_PRO_TOKEN }}
 ```

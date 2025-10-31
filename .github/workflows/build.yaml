@@ -30,9 +30,6 @@ on:
           working.
         required: false
     secrets:
-      GITHUB_TOKEN:
-        required: true
-        description: "GitHub token to push to the target branch"
       VIASH_PRO_TOKEN:
         required: false
         description: "Viash pro token"
