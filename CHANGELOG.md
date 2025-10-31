@@ -1,4 +1,4 @@
-# viash-actions upcoming
+# viash-actions v6.7.4
 
 ## Minor changes
 
