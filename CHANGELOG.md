@@ -4,7 +4,7 @@
 
 * `.github/workflows/build.yaml`: Pass secrets to underlying build action (PR #50).
 
-* Update `actions/checkout` from v4 to v5 (PR #50).
+* Update `actions/checkout` from v4 to v6 (PR #50 and PR #51).
 
 ## Bug fixes
 
