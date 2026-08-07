@@ -1,3 +1,9 @@
+# viash-actions unreleased
+
+## Bug fixes
+
+* `project/sync-and-cache`: Add `--delete` flag to sync commands so files removed from the remote source are also removed locally (PR #56).
+
 # viash-actions v6.7.3
 
 ## Minor changes
