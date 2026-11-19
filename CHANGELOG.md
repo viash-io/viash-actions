@@ -1,10 +1,14 @@
-# viash-actions development
+# viash-actions unreleased
 
 ## New functionality
 
 * `pro/setup-vlint`: New action to install vlint (PR #58).
 
 * `pro/vlint`: New action to check the formatting of Viash configs and lint them with vlint (PR #58).
+
+## Bug fixes
+
+* `project/sync-and-cache`: Add `--delete` flag to sync commands so files removed from the remote source are also removed locally (PR #56).
 
 # viash-actions v6.7.3
 

@@ -173,14 +173,15 @@ runs:
             aws s3 sync \
             "$s3_path" \
             "$dest_path" \
-            --no-sign-request
+            --no-sign-request \
+            --delete
         }
         function sync_gs() {
           local gs_path="$1"
           local dest_path="$2"
           local orig_setting=`gcloud config get-value auth/disable_credentials`
           gcloud config set auth/disable_credentials true
-          gcloud storage rsync -r "$gs_path" "$dest_path"
+          gcloud storage rsync -r "$gs_path" "$dest_path" --delete-unmatched-destination-objects
           gcloud config set auth/disable_credentials $orig_setting
         }
 
