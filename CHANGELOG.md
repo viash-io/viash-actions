@@ -1,3 +1,11 @@
+# viash-actions development
+
+## New functionality
+
+* `pro/setup-vlint`: New action to install vlint (PR #58).
+
+* `pro/vlint`: New action to check the formatting of Viash configs and lint them with vlint (PR #58).
+
 # viash-actions v6.7.3
 
 ## Minor changes
@@ -238,7 +246,7 @@
 
 ## New features
 
-* `pro/generate-documentation-qmd`: Added `working_directory` option. 
+* `pro/generate-documentation-qmd`: Added `working_directory` option.
 
 ## Bug fixes
 
