@@ -82,7 +82,7 @@ The two examples below show different ways to implement this which show differen
 #### One job
 
 
-Th simplest way to skip the `vlint` step is to check for the token in the `Setup vlint` step and skip the `vlint` step when it is not set.
+The simplest way to skip the `vlint` step is to check for the token in the `Setup vlint` step and skip the `vlint` step when it is not set.
 With this approach, a notice and a line in the job summary say that the configs were not checked but the job still shows as successful in the pull request checks.
 Use the two-job approach below if you want the `vlint` job to show as skipped in the pull request checks.
 
