@@ -19,7 +19,6 @@ error and the `installed` output is `false`.
 
 - `token`: *(Optional)* GitHub token with read access to
   data-intuitive/viash-lint, used to download the vlint release.
-  Default: `${{ github.token }}`.
 - `version`: *(Optional)* The vlint release tag to install
   (e.g. `v0.0.2`), or `latest` for the latest release. Default:
   `latest`.

@@ -12,7 +12,6 @@ inputs:
     required: false
     description: >
       GitHub token with read access to data-intuitive/viash-lint, used to download the vlint release.
-    default: ${{ github.token }}
   version:
     required: false
     description: >
