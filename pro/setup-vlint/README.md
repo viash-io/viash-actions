@@ -20,11 +20,10 @@ error and the `installed` output is `false`.
 - `token`: *(Optional)* GitHub token with read access to
   data-intuitive/viash-lint, used to download the vlint release.
 - `version`: *(Optional)* The vlint release tag to install
-  (e.g. `v0.0.2`), or `latest` for the latest release. Default:
-  `latest`.
+  (e.g. `v0.0.2`). If not set, the latest release is installed.
 - `on_missing_token`: *(Optional)* What to do when the token is empty:
   `error` fails the step, `skip` gives a notice and does not install
-  vlint. Default: `error`.
+  vlint. If not set, the step fails (`error`).
 
 ### Outputs
 

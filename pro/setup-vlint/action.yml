@@ -15,13 +15,12 @@ inputs:
   version:
     required: false
     description: >
-      The vlint release tag to install (e.g. `v0.0.2`), or `latest` for the latest release.
-    default: latest
+      The vlint release tag to install (e.g. `v0.0.2`). If not set, the latest release is installed.
   on_missing_token:
     required: false
     description: >
       What to do when the token is empty: `error` fails the step, `skip` gives a notice and does not install vlint.
-    default: error
+      If not set, the step fails (`error`).
 outputs:
   installed:
     description: 'Whether vlint was installed (`true` or `false`).'
@@ -47,6 +46,8 @@ runs:
 
         repo="data-intuitive/viash-lint"
         install_dir="$RUNNER_TEMP/vlint"
+        VLINT_VERSION="${VLINT_VERSION:-latest}"
+        ON_MISSING_TOKEN="${ON_MISSING_TOKEN:-error}"
 
         fail() {
           echo "::error title=vlint not installed::$*"
