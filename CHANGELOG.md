@@ -1,5 +1,9 @@
 # viash-actions unreleased
 
+## Breaking changes
+
+* Removed `project/check-concurrent-pr`.
+
 ## Bug fixes
 
 * `project/sync-and-cache`: Add `--delete` flag to sync commands so files removed from the remote source are also removed locally (PR #56).
