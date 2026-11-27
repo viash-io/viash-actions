@@ -1,0 +1,55 @@
+name: Format and lint Viash configs with vlint
+author: Data Intuitive
+description: |
+  Check the formatting of the Viash configs in a project and lint them with
+  [vlint](https://github.com/data-intuitive/viash-lint).
+  Problems are shown as annotations on the pull request.
+
+  vlint must be on the `PATH`.
+  We recommend to use [viash-actions/pro/setup-vlint](https://github.com/viash-io/viash-actions/tree/main/pro/setup-vlint) before you run this action.
+inputs:
+  format:
+    required: false
+    description: >
+      Whether to check the formatting with `vlint format --check`.
+    default: "true"
+  check:
+    required: false
+    description: >
+      Whether to lint the configs with `vlint check`.
+    default: "true"
+  project_directory:
+    required: false
+    description: >
+      Path to the project directory. This is the directory where the project config `_viash.yaml` is located.
+    default: "."
+runs:
+  using: composite
+  steps:
+    - name: Run vlint
+      shell: bash
+      working-directory: ${{ inputs.project_directory }}
+      env:
+        VLINT_FORMAT: ${{ inputs.format }}
+        VLINT_CHECK: ${{ inputs.check }}
+      run: |
+        set -o nounset -o pipefail
+
+        if ! command -v vlint >/dev/null 2>&1; then
+          echo "::error title=vlint not found::vlint is not on the PATH. Install it with viash-io/viash-actions/pro/setup-vlint."
+          exit 1
+        fi
+
+        # Run both commands before failing, so that all problems are shown
+        status=0
+        if [ "$VLINT_FORMAT" = "true" ]; then
+          echo "::group::vlint format --check"
+          vlint format --check --output-format github . || status=1
+          echo "::endgroup::"
+        fi
+        if [ "$VLINT_CHECK" = "true" ]; then
+          echo "::group::vlint check"
+          vlint check --output-format github . || status=1
+          echo "::endgroup::"
+        fi
+        exit "$status"

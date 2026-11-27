@@ -32,6 +32,8 @@ Pro](https://www.data-intuitive.com/services/viashpro.html) actions:
     nf-tower schemas for Viash components
 3.  [`pro/generate-documentation-qmd`](pro/generate-documentation-qmd) -
     Build quarto markdown documentation files for Viash components
+4.  [`pro/setup-vlint`](pro/setup-vlint) - Setup vlint
+5.  [`pro/vlint`](pro/vlint) - Format and lint Viash configs with vlint
 
 We recommend using `v6` for your actions.
 

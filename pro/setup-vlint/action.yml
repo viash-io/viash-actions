@@ -1,0 +1,120 @@
+name: Setup vlint
+author: Data Intuitive
+description: |
+  Install [vlint](https://github.com/data-intuitive/viash-lint), the formatter and linter for Viash configs,
+  and add it to the `PATH`.
+
+  Installing vlint needs a token with read access to data-intuitive/viash-lint
+  (a fine-grained token with "Contents: Read-only").
+  With `on_missing_token: skip`, a missing token is not an error and the `installed` output is `false`.
+inputs:
+  token:
+    required: false
+    description: >
+      GitHub token with read access to data-intuitive/viash-lint, used to download the vlint release.
+  version:
+    required: false
+    description: >
+      The vlint release tag to install (e.g. `v0.0.2`). If not set, the latest release is installed.
+  on_missing_token:
+    required: false
+    description: >
+      What to do when the token is empty: `error` fails the step, `skip` gives a notice and does not install vlint.
+      If not set, the step fails (`error`).
+outputs:
+  installed:
+    description: 'Whether vlint was installed (`true` or `false`).'
+    value: ${{ steps.install.outputs.installed }}
+  path:
+    description: 'The path to the installed vlint executable.'
+    value: ${{ steps.install.outputs.path }}
+  version:
+    description: 'The installed version of vlint.'
+    value: ${{ steps.install.outputs.version }}
+runs:
+  using: composite
+  steps:
+    - name: Install vlint
+      id: install
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        VLINT_VERSION: ${{ inputs.version }}
+        ON_MISSING_TOKEN: ${{ inputs.on_missing_token }}
+      run: |
+        set -o errexit -o nounset -o pipefail
+
+        repo="data-intuitive/viash-lint"
+        install_dir="$RUNNER_TEMP/vlint"
+        VLINT_VERSION="${VLINT_VERSION:-latest}"
+        ON_MISSING_TOKEN="${ON_MISSING_TOKEN:-error}"
+
+        fail() {
+          echo "::error title=vlint not installed::$*"
+          exit 1
+        }
+
+        if [ -z "$GH_TOKEN" ]; then
+          case "$ON_MISSING_TOKEN" in
+            error)
+              fail "No token given. Set the token input to a secret with read access to $repo."
+              ;;
+            skip)
+              message="No token given, so vlint was not installed and the Viash configs were not checked."
+              echo "::notice title=vlint skipped::$message"
+              echo "**vlint skipped:** $message" >> "$GITHUB_STEP_SUMMARY"
+              echo "installed=false" >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+            *)
+              fail "The on_missing_token input must be 'error' or 'skip', not '$ON_MISSING_TOKEN'."
+              ;;
+          esac
+        fi
+
+        command -v gh >/dev/null 2>&1 || fail "The GitHub CLI (gh) is not installed on this runner."
+
+        case "$(uname -s)-$(uname -m)" in
+          Darwin-arm64) target="aarch64-apple-darwin" ;;
+          Darwin-x86_64) target="x86_64-apple-darwin" ;;
+          Linux-aarch64 | Linux-arm64) target="aarch64-unknown-linux-gnu" ;;
+          Linux-x86_64) target="x86_64-unknown-linux-gnu" ;;
+          *) fail "No vlint release for $(uname -s) $(uname -m)." ;;
+        esac
+        asset="viash-lint-$target.tar.xz"
+
+        tag=()
+        if [ "$VLINT_VERSION" != "latest" ]; then
+          tag=("$VLINT_VERSION")
+        fi
+
+        tmp_dir=$(mktemp -d)
+        trap 'rm -rf "$tmp_dir"' EXIT
+
+        if ! gh release download ${tag[@]+"${tag[@]}"} --repo "$repo" --pattern "$asset" --pattern "$asset.sha256" --dir "$tmp_dir"; then
+          fail "Could not download vlint $VLINT_VERSION ($asset). Check that the release exists and that the token can read $repo and has not expired."
+        fi
+
+        if command -v sha256sum >/dev/null 2>&1; then
+          checksum=(sha256sum --check --status)
+        else
+          checksum=(shasum --algorithm 256 --check --status)
+        fi
+        (cd "$tmp_dir" && "${checksum[@]}" "$asset.sha256") || fail "The checksum of $asset does not match."
+
+        if ! {
+          tar -xJf "$tmp_dir/$asset" -C "$tmp_dir" &&
+            mkdir -p "$install_dir" &&
+            install -m 755 "$tmp_dir/viash-lint-$target/vlint" "$install_dir/vlint"
+        }; then
+          fail "Could not extract or install vlint."
+        fi
+        echo "$install_dir" >> "$GITHUB_PATH"
+
+        version=$("$install_dir/vlint" --version | sed 's/^vlint //')
+        echo "Installed vlint $version to $install_dir/vlint"
+        {
+          echo "installed=true"
+          echo "path=$install_dir/vlint"
+          echo "version=$version"
+        } >> "$GITHUB_OUTPUT"
